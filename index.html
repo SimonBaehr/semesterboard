@@ -419,7 +419,7 @@ const ICONS={
   gewicht:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 10a5 5 0 0 1 8 0M12 10l1.5-2"/></svg>'
 };
 const VIEWS=[["heute","Cockpit"],["woche","Woche"],["faecher","Fächer"],["aufgaben","Aufgaben"],["notizen","Notizen"]];
-const AVIEWS=[["alltag","Übersicht"],["training","Training"],["essen","Ernährung"],["gewicht","Gewicht"]];
+const AVIEWS=[["alltag","Übersicht"],["training","Training"]];
 const COLS=["courses","events","tasks","steps","notes","digests","literature","timelog","reviews"];
 // Alltag-Daten liegen in eigenen Tabellen (fit_*), getrennt von den Uni-Tabellen.
 const FCOLS=["fit_workouts","fit_meals","fit_weight","fit_goals"];
@@ -959,28 +959,32 @@ function vGewicht(){
 }
 
 function vAlltag(){
-  const today=iso(new Date()),g=goals(),kin=kcalIn(today),out=kcalOut(today),st=weightStats();
+  const today=iso(new Date());
   const wk=monday(new Date()),days=[...Array(7)].map((_,i)=>addDays(wk,i));
   const wkW=S.fit_workouts.filter(w=>w.date>=iso(days[0])&&w.date<=iso(days[6])),wd=wkW.filter(w=>w.done);
   const plan=plannedW(),next=plan.find(w=>w.date>=today);
-  const kp=g.kcalTarget?Math.round(100*kin/g.kcalTarget):null;
+  const isRun=w=>w.done&&/^(Run|TrailRun|VirtualRun)\b/.test(w.details||"");
+  const kmOf=w=>{const m=/([\d.]+) km/.exec(w.details||"");return m?+m[1]:0};
+  const runsWk=wd.filter(isRun),kmWk=runsWk.reduce((a,w)=>a+kmOf(w),0);
+  const m0=iso(new Date(new Date().getFullYear(),new Date().getMonth(),1)),y0=new Date().getFullYear()+"-01-01";
+  const kmMon=S.fit_workouts.filter(w=>isRun(w)&&w.date>=m0).reduce((a,w)=>a+kmOf(w),0);
+  const kmYr=S.fit_workouts.filter(w=>isRun(w)&&w.date>=y0).reduce((a,w)=>a+kmOf(w),0);
+  const f1=x=>x.toLocaleString("de-DE",{maximumFractionDigits:1});
   return `<div class="grid">
   <blockquote class="quote s12">IF YOU DON’T CHANGE IT, YOU CHOOSE IT.</blockquote>
   ${(()=>{const s=S.fit_workouts.filter(w=>w.date===today&&/^Laufvorschlag/i.test(w.title||""))[0];
     return `<section class="panel hud s12" aria-labelledby="h-run"><div class="ph"><h2 id="h-run">Laufvorschlag heute</h2><span class="label">aus deinen Strava-Daten</span></div>${s?`<div class="item${s.done?" done":""}" style="align-items:flex-start"><input type="checkbox" class="check" data-toggle="fit_workouts/${s.id}" ${s.done?"checked":""} aria-label="Erledigt"><div class="body"><div class="title" style="font-size:1.05rem">${esc(s.title.replace(/^Laufvorschlag:\s*/i,""))}</div><div class="meta">${s.durationMin?`<span>${s.durationMin} min</span>`:""}</div>${s.details?`<div style="white-space:pre-wrap;color:var(--ink2);margin-top:6px;font-size:.9rem">${esc(s.details)}</div>`:""}</div></div>`:'<div class="empty">Der Vorschlag für heute kommt jeden Morgen gegen 6 Uhr.</div>'}</section>`})()}
-  <section class="panel hud s12"><div class="kpis">
-    <div class="kpi">${ringSVG(kp==null?null:Math.min(100,kp),kp>100?"var(--serious)":"var(--accent)",72,7,kp==null?"–":kp+"%")}<div><div class="label">Heute gegessen</div><div class="big">${num(kin)}<small>kcal</small></div><div class="sub">${g.kcalTarget?"Ziel "+num(g.kcalTarget)+" kcal":"Ziel unten festlegen"}</div></div></div>
-    <div class="kpi"><div><div class="label">Bilanz heute</div><div class="big ${out==null?"":kin-out>0?"up":"down"}">${out==null?"–":(kin-out>0?"+":"−")+num(Math.abs(kin-out))}<small>kcal</small></div><div class="sub">${out==null?"Grundverbrauch unten eintragen":"Verbrauch "+num(out)+" kcal"}</div></div></div>
-    <div class="kpi"><div><div class="label">Gewicht</div><div class="big">${st?kg(st.last.kg):"–"}<small>kg</small></div><div class="sub">${st&&st.delta!=null?signed(st.delta)+" kg in 7 Tagen":st?"Stand "+fDate(fromIso(st.last.date),{day:"2-digit",month:"2-digit"}):"Noch kein Eintrag"}</div></div></div>
-    <div class="kpi"><div style="min-width:0"><div class="label">Training KW ${kw(new Date())}</div><div class="big">${wd.length}<small>/ ${wkW.length}</small></div><div class="sub">${wd.reduce((s,w)=>s+(w.durationMin||0),0)} min${next?" · als Nächstes "+(next.date===today?"heute":fDate(fromIso(next.date),{weekday:"short"}))+(next.time?" "+esc(next.time):"")+": "+esc(next.title):""}</div></div></div>
+  <section class="panel s12"><div class="kpis">
+    <div class="kpi"><div><div class="label">Läufe diese Woche</div><div class="big">${runsWk.length}<small>/ 3</small></div><div class="sub">${f1(kmWk)} km</div></div></div>
+    <div class="kpi"><div><div class="label">Training KW ${kw(new Date())}</div><div class="big">${wd.length}<small>Einheiten</small></div><div class="sub">${wd.reduce((s,w)=>s+(w.durationMin||0),0)} min</div></div></div>
+    <div class="kpi"><div><div class="label">Laufen ${fDate(new Date(),{month:"long"})}</div><div class="big">${f1(kmMon)}<small>km</small></div><div class="sub">${f1(kmYr)} km in ${new Date().getFullYear()}</div></div></div>
+    <div class="kpi"><div style="min-width:0"><div class="label">Als Nächstes</div><div class="sub" style="margin-top:4px">${next?(next.date===today?"heute":fDate(fromIso(next.date),{weekday:"short"}))+(next.time?" "+esc(next.time):"")+": "+esc(next.title.replace(/^Laufvorschlag:\s*/i,"")):"nichts geplant"}</div></div></div>
   </div></section>
-  <section class="panel s8"><div class="ph"><h2>Gewichtsverlauf</h2>${wrSeg()}</div><div class="chart" data-chart="weight"></div></section>
-  <section class="panel s4">${listHead("Geplante Trainings",plan.length)}<div>${plan.slice(0,5).map(w=>`<div class="item"><input type="checkbox" class="check" data-toggle="fit_workouts/${w.id}" aria-label="Erledigt"><div class="body"><div class="title">${esc(w.title)}</div><div class="meta">${tChip(w.type)}${relDue(w.date)}${w.time?`<span>${esc(w.time)}</span>`:""}</div></div></div>`).join("")||'<div class="empty">Nichts geplant.</div>'}</div><button class="btn small" data-go="training" style="margin-top:10px">Training planen</button></section>
-  <section class="panel s7"><div class="ph"><h2>Kalorien · 14 Tage</h2><button class="btn small" data-go="essen">Mahlzeit eintragen</button></div><div class="chart" data-chart="kcal"></div></section>
-  <section class="panel s5"><div class="ph"><h2>Trainingswoche</h2></div><div class="wkl">${days.map(d=>{const k=iso(d),xs=wkW.filter(w=>w.date===k).sort(byWhen);
+  <section class="panel s5">${listHead("Geplante Trainings",plan.length)}<div>${plan.slice(0,5).map(w=>`<div class="item"><input type="checkbox" class="check" data-toggle="fit_workouts/${w.id}" aria-label="Erledigt"><div class="body"><div class="title">${esc(w.title)}</div><div class="meta">${tChip(w.type)}${relDue(w.date)}${w.time?`<span>${esc(w.time)}</span>`:""}</div></div></div>`).join("")||'<div class="empty">Nichts geplant.</div>'}</div><button class="btn small" data-go="training" style="margin-top:10px">Training planen</button></section>
+  <section class="panel s7"><div class="ph"><h2>Trainingswoche</h2></div><div class="wkl">${days.map(d=>{const k=iso(d),xs=wkW.filter(w=>w.date===k).sort(byWhen);
     return `<div class="wkd${k===today?" today":k<today?" past":""}"><div><div class="dn">${fDate(d,{weekday:"short"})}</div><div class="dd">${fDate(d,{day:"2-digit",month:"2-digit"})}</div></div><div>${xs.length?xs.map(w=>`<div class="wke" style="--cc:${tCol(w.type)}" data-go="training"><span class="t">${w.time?esc(w.time):(WT[w.type]||WT.sonstiges)[0]}</span><span><span class="n">${w.done?"✓ ":""}${esc(w.title)}</span>${w.durationMin?`<span class="r">${w.durationMin} min</span>`:""}</span></div>`).join(""):'<div class="free">Ruhetag</div>'}</div></div>`}).join("")}</div></section>
-  <section class="panel s12"><div class="ph"><h2>Ziele</h2><span class="faint" style="font-size:.76rem">Grundlage für Ring, Bilanz und Zielgewicht</span></div>
-    <form class="goals" id="f-goals"><label>Kalorien pro Tag (Ziel)<input type="number" name="kcalTarget" min="0" value="${g.kcalTarget??""}" placeholder="z. B. 2400"></label><label>Grundverbrauch pro Tag<input type="number" name="baseBurn" min="0" value="${g.baseBurn??""}" placeholder="z. B. 2200"></label><label>Eiweiß pro Tag (g)<input type="number" name="proteinTarget" min="0" value="${g.proteinTarget??""}" placeholder="z. B. 140"></label><label>Zielgewicht (kg)<input type="number" name="weightTarget" step="0.1" min="20" max="400" value="${g.weightTarget??""}" placeholder="z. B. 78"></label><button class="btn primary">Ziele speichern</button></form></section>
+  <section class="panel s12"><div class="ph"><h2>Minuten pro Woche</h2><span class="faint" style="font-size:.76rem">letzte 8 Wochen</span></div><div class="chart" data-chart="train"></div>
+    <div class="legend">${Object.values(WT).map(v=>`<span><i style="background:${v[1]}"></i>${v[0]}</span>`).join("")}</div></section>
   </div>`;
 }
 
@@ -1041,7 +1045,7 @@ function render(){
   const body={heute:vHeute,woche:vWoche,faecher:vFaecher,aufgaben:vAufgaben,notizen:vNotizen,mail:vMail,alltag:vAlltag,training:vTraining,essen:vEssen,gewicht:vGewicht}[view]();
   const h=new Date().getHours(),al=isAlltag(view),home=view==="heute"||view==="alltag";
   const modeSeg=`<div class="seg mode" role="group" aria-label="Bereich"><button data-mode="uni" aria-pressed="${!al}">Uni</button><button data-mode="alltag" aria-pressed="${al}">Fitness</button></div>`;
-  $("#main").innerHTML=`<div class="top"><div><div class="label">${al?"Fitness · Training, Ernährung, Gewicht":"Semesterboard · M.Sc. Applied Business Innovation"}</div>${view==="heute"?`<h1>Guten ${h<11?"Morgen":h<18?"Tag":"Abend"}, Simon</h1>`:""}${view==="alltag"?"<h1>Fitness</h1>":""}${view==="heute"?'<button class="btn" data-brief="open" style="margin-top:8px">☀ Tages-Briefing</button>':""}</div><div class="topr">${modeSeg}${home?'<button class="refresh" id="refresh" data-refresh="1" aria-label="Aktualisieren" title="Aktualisieren"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button>':""}</div></div>
+  $("#main").innerHTML=`<div class="top"><div><div class="label">${al?"Fitness · Training und Laufen":"Semesterboard · M.Sc. Applied Business Innovation"}</div>${view==="heute"?`<h1>Guten ${h<11?"Morgen":h<18?"Tag":"Abend"}, Simon</h1>`:""}${view==="alltag"?"<h1>Fitness</h1>":""}${view==="heute"?'<button class="btn" data-brief="open" style="margin-top:8px">☀ Tages-Briefing</button>':""}</div><div class="topr">${modeSeg}${home?'<button class="refresh" id="refresh" data-refresh="1" aria-label="Aktualisieren" title="Aktualisieren"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button>':""}</div></div>
     ${!navigator.onLine?'<div class="notice">Offline: Du siehst den letzten Stand. Änderungen gehen erst wieder mit Verbindung.</div>':""}${body}`;
   drawCharts();
   const b=$("#brief");if(b&&!b.hidden){const sc=b.firstElementChild?b.firstElementChild.scrollTop:0;b.innerHTML=briefingHTML();b.firstElementChild.scrollTop=sc}
