@@ -597,6 +597,10 @@ h2{font-size:.9rem;font-weight:600;color:var(--ink)}
 .lz-bl{font-size:.7rem;color:var(--ink3)}.lz-pw{margin-bottom:12px}
 .lz-neutral{color:var(--ink)}
 @media (max-width:520px){.lz-tiles{gap:6px}.lz-num .lz-v{font-size:22px}.lz-xl .lz-v{font-size:44px}.lz-sec{padding:16px}}
+
+/* Karte in eigenem Stapelkontext: Leaflet-Ebenen (z-index 400–1000) bleiben unter Tab-Leiste und Hinweisen */
+.anamap{position:relative;z-index:0;isolation:isolate}
+@media (max-width:760px){.tabbar{z-index:1100}}
 </style>
 </head>
 <body>
