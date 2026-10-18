@@ -1036,7 +1036,7 @@ function shopList(recipes,scope){
   Object.entries(need).forEach(([k,q])=>{const p=REZ.prices[k],packs=Math.max(1,Math.ceil(q/p[1]-1e-9));tot+=packs*p[3];used+=q/p[1]*p[3];(cats[p[4]]=cats[p[4]]||[]).push({k,q,p,packs})});
   const amt=(q,p)=>p[2]==="g"||p[2]==="ml"?`${Math.round(q)} ${p[2]}`:`${(Math.round(q*10)/10).toLocaleString("de-DE")} ${p[2]}`;
   return `<div class="shop">${Object.keys(cats).sort().map(c=>`<div class="sgrp"><div class="label">${esc(c)}</div>${cats[c].sort((a,b)=>a.p[0].localeCompare(b.p[0])).map(x=>{const key=scope+"-"+x.k,on=chk(key);
-      return `<label class="sitem${on?" done":""}"><input type="checkbox" class="check" data-shop="${esc(key)}" ${on?"checked":""}><span class="sn">${esc(x.p[0])}</span><span class="sq">${amt(x.q,x.p)} gebraucht · ${x.packs} × ${x.p[1]} ${x.p[2]}</span><span class="sp">${eur(x.packs*x.p[3])}</span></label>`}).join("")}</div>`).join("")}
+      return `<label class="sitem${on?" done":""}"><input type="checkbox" class="check" data-shop="${esc(key)}" ${on?"checked":""}><span class="sn">${esc(x.p[0])}</span><span class="sq">${amt(x.q,x.p)} gebraucht · ${x.packs} × ${x.p[1]} ${x.p[2]}${x.p[5]?" · Preis "+esc(x.p[5]):""}</span><span class="sp">${eur(x.packs*x.p[3])}</span></label>`}).join("")}</div>`).join("")}
     <div class="stot"><span>Einkauf ca. <b>${eur(tot)}</b></span><span class="faint">davon in diesen Rezepten verbraucht ca. ${eur(used)}, der Rest reicht für die nächsten Tage</span></div>
     ${vor.size?`<div class="faint" style="font-size:.8rem;margin-top:8px">Aus dem Vorrat: ${[...vor].map(esc).join(", ")}</div>`:""}</div>`;
 }
@@ -1044,7 +1044,7 @@ function vEssen(){
   if(!REZ)return '<div class="ph"><h1>Essen</h1></div><section class="panel"><div class="empty">Rezepte werden geladen …</div></section>';
   const ti=wdIdx(new Date());if(essDay==null)essDay=ti;const ms=mealsOf(essDay);
   const wkStart=iso(monday(new Date()));
-  return `<div class="ph"><h1>Essen</h1><span class="label">günstig, ausgewogen, mit Zutaten, die sich wiederholen</span></div>
+  return `<div class="ph"><h1>Essen</h1><span class="label">günstig, ausgewogen, Preise für REWE</span></div>
   <div class="row" style="margin-bottom:14px"><div class="seg" role="group" aria-label="Ansicht"><button data-esstab="tag" aria-pressed="${essTab==="tag"}">Tag</button><button data-esstab="woche" aria-pressed="${essTab==="woche"}">Wocheneinkauf</button></div>
   ${essTab==="tag"?`<div class="seg" role="group" aria-label="Tag">${WDAYS.map((d,i)=>`<button data-essday="${i}" aria-pressed="${essDay===i}">${d}${i===ti?" ·":""}</button>`).join("")}</div>`:""}</div>
   ${essTab==="tag"?`<div class="grid">

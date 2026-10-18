@@ -1,257 +1,293 @@
 {
- "note": "Preise sind geschätzte Discounter-Preise (Aldi/Lidl, Stand Oktober 2026) und nicht tagesaktuell. Nährwerte pro Portion sind grobe Schätzungen.",
+ "note": "Preise für REWE, vor allem die Eigenmarke ja!. „gemeldet“ = zuletzt auf supermarktcheck.de von Nutzern gemeldeter REWE-Preis (ohne Datum, kann veraltet sein); „geschätzt“ = eigene Schätzung (Stand Oktober 2026). Frische Ware schwankt je nach Woche und Filiale. Nährwerte pro Portion sind grobe Schätzungen.",
  "prices": {
   "hafer": [
-   "Haferflocken",
+   "ja! Zarte Haferflocken",
    500,
    "g",
-   0.79,
-   "Trocken"
+   0.69,
+   "Trocken",
+   "gemeldet"
   ],
   "banane": [
    "Bananen",
    6,
    "Stk",
-   1.59,
-   "Obst & Gemüse"
+   1.79,
+   "Obst & Gemüse",
+   "geschätzt"
   ],
   "apfel": [
-   "Äpfel",
+   "ja! Äpfel (ca. 1 kg)",
    6,
    "Stk",
-   2.29,
-   "Obst & Gemüse"
+   2.49,
+   "Obst & Gemüse",
+   "geschätzt"
   ],
   "milch": [
-   "Milch oder Haferdrink",
+   "ja! Milch oder Haferdrink",
    1000,
    "ml",
    1.09,
-   "Kühlregal"
+   "Kühlregal",
+   "geschätzt"
   ],
   "joghurt": [
-   "Naturjoghurt 3,5 %",
+   "ja! Naturjoghurt 3,5 %",
    500,
    "g",
    0.79,
-   "Kühlregal"
+   "Kühlregal",
+   "geschätzt"
   ],
   "eier": [
-   "Eier (Freiland)",
+   "ja! Eier Bodenhaltung",
    10,
    "Stk",
-   2.49,
-   "Kühlregal"
+   1.99,
+   "Kühlregal",
+   "gemeldet"
   ],
   "brot": [
    "Vollkornbrot",
    500,
    "g",
-   1.29,
-   "Brot"
+   1.49,
+   "Brot",
+   "geschätzt"
   ],
   "feta": [
-   "Feta",
+   "Feta (Marka Hellas)",
    200,
    "g",
-   1.49,
-   "Kühlregal"
+   2.19,
+   "Kühlregal",
+   "gemeldet"
   ],
   "beeren": [
-   "TK-Beerenmischung",
+   "ja! TK-Beerenmischung",
    750,
    "g",
-   2.49,
-   "Tiefkühl"
+   2.99,
+   "Tiefkühl",
+   "geschätzt"
   ],
   "erdnuss": [
-   "Erdnussbutter",
+   "ja! Erdnussbutter",
    350,
    "g",
-   2.49,
-   "Trocken"
+   1.75,
+   "Trocken",
+   "gemeldet"
   ],
   "tomate": [
    "Tomaten",
    500,
    "g",
-   1.49,
-   "Obst & Gemüse"
+   1.79,
+   "Obst & Gemüse",
+   "geschätzt"
   ],
   "paprika": [
-   "Paprika",
+   "Paprika (3er)",
    3,
    "Stk",
-   1.99,
-   "Obst & Gemüse"
+   2.29,
+   "Obst & Gemüse",
+   "geschätzt"
   ],
   "spinat": [
-   "TK-Blattspinat",
+   "ja! TK-Blattspinat",
    450,
    "g",
    1.29,
-   "Tiefkühl"
+   "Tiefkühl",
+   "geschätzt"
   ],
   "kartoffel": [
-   "Kartoffeln",
+   "ja! Kartoffeln",
    2000,
    "g",
-   2.49,
-   "Obst & Gemüse"
+   2.79,
+   "Obst & Gemüse",
+   "geschätzt"
   ],
   "karotte": [
-   "Karotten",
-   1000,
-   "g",
-   0.99,
-   "Obst & Gemüse"
-  ],
-  "zwiebel": [
-   "Zwiebeln",
+   "ja! Karotten",
    1000,
    "g",
    1.19,
-   "Obst & Gemüse"
+   "Obst & Gemüse",
+   "geschätzt"
+  ],
+  "zwiebel": [
+   "ja! Zwiebeln",
+   1000,
+   "g",
+   1.29,
+   "Obst & Gemüse",
+   "geschätzt"
   ],
   "knoblauch": [
    "Knoblauch",
    1,
    "Knolle",
-   0.49,
-   "Obst & Gemüse"
+   0.59,
+   "Obst & Gemüse",
+   "geschätzt"
   ],
   "zucchini": [
    "Zucchini",
    2,
    "Stk",
-   1.49,
-   "Obst & Gemüse"
+   1.79,
+   "Obst & Gemüse",
+   "geschätzt"
   ],
   "aubergine": [
    "Aubergine",
    1,
    "Stk",
-   0.99,
-   "Obst & Gemüse"
+   1.29,
+   "Obst & Gemüse",
+   "geschätzt"
   ],
   "fzwiebel": [
    "Frühlingszwiebeln",
    1,
    "Bund",
-   0.69,
-   "Obst & Gemüse"
+   0.79,
+   "Obst & Gemüse",
+   "geschätzt"
   ],
   "zitrone": [
-   "Zitronen",
+   "Zitronen (Netz)",
    3,
    "Stk",
-   1.29,
-   "Obst & Gemüse"
+   1.49,
+   "Obst & Gemüse",
+   "geschätzt"
   ],
   "linsen": [
    "Rote Linsen",
    500,
    "g",
-   1.79,
-   "Trocken"
+   1.99,
+   "Trocken",
+   "geschätzt"
   ],
   "kicher": [
-   "Kichererbsen (Dose, 400 g)",
-   1,
-   "Dose",
-   0.79,
-   "Konserven"
-  ],
-  "kidney": [
-   "Kidneybohnen (Dose, 400 g)",
-   1,
-   "Dose",
-   0.69,
-   "Konserven"
-  ],
-  "weisse": [
-   "Weiße Bohnen (Dose, 400 g)",
-   1,
-   "Dose",
-   0.79,
-   "Konserven"
-  ],
-  "mais": [
-   "Mais (Dose, 285 g)",
-   1,
-   "Dose",
-   0.89,
-   "Konserven"
-  ],
-  "dosentom": [
-   "Gehackte Tomaten (Dose, 400 g)",
+   "ja! Kichererbsen (Dose)",
    1,
    "Dose",
    0.59,
-   "Konserven"
+   "Konserven",
+   "gemeldet"
+  ],
+  "kidney": [
+   "ja! Kidneybohnen (Dose)",
+   1,
+   "Dose",
+   0.69,
+   "Konserven",
+   "gemeldet"
+  ],
+  "weisse": [
+   "REWE Weiße Bohnen (Glas 720 ml, ca. 2 Dosen)",
+   2,
+   "Dose",
+   1.09,
+   "Konserven",
+   "gemeldet"
+  ],
+  "mais": [
+   "ja! Mais (3 × 212 ml)",
+   3,
+   "Dose",
+   2.29,
+   "Konserven",
+   "gemeldet"
+  ],
+  "dosentom": [
+   "ja! Gehackte Tomaten (Dose, 400 g)",
+   1,
+   "Dose",
+   0.55,
+   "Konserven",
+   "geschätzt"
   ],
   "kokos": [
-   "Kokosmilch (400 ml)",
+   "REWE Beste Wahl Kokosmilch (400 ml)",
    1,
    "Dose",
    1.29,
-   "Konserven"
+   "Konserven",
+   "gemeldet"
   ],
   "sardinen": [
-   "Sardinen in Öl (125 g)",
+   "ja! Sardinen in Öl (125 g)",
    1,
    "Dose",
-   1.29,
-   "Konserven"
+   1.19,
+   "Konserven",
+   "geschätzt"
   ],
   "oliven": [
-   "Schwarze Oliven",
+   "ja! Schwarze Oliven",
    160,
    "g",
-   0.99,
-   "Konserven"
+   1.19,
+   "Konserven",
+   "geschätzt"
   ],
   "reis": [
-   "Langkornreis",
+   "ja! Parboiled Langkornreis",
    1000,
    "g",
-   1.29,
-   "Trocken"
+   1.59,
+   "Trocken",
+   "gemeldet"
   ],
   "penne": [
    "Vollkorn-Penne",
    500,
    "g",
    0.99,
-   "Trocken"
+   "Trocken",
+   "geschätzt"
   ],
   "spaghetti": [
-   "Spaghetti",
+   "ja! Spaghetti",
    500,
    "g",
-   0.79,
-   "Trocken"
+   0.69,
+   "Trocken",
+   "gemeldet"
   ],
   "wraps": [
-   "Tortilla-Wraps",
+   "ja! Tortilla-Wraps",
    6,
    "Stk",
-   1.29,
-   "Brot"
+   1.49,
+   "Brot",
+   "geschätzt"
   ],
   "haehnchen": [
-   "Hähnchenbrustfilet",
+   "ja! Hähnchenbrustfilet",
    400,
    "g",
-   4.79,
-   "Kühlregal"
+   5.49,
+   "Kühlregal",
+   "geschätzt"
   ],
   "erbsen": [
-   "TK-Erbsen",
+   "ja! TK-Erbsen",
    450,
    "g",
-   1.19,
-   "Tiefkühl"
+   1.29,
+   "Tiefkühl",
+   "geschätzt"
   ]
  },
  "recipes": [
