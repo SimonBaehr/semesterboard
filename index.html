@@ -797,7 +797,7 @@ function chartBurndown(el,cid){
 function drawCharts(){
   document.querySelectorAll("[data-chart]").forEach(el=>{const k=el.dataset.chart;
     if(k==="timeline")chartTimeline(el);else if(k==="activity")chartActivity(el);else if(k==="study")chartStudy(el);else if(k==="burndown")chartBurndown(el,el.dataset.cid);else if(k==="weight")chartWeight(el);else if(k==="kcal")chartKcal(el);else if(k==="train")chartTrain(el);else if(k==="runkm")chartRunKm(el);else if(k==="runyear")chartRunYear(el);else if(k==="mix")chartMix(el);else if(k==="pace")chartPace(el);else if(k==="pmc")chartPMC(el);else if(k==="acwr")chartACWR(el);else if(k==="heat")chartHeat(el);else if(k==="volume")chartVolume(el)});
-  const am=document.getElementById("anamap");if(am)initMap(am);
+  const am=document.getElementById("anamap-slot");if(am)mountMap(am);else if(LMAP&&MAPEL&&document.body.contains(MAPEL))LMAP.invalidateSize();
   document.querySelectorAll(".kpi .rg").forEach(c=>c.style.strokeDashoffset=c.dataset.off);
   if(!ringsDone&&S.steps.length){requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll(".rg").forEach(c=>c.style.strokeDashoffset=c.dataset.off)));ringsDone=true}
 }
@@ -1410,7 +1410,7 @@ function vAnalyse(){
     <div class="kpi"><div><div class="label">Monotonie 7 Tage</div><div class="big">${mo&&mo.mono?mo.mono.toFixed(1).replace(".",","):"–"}</div><div class="sub">${mo&&mo.mono>2?"zu gleichförmig":"Belastung variiert"}</div></div></div>
   </div></section>
   <section class="panel s12"><div class="ph"><h2>Routen</h2><div class="row" style="gap:8px;flex-wrap:wrap">${seg("sport",anaSport,[["run","Laufen"],["ride","Rad"],["hike","Gehen & Wandern"],["all","Alle"]])}${seg("range",anaRange,[["90","90 Tage"],["365","12 Monate"],["all","Alle"]])}</div></div>
-    ${withPoly?`<div class="anamap-wrap"><div id="anamap" class="anamap" role="application" aria-label="Karte mit deinen Routen"></div><div id="ana-side" class="ana-side"></div></div>`:`<div class="empty">Die GPS-Routen werden gerade nachgeladen. Die tägliche Strava-Synchronisation holt jeden Morgen weitere Aktivitäten mit Route, neue Läufe kommen sofort mit.</div>`}
+    ${withPoly?`<div class="anamap-wrap"><div id="anamap-slot" class="anamap"></div><div id="ana-side" class="ana-side"></div></div>`:`<div class="empty">Die GPS-Routen werden gerade nachgeladen. Die tägliche Strava-Synchronisation holt jeden Morgen weitere Aktivitäten mit Route, neue Läufe kommen sofort mit.</div>`}
     ${withPoly&&withPoly<doneStrava*.6?`<div class="faint" style="font-size:.76rem;margin-top:8px">${withPoly} von ${doneStrava} Strava-Aktivitäten haben schon eine Route, der Rest wird jeden Morgen nachgeladen.</div>`:""}
   </section>
   <div id="ana-cmp" class="s12" style="display:contents"></div>
@@ -1446,17 +1446,25 @@ function addTiles(map,i,dark){const t=TILES[i];if(!t)return;let ok=0,bad=0;const
   lay.on("tileload",()=>ok++);lay.on("tileerror",()=>{bad++;if(!ok&&bad>=4&&!lay._sbGone&&TILES[i+1]){lay._sbGone=true;map.removeLayer(lay);addTiles(map,i+1,dark)}})}
 const cssv=n=>getComputedStyle(document.body).getPropertyValue(n).trim();
 const CMPCOL=["#e8590c","#1c7ed6"];
+/* Die Karte wird nur einmal angelegt und bei jedem Neuzeichnen der Seite wieder eingehängt.
+   Vorher entstand sie bei jedem render() und jedem resize (am Handy schon beim Scrollen) neu, die Kacheln kamen nie an. */
+let MAPEL=null,LREND=null;
+function mountMap(slot){
+  if(!MAPEL){MAPEL=document.createElement("div");MAPEL.id="anamap";MAPEL.className="anamap";MAPEL.setAttribute("role","application");MAPEL.setAttribute("aria-label","Karte mit deinen Routen")}
+  slot.replaceWith(MAPEL);
+  if(LMAP){LMAP.invalidateSize();drawRoutes(!anaView||anaView.k!==anaSport+anaRange)}else initMap(MAPEL)}
+let mapInit=false;
 function initMap(el){
-  sidePanel(anaList());cmpPanel();
-  leaflet().then(()=>{if(!document.body.contains(el))return;if(LMAP){LMAP.remove();LMAP=null}
+  sidePanel(anaList());cmpPanel();if(mapInit)return;mapInit=true;
+  leaflet().then(()=>{if(LMAP)return;if(!document.body.contains(el)){mapInit=false;return}
     const dark=matchMedia("(prefers-color-scheme: dark)").matches;
     LMAP=L.map(el,{preferCanvas:true,zoomControl:true,attributionControl:true});
     addTiles(LMAP,0,dark);
     LGROUP=L.layerGroup().addTo(LMAP);LMAP.on("moveend",()=>{anaView={c:LMAP.getCenter(),z:LMAP.getZoom(),k:anaSport+anaRange}});
-    drawRoutes(true);setTimeout(()=>{if(LMAP)LMAP.invalidateSize()},250)}).catch(()=>{el.innerHTML='<div class="empty">Die Karte konnte nicht geladen werden (keine Verbindung?).</div>'});
+    drawRoutes(true);setTimeout(()=>{if(LMAP)LMAP.invalidateSize()},250)}).catch(()=>{mapInit=false;el.innerHTML='<div class="empty">Die Karte konnte nicht geladen werden (keine Verbindung?).</div>'});
 }
 function drawRoutes(fit){
-  const list=anaList();if(LMAP&&LGROUP){LGROUP.clearLayers();const acc=cssv("--accent")||"#4f46e5",r=L.canvas({tolerance:6});
+  const list=anaList();if(LMAP&&LGROUP){LGROUP.clearLayers();const acc=cssv("--accent")||"#4f46e5",r=LREND||(LREND=L.canvas({tolerance:6}));
     const bounds=[];list.forEach(w=>{const p=ptsOf(w);if(p.length<2)return;if(!anaSel.includes(w.id)){const pl=L.polyline(p,{color:acc,weight:2,opacity:anaSel.length?.18:.4,renderer:r}).addTo(LGROUP);pl.on("click",()=>anaPick(w.id));pl.bindTooltip(`${esc(w.title)} · ${fDate(fromIso(w.date))}`,{sticky:true})}p.forEach(x=>bounds.push(x))});
     anaSel.forEach((id,i)=>{const w=wById(id);if(!w)return;const p=ptsOf(w);if(p.length<2)return;L.polyline(p,{color:CMPCOL[i],weight:4.5,opacity:.95}).addTo(LGROUP).bindTooltip(`${esc(w.title)} · ${fDate(fromIso(w.date))}`,{sticky:true});L.circleMarker(p[0],{radius:5,color:CMPCOL[i],fillOpacity:1}).addTo(LGROUP)});
     if(fit){if(anaView&&anaView.k===anaSport+anaRange)LMAP.setView(anaView.c,anaView.z);else if(anaSel.length){const b=[];anaSel.forEach(id=>{const w=wById(id);if(w)ptsOf(w).forEach(x=>b.push(x))});if(b.length)LMAP.fitBounds(b,{padding:[24,24]})}else if(bounds.length)LMAP.fitBounds(focusBounds(list),{padding:[20,20]});else LMAP.setView([48.137,11.575],11)}}
