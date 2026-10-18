@@ -1056,7 +1056,7 @@ async function refreshAll(){
 function showAuth(){$("#auth").hidden=false;$("#logout").hidden=true;$("#synctext").textContent="Abgemeldet"}
 $("#authform").addEventListener("submit",async e=>{e.preventDefault();e.stopPropagation();$("#a-err").textContent="";
   const {error}=await sb.auth.signInWithPassword({email:$("#a-mail").value.trim(),password:$("#a-pass").value});
-  if(error)$("#a-err").textContent="Anmeldung fehlgeschlagen. E-Mail oder Passwort prüfen.";});
+  if(error)$("#a-err").textContent="Anmeldung fehlgeschlagen. E-Mail oder Passwort prüfen. Noch kein Konto? Dann zuerst auf „Konto erstellen“ tippen.";});
 $("#a-signup").addEventListener("click",async()=>{$("#a-err").textContent="";const email=$("#a-mail").value.trim(),password=$("#a-pass").value;
   if(!email||password.length<8){$("#a-err").textContent="Bitte E-Mail und ein Passwort mit mindestens 8 Zeichen eingeben.";return}
   const {data,error}=await sb.auth.signUp({email,password,options:{emailRedirectTo:location.origin+location.pathname}});
