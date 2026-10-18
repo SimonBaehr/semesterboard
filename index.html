@@ -489,7 +489,7 @@ const isTimed=e=>!e.allDay&&["lecture","other","private","own"].includes(e.kind)
 const COMMUTE={from:"de:09162:720",mins:[5,25,45]};
 const DEST={
   campus:{to:"de:09162:10",stop:"Pasing",place:"am Campus",title:"Anfahrt zum Campus Pasing",ride:28,walk:15,buffer:20,maps:"Hochschule München Campus Pasing, Am Stadtpark 20, 81243 München"},
-  work:{to:"de:09162:5",stop:"Ostbahnhof",place:"bei der Arbeit",title:"Anfahrt zur Arbeit",ride:10,walk:10,buffer:0,maps:"München Ostbahnhof"}
+  work:{to:"de:09162:5",stop:"Ostbahnhof",place:"bei der Arbeit",title:"Anfahrt zur Arbeit",ride:10,walk:10,buffer:0,maps:"Deloitte, Atlas, Rosenheimer Str. 143C, 81671 München"}
 };
 const onCampus=e=>e&&!e.allDay&&["lecture","exam","other"].includes(e.kind)&&!/zoom|online/i.test(e.location||"")&&/(^|\s)(L[UOE]\s?\d|Kapelle|Pasing|Campus)/i.test(e.location||"");
 const onWork=e=>e&&!e.allDay&&(e.source==="work"||/^Arbeit\b/i.test(e.title||""));
