@@ -1517,11 +1517,15 @@ function leaflet(){if(window.L&&L.map)return Promise.resolve();return leafP||(le
     const c=document.createElement("link");c.rel="stylesheet";c.href=LEAF_CDN[i]+"leaflet.css";document.head.appendChild(c);
     const s=document.createElement("script");s.src=LEAF_CDN[i]+"leaflet.js";s.onload=()=>res();s.onerror=()=>{s.remove();c.remove();tryCdn(i+1)};document.head.appendChild(s)};
   tryCdn(0)}))}
+// Satellitenkarte von Esri World Imagery (ohne API-Schlüssel), darüber Straßen- und Ortsnamen.
+// CARTO verlangt seit 2026 einen API-Schlüssel und lieferte nur noch Wasserzeichen-Kacheln.
+const ESRI="https://server.arcgisonline.com/ArcGIS/rest/services/";
 const TILES=[
-  {url:d=>`https://{s}.basemaps.cartocdn.com/${d?"dark_all":"light_all"}/{z}/{x}/{y}{r}.png`,o:{subdomains:"abcd",maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'}},
+  {url:()=>ESRI+"World_Imagery/MapServer/tile/{z}/{y}/{x}",o:{maxZoom:19,maxNativeZoom:18,attribution:'Satellit &copy; <a href="https://www.esri.com">Esri</a>, Maxar, Earthstar Geographics'},
+   labels:[ESRI+"Reference/World_Transportation/MapServer/tile/{z}/{y}/{x}",ESRI+"Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"]},
   {url:()=>"https://tile.openstreetmap.org/{z}/{x}/{y}.png",o:{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}}];
-function addTiles(map,i,dark){const t=TILES[i];if(!t)return;let ok=0,bad=0;const lay=L.tileLayer(t.url(dark),t.o).addTo(map);
-  lay.on("tileload",()=>ok++);lay.on("tileerror",()=>{bad++;if(!ok&&bad>=4&&!lay._sbGone&&TILES[i+1]){lay._sbGone=true;map.removeLayer(lay);addTiles(map,i+1,dark)}})}
+function addTiles(map,i,dark){const t=TILES[i];if(!t)return;let ok=0,bad=0;const lay=L.tileLayer(t.url(dark),t.o).addTo(map);const lbl=(t.labels||[]).map(u=>L.tileLayer(u,{maxZoom:19,maxNativeZoom:18,opacity:.85}).addTo(map));
+  lay.on("tileload",()=>ok++);lay.on("tileerror",()=>{bad++;if(!ok&&bad>=4&&!lay._sbGone&&TILES[i+1]){lay._sbGone=true;map.removeLayer(lay);lbl.forEach(x=>map.removeLayer(x));addTiles(map,i+1,dark)}})}
 const cssv=n=>getComputedStyle(document.body).getPropertyValue(n).trim();
 const CMPCOL=["#e8590c","#1c7ed6"];
 /* Die Karte wird nur einmal angelegt und bei jedem Neuzeichnen der Seite wieder eingehängt.
@@ -1543,7 +1547,7 @@ function initMap(el){
 }
 function drawRoutes(fit){
   const list=anaList();if(LMAP&&LGROUP){LGROUP.clearLayers();const acc=cssv("--accent")||"#4f46e5",r=LREND||(LREND=L.canvas({tolerance:6}));
-    const bounds=[];list.forEach(w=>{const p=ptsOf(w);if(p.length<2)return;if(!anaSel.includes(w.id)){const pl=L.polyline(p,{color:acc,weight:2,opacity:anaSel.length?.18:.4,renderer:r}).addTo(LGROUP);pl.on("click",()=>anaPick(w.id));pl.bindTooltip(`${esc(w.title)} · ${fDate(fromIso(w.date))}`,{sticky:true})}p.forEach(x=>bounds.push(x))});
+    const bounds=[];list.forEach(w=>{const p=ptsOf(w);if(p.length<2)return;if(!anaSel.includes(w.id)){const pl=L.polyline(p,{color:acc,weight:2.5,opacity:anaSel.length?.3:.75,renderer:r}).addTo(LGROUP);pl.on("click",()=>anaPick(w.id));pl.bindTooltip(`${esc(w.title)} · ${fDate(fromIso(w.date))}`,{sticky:true})}p.forEach(x=>bounds.push(x))});
     anaSel.forEach((id,i)=>{const w=wById(id);if(!w)return;const p=ptsOf(w);if(p.length<2)return;L.polyline(p,{color:CMPCOL[i],weight:4.5,opacity:.95}).addTo(LGROUP).bindTooltip(`${esc(w.title)} · ${fDate(fromIso(w.date))}`,{sticky:true});L.circleMarker(p[0],{radius:5,color:CMPCOL[i],fillOpacity:1}).addTo(LGROUP)});
     if(fit){if(anaView&&anaView.k===anaSport+anaRange)LMAP.setView(anaView.c,anaView.z);else if(anaSel.length){const b=[];anaSel.forEach(id=>{const w=wById(id);if(w)ptsOf(w).forEach(x=>b.push(x))});if(b.length)LMAP.fitBounds(b,{padding:[24,24]})}else if(bounds.length)LMAP.fitBounds(focusBounds(list),{padding:[20,20]});else LMAP.setView([48.137,11.575],11)}}
   sidePanel(list);cmpPanel();
