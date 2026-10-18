@@ -658,7 +658,7 @@ function chartBurndown(el,cid){
 }
 function drawCharts(){
   document.querySelectorAll("[data-chart]").forEach(el=>{const k=el.dataset.chart;
-    if(k==="timeline")chartTimeline(el);else if(k==="activity")chartActivity(el);else if(k==="study")chartStudy(el);else if(k==="burndown")chartBurndown(el,el.dataset.cid);else if(k==="weight")chartWeight(el);else if(k==="kcal")chartKcal(el);else if(k==="train")chartTrain(el)});
+    if(k==="timeline")chartTimeline(el);else if(k==="activity")chartActivity(el);else if(k==="study")chartStudy(el);else if(k==="burndown")chartBurndown(el,el.dataset.cid);else if(k==="weight")chartWeight(el);else if(k==="kcal")chartKcal(el);else if(k==="train")chartTrain(el);else if(k==="runkm")chartRunKm(el);else if(k==="runyear")chartRunYear(el);else if(k==="mix")chartMix(el);else if(k==="pace")chartPace(el)});
   document.querySelectorAll(".kpi .rg").forEach(c=>c.style.strokeDashoffset=c.dataset.off);
   if(!ringsDone&&S.steps.length){requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll(".rg").forEach(c=>c.style.strokeDashoffset=c.dataset.off)));ringsDone=true}
 }
@@ -910,7 +910,7 @@ function vTraining(){
   return `<div class="ph"><h1>Training</h1><span class="label">KW ${kw(new Date())} · ${wd.length}/${thisWeek.length} erledigt · ${wd.reduce((s,w)=>s+(w.durationMin||0),0)} min</span></div>
   <div class="grid">
   <section class="panel s7">${listHead("Geplant",plan.length,"workout","Training planen")}${addOpen.workout?workoutForm():""}<div>${plan.length?plan.map(workoutRow).join(""):'<div class="empty">Nichts geplant. Mit + ein Training anlegen.</div>'}</div></section>
-  <section class="panel s5"><div class="ph"><h2>Minuten pro Woche</h2><span class="faint" style="font-size:.76rem">letzte 8 Wochen</span></div><div class="chart" data-chart="train"></div>
+  <section class="panel s5"><div class="ph"><h2>Training pro Woche</h2><span class="faint" style="font-size:.76rem">Stunden, letzte 12 Wochen</span></div><div class="chart" data-chart="train"></div>
     <div class="legend">${Object.values(WT).map(v=>`<span><i style="background:${v[1]}"></i>${v[0]}</span>`).join("")}</div></section>
   <section class="panel s12">${listHead("Erledigt",done.length)}<div>${done.length?done.slice(0,40).map(workoutRow).join(""):'<div class="empty">Noch kein Training abgehakt.</div>'}</div></section></div>`;
 }
@@ -983,8 +983,12 @@ function vAlltag(){
   <section class="panel s5">${listHead("Geplante Trainings",plan.length)}<div>${plan.slice(0,5).map(w=>`<div class="item"><input type="checkbox" class="check" data-toggle="fit_workouts/${w.id}" aria-label="Erledigt"><div class="body"><div class="title">${esc(w.title)}</div><div class="meta">${tChip(w.type)}${relDue(w.date)}${w.time?`<span>${esc(w.time)}</span>`:""}</div></div></div>`).join("")||'<div class="empty">Nichts geplant.</div>'}</div><button class="btn small" data-go="training" style="margin-top:10px">Training planen</button></section>
   <section class="panel s7"><div class="ph"><h2>Trainingswoche</h2></div><div class="wkl">${days.map(d=>{const k=iso(d),xs=wkW.filter(w=>w.date===k).sort(byWhen);
     return `<div class="wkd${k===today?" today":k<today?" past":""}"><div><div class="dn">${fDate(d,{weekday:"short"})}</div><div class="dd">${fDate(d,{day:"2-digit",month:"2-digit"})}</div></div><div>${xs.length?xs.map(w=>`<div class="wke" style="--cc:${tCol(w.type)}" data-go="training"><span class="t">${w.time?esc(w.time):(WT[w.type]||WT.sonstiges)[0]}</span><span><span class="n">${w.done?"✓ ":""}${esc(w.title)}</span>${w.durationMin?`<span class="r">${w.durationMin} min</span>`:""}</span></div>`).join(""):'<div class="free">Ruhetag</div>'}</div></div>`}).join("")}</div></section>
-  <section class="panel s12"><div class="ph"><h2>Minuten pro Woche</h2><span class="faint" style="font-size:.76rem">letzte 8 Wochen</span></div><div class="chart" data-chart="train"></div>
+  <section class="panel s7"><div class="ph"><h2>Training pro Woche</h2><span class="faint" style="font-size:.76rem">Stunden, letzte 12 Wochen</span></div><div class="chart" data-chart="train"></div>
     <div class="legend">${Object.values(WT).map(v=>`<span><i style="background:${v[1]}"></i>${v[0]}</span>`).join("")}</div></section>
+  <section class="panel s5"><div class="ph"><h2>Laufkilometer pro Woche</h2><span class="faint" style="font-size:.76rem">letzte 12 Wochen</span></div><div class="chart" data-chart="runkm"></div></section>
+  <section class="panel s7"><div class="ph"><h2>Laufkilometer im Jahresvergleich</h2><span class="faint" style="font-size:.76rem">kumuliert</span></div><div class="chart" data-chart="runyear"></div></section>
+  <section class="panel s5"><div class="ph"><h2>Sportarten</h2><span class="faint" style="font-size:.76rem">Stunden, letzte 12 Monate</span></div><div class="chart" data-chart="mix"></div></section>
+  <section class="panel s12"><div class="ph"><h2>Pace-Entwicklung</h2><span class="faint" style="font-size:.76rem">Straßenläufe, letzte 6 Monate</span></div><div class="chart" data-chart="pace"></div></section>
   </div>`;
 }
 
@@ -1025,18 +1029,76 @@ function chartKcal(el){
   if(g0.kcalTarget)g+=`<line x1="${L}" x2="${W}" y1="${Y(g0.kcalTarget)}" y2="${Y(g0.kcalTarget)}" stroke="var(--ink2)" stroke-dasharray="5 4"/>`;
   el.innerHTML=`<svg width="${W}" height="${H}" role="img" aria-label="Gegessene und verbrauchte Kalorien pro Tag, letzte 14 Tage">${g}</svg><div class="legend"><span><i style="background:var(--accent)"></i>Gegessen</span>${g0.kcalTarget?'<span><i style="background:var(--ink2)"></i>Ziel</span>':""}${g0.baseBurn?'<span><i style="background:var(--ink)"></i>Verbrauch</span>':""}</div>`;
 }
+const spOf=w=>(w.details||"").split(" · ")[0];
+const kmOfW=w=>{const m=/([\d.]+) km/.exec(w.details||"");return m?+m[1]:0};
+const isRunW=w=>w.done&&/^(Run|TrailRun|VirtualRun)$/.test(spOf(w));
+const fh=v=>(Math.round(v*10)/10).toLocaleString("de-DE");
+const niceStep=(max,n=4)=>{const r=max/n,p=Math.pow(10,Math.floor(Math.log10(r||1))),f=r/p;return (f<=1?1:f<=2?2:f<=2.5?2.5:f<=5?5:10)*p};
+const emptyNote=(W,H,L,t)=>`<text x="${(W+L)/2}" y="${H/2-8}" text-anchor="middle" style="fill:var(--ink3);font-family:var(--f-body);font-size:12px">${t}</text>`;
+function axisY(W,L,T,H,B,max,step,fmt){const Y=v=>T+(H-T-B)*(1-v/max);let g='<g class="grid">';for(let v=0;v<=max+1e-9;v+=step)g+=`<line x1="${L}" x2="${W}" y1="${Y(v)}" y2="${Y(v)}"/>`;g+='</g>';for(let v=0;v<=max+1e-9;v+=step)g+=`<text x="${L-6}" y="${Y(v)}" text-anchor="end" dominant-baseline="central">${fmt?fmt(v):v}</text>`;return {g,Y}}
 function chartTrain(el){
-  const W=el.clientWidth,H=170,L=34,B=22,T=10,n=8,m0=monday(new Date());
+  const W=el.clientWidth,H=190,L=34,B=22,T=10,n=12,m0=monday(new Date());
   const wks=[...Array(n)].map((_,i)=>addDays(m0,7*(i-n+1)));
-  const data=wks.map(w=>{const a=iso(w),b=iso(addDays(w,6)),o={};S.fit_workouts.filter(x=>x.done&&x.date>=a&&x.date<=b).forEach(x=>{o[x.type]=(o[x.type]||0)+(x.durationMin||0)});return o});
-  const tot=data.map(o=>Object.values(o).reduce((a,b)=>a+b,0)),max=Math.max(60,...tot)*1.1,step=max>360?120:max>180?60:30,bw=(W-L)/n,Y=v=>T+(H-T-B)*(1-v/max);
-  let g='<g class="grid">';for(let v=0;v<=max;v+=step)g+=`<line x1="${L}" x2="${W}" y1="${Y(v)}" y2="${Y(v)}"/>`;g+='</g>';
-  for(let v=0;v<=max;v+=step)g+=`<text x="${L-6}" y="${Y(v)}" text-anchor="end" dominant-baseline="central">${v}</text>`;
-  wks.forEach((w,i)=>{const x=L+i*bw+bw*.2,bwid=bw*.6;let acc=0;
-    Object.keys(WT).forEach(k=>{const v=data[i][k]||0;if(!v)return;const y0=Y(acc),y1=Y(acc+v);g+=`<rect x="${x}" y="${y1}" width="${bwid}" height="${Math.max(1,y0-y1-1)}" rx="2" fill="${WT[k][1]}" opacity="${i===n-1?1:.8}"/>`;acc+=v});
-    g+=`<text x="${x+bwid/2}" y="${H-6}" text-anchor="middle">KW${kw(w)}</text>`;
-    g+=`<rect class="hit" x="${L+i*bw}" y="${T}" width="${bw}" height="${H-T-B}" fill="transparent" data-tip="${esc(`<b>KW ${kw(w)}</b> · ${tot[i]} min`+Object.keys(WT).filter(k=>data[i][k]).map(k=>`<br><span class="c" style="background:${WT[k][1]}"></span>${WT[k][0]}: ${data[i][k]} min`).join(""))}"/>`});
-  el.innerHTML=`<svg width="${W}" height="${H}" role="img" aria-label="Trainingsminuten pro Woche nach Art, letzte 8 Wochen">${g}${tot.every(v=>!v)?`<text x="${(W+L)/2}" y="${H/2-8}" text-anchor="middle" style="fill:var(--ink3);font-family:var(--f-body);font-size:12px">Abgehakte Trainings füllen dieses Diagramm.</text>`:""}</svg>`;
+  const data=wks.map(w=>{const a=iso(w),b=iso(addDays(w,6)),o={};S.fit_workouts.filter(x=>x.done&&x.date>=a&&x.date<=b).forEach(x=>{o[x.type]=(o[x.type]||0)+(x.durationMin||0)/60});return o});
+  const tot=data.map(o=>Object.values(o).reduce((a,b)=>a+b,0)),step=niceStep(Math.max(2,...tot)),max=Math.ceil(Math.max(2,...tot)*1.08/step)*step,bw=(W-L)/n;
+  let {g,Y}=axisY(W,L,T,H,B,max,step,v=>fh(v)+" h");
+  wks.forEach((w,i)=>{const x=L+i*bw+bw*.18,bwid=bw*.64;let acc=0;
+    Object.keys(WT).forEach(k=>{const v=data[i][k]||0;if(!v)return;const y0=Y(acc),y1=Y(acc+v);g+=`<rect x="${x}" y="${y1}" width="${bwid}" height="${Math.max(1,y0-y1-1)}" rx="2" fill="${WT[k][1]}" opacity="${i===n-1?1:.85}"/>`;acc+=v});
+    if(i%2===(n-1)%2)g+=`<text x="${x+bwid/2}" y="${H-6}" text-anchor="middle">KW${kw(w)}</text>`;
+    g+=`<rect class="hit" x="${L+i*bw}" y="${T}" width="${bw}" height="${H-T-B}" fill="transparent" data-tip="${esc(`<b>KW ${kw(w)}</b> · ${fh(tot[i])} h`+Object.keys(WT).filter(k=>data[i][k]).map(k=>`<br><span class="c" style="background:${WT[k][1]}"></span>${WT[k][0]}: ${fh(data[i][k])} h`).join(""))}"/>`});
+  el.innerHTML=`<svg width="${W}" height="${H}" role="img" aria-label="Trainingsstunden pro Woche nach Art, letzte 12 Wochen">${g}${tot.every(v=>!v)?emptyNote(W,H,L,"Abgehakte Trainings füllen dieses Diagramm."):""}</svg>`;
+}
+function chartRunKm(el){
+  const W=el.clientWidth,H=190,L=34,B=22,T=10,n=12,m0=monday(new Date());
+  const wks=[...Array(n)].map((_,i)=>addDays(m0,7*(i-n+1)));
+  const km=wks.map(w=>{const a=iso(w),b=iso(addDays(w,6));return S.fit_workouts.filter(x=>isRunW(x)&&x.date>=a&&x.date<=b).reduce((s,x)=>s+kmOfW(x),0)});
+  const cnt=wks.map(w=>{const a=iso(w),b=iso(addDays(w,6));return S.fit_workouts.filter(x=>isRunW(x)&&x.date>=a&&x.date<=b).length});
+  const step=niceStep(Math.max(10,...km)),max=Math.ceil(Math.max(10,...km)*1.08/step)*step,bw=(W-L)/n;
+  let {g,Y}=axisY(W,L,T,H,B,max,step);
+  const avg=km.slice(0,-1).reduce((a,b)=>a+b,0)/(n-1);
+  wks.forEach((w,i)=>{const x=L+i*bw+bw*.18,bwid=bw*.64;if(km[i])g+=`<rect x="${x}" y="${Y(km[i])}" width="${bwid}" height="${Math.max(1,Y(0)-Y(km[i]))}" rx="3" fill="var(--accent)" opacity="${i===n-1?1:.75}"/>`;
+    if(i%2===(n-1)%2)g+=`<text x="${x+bwid/2}" y="${H-6}" text-anchor="middle">KW${kw(w)}</text>`;
+    g+=`<rect class="hit" x="${L+i*bw}" y="${T}" width="${bw}" height="${H-T-B}" fill="transparent" data-tip="${esc(`<b>KW ${kw(w)}</b><br>${fh(km[i])} km in ${cnt[i]} ${cnt[i]===1?"Lauf":"Läufen"}`)}"/>`});
+  if(avg>0)g+=`<line x1="${L}" x2="${W}" y1="${Y(avg)}" y2="${Y(avg)}" stroke="var(--ink3)" stroke-dasharray="4 4"/><text x="${W}" y="${Y(avg)-6}" text-anchor="end">Ø ${fh(avg)} km</text>`;
+  el.innerHTML=`<svg width="${W}" height="${H}" role="img" aria-label="Laufkilometer pro Woche, letzte 12 Wochen">${g}${km.every(v=>!v)?emptyNote(W,H,L,"Noch keine Läufe in den letzten 12 Wochen."):""}</svg>`;
+}
+function chartRunYear(el){
+  const W=el.clientWidth,H=220,L=40,B=22,T=12,R=56;
+  const runs=S.fit_workouts.filter(isRunW);if(!runs.length){el.innerHTML='<div class="empty">Noch keine Läufe.</div>';return}
+  const cy=new Date().getFullYear(),years=[...new Set(runs.map(r=>+r.date.slice(0,4)))].filter(y=>y>=cy-3).sort();
+  const doy=d=>{const x=fromIso(d);return (x-new Date(x.getFullYear(),0,1))/DAY};
+  const series=years.map(y=>{let acc=0;const pts=[[0,0]];runs.filter(r=>+r.date.slice(0,4)===y).sort((a,b)=>a.date.localeCompare(b.date)).forEach(r=>{acc+=kmOfW(r);pts.push([doy(r.date),acc])});if(y<cy)pts.push([365,acc]);else pts.push([doy(iso(new Date())),acc]);return {y,pts,tot:acc}});
+  const mx=Math.max(...series.map(s=>s.tot)),step=niceStep(mx),max=Math.ceil(mx*1.05/step)*step;
+  const X=d=>L+(W-L-R)*d/365;let {g,Y}=axisY(W-R,L,T,H,B,max,step);
+  ["Jan","Feb","Mär","Apr","Mai","Jun","Jul","Aug","Sep","Okt","Nov","Dez"].forEach((m,i)=>{if(W<520&&i%2)return;g+=`<text x="${X(i*30.4+15)}" y="${H-6}" text-anchor="middle">${m}</text>`});
+  const greys=["var(--line2)","var(--ink3)","var(--ink2)"];
+  series.forEach((s,i)=>{const cur=s.y===cy,col=cur?"var(--accent)":greys[Math.max(0,greys.length-(series.length-1-i))]||"var(--ink3)";
+    g+=`<polyline fill="none" stroke="${col}" stroke-width="${cur?2.5:1.6}" stroke-linejoin="round" points="${s.pts.map(p=>`${X(p[0]).toFixed(1)},${Y(p[1]).toFixed(1)}`).join(" ")}"/>`;
+    const last=s.pts[s.pts.length-1];g+=`<text x="${X(last[0])+6}" y="${Y(last[1])}" dominant-baseline="central" style="fill:${col};font-weight:600">${s.y}</text>`});
+  el.innerHTML=`<svg width="${W}" height="${H}" role="img" aria-label="Kumulierte Laufkilometer pro Jahr">${g}</svg><div class="legend">${series.map(s=>`<span>${s.y}: <b style="margin-left:4px">${Math.round(s.tot).toLocaleString("de-DE")} km</b></span>`).join("")}</div>`;
+}
+const SPORT_DE={Run:"Laufen",TrailRun:"Trailrun",VirtualRun:"Laufen",Ride:"Rad",GravelRide:"Rad",MountainBikeRide:"Rad",EMountainBikeRide:"Rad",VirtualRide:"Rad",Walk:"Gehen",Hike:"Wandern",Snowshoe:"Wandern",WeightTraining:"Kraft",Crossfit:"Kraft",HighIntensityIntervalTraining:"HIIT",RockClimbing:"Bouldern",Swim:"Schwimmen",Tennis:"Tennis"};
+function chartMix(el){
+  const from=iso(addDays(new Date(),-365)),o={};
+  S.fit_workouts.filter(w=>w.done&&w.date>=from).forEach(w=>{const k=SPORT_DE[spOf(w)]||"Sonstiges";o[k]=(o[k]||0)+(w.durationMin||0)/60});
+  const rows=Object.entries(o).sort((a,b)=>b[1]-a[1]);if(!rows.length){el.innerHTML='<div class="empty">Noch keine Trainings im letzten Jahr.</div>';return}
+  const tot=rows.reduce((a,r)=>a+r[1],0),mx=rows[0][1];
+  el.innerHTML=rows.map(([k,v])=>`<div class="meter" ${tipAttr(`<b>${esc(k)}</b><br>${fh(v)} h · ${Math.round(100*v/tot)} %`)}><div class="row"><span>${esc(k)}</span><span class="num">${Math.round(v)} h</span></div><div class="bar"><i style="width:${(100*v/mx).toFixed(1)}%;background:var(--accent);opacity:${k==="Laufen"||k==="Trailrun"?1:.55}"></i></div></div>`).join("")+`<div class="faint" style="font-size:.76rem;margin-top:4px">Gesamt ${Math.round(tot)} h in den letzten 12 Monaten</div>`;
+}
+function chartPace(el){
+  const W=el.clientWidth,H=210,L=44,B=22,T=12,R=10,from=iso(addDays(new Date(),-182));
+  const pts=S.fit_workouts.filter(w=>isRunW(w)&&spOf(w)==="Run"&&w.date>=from&&kmOfW(w)>=3).map(w=>{const m=/(\d+):(\d{2}) \/km/.exec(w.details||"");return m?{d:w.date,p:+m[1]*60+ +m[2],km:kmOfW(w),t:w.title}:null}).filter(x=>x&&x.p>150&&x.p<480).sort((a,b)=>a.d.localeCompare(b.d));
+  if(pts.length<3){el.innerHTML='<div class="empty">Zu wenige Läufe für eine Pace-Kurve.</div>';return}
+  const lo=Math.floor(Math.min(...pts.map(p=>p.p))/15)*15,hi=Math.ceil(Math.max(...pts.map(p=>p.p))/15)*15,t0=fromIso(from).getTime(),t1=Date.now();
+  const X=d=>L+(W-L-R)*(fromIso(d).getTime()-t0)/(t1-t0),Y=p=>T+(H-T-B)*(p-lo)/(hi-lo||1);
+  const pf=s=>`${Math.floor(s/60)}:${String(Math.round(s%60)).padStart(2,"0")}`;
+  let g='<g class="grid">';const st=(hi-lo)>90?30:15;for(let v=lo;v<=hi;v+=st)g+=`<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}"/>`;g+='</g>';
+  for(let v=lo;v<=hi;v+=st)g+=`<text x="${L-6}" y="${Y(v)}" text-anchor="end" dominant-baseline="central">${pf(v)}</text>`;
+  for(let i=0;i<6;i++){const d=new Date(t0+(t1-t0)*(i+.5)/6);g+=`<text x="${X(iso(d))}" y="${H-6}" text-anchor="middle">${fDate(d,{month:"short"})}</text>`}
+  const roll=pts.map((p,i)=>{const w=pts.slice(Math.max(0,i-4),i+1);return {d:p.d,p:w.reduce((a,b)=>a+b.p,0)/w.length}});
+  g+=`<polyline fill="none" stroke="var(--accent)" stroke-width="2.2" points="${roll.map(r=>`${X(r.d).toFixed(1)},${Y(r.p).toFixed(1)}`).join(" ")}"/>`;
+  pts.forEach(p=>{g+=`<circle class="hit" cx="${X(p.d).toFixed(1)}" cy="${Y(p.p).toFixed(1)}" r="${Math.min(7,2.5+p.km/6).toFixed(1)}" fill="var(--accent)" opacity=".28" data-tip="${esc(`<b>${esc(p.t)}</b><br>${fDate(fromIso(p.d))} · ${fh(p.km)} km · ${pf(p.p)} /km`)}"/>`});
+  el.innerHTML=`<svg width="${W}" height="${H}" role="img" aria-label="Pace der Läufe, letzte 6 Monate">${g}</svg><div class="legend"><span><i style="background:var(--accent)"></i>Schnitt der letzten 5 Läufe</span><span>Punkte: einzelne Läufe ab 3 km, größer = länger, oben = schneller</span></div>`;
 }
 
 /* ---------- Render ---------- */
