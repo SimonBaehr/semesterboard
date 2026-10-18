@@ -545,7 +545,7 @@ const ICONS={
   essen:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 3v8a2 2 0 0 0 2 2v8M5 3v6M9 3v6M17 21V3c-2 1-3 4-3 8h3"/></svg>',
   gewicht:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 10a5 5 0 0 1 8 0M12 10l1.5-2"/></svg>'
 };
-const VIEWS=[["heute","Cockpit"],["woche","Woche"],["faecher","Fächer"],["aufgaben","Aufgaben"],["notizen","Notizen"]];
+const VIEWS=[["heute","Cockpit"],["woche","Woche"],["faecher","Fächer"]];
 const AVIEWS=[["alltag","Fitness"],["training","Training"],["analyse","Analyse"],["essen","Abendessen"]];
 const COLS=["courses","events","tasks","steps","notes","digests","literature","timelog","reviews","news"];
 // Alltag-Daten liegen in eigenen Tabellen (fit_*), getrennt von den Uni-Tabellen.
@@ -855,8 +855,8 @@ function vHeute(){
 
     <section class="panel s7" aria-labelledby="h-prog"><div class="ph"><h2 id="h-prog">Fortschritt Modularbeiten</h2><span class="num faint" style="font-size:.8rem">${doneSteps}/${allSteps} Schritte</span></div>
       <div class="rings">${sortedCourses().map(c=>{const p=progressOf(c.id);return `<button class="ring" data-course="${c.id}" ${tipAttr(`<b>${esc(c.name)}</b><br>${p==null?"Noch kein Plan angelegt":stepsOf(c.id).filter(s=>s.done).length+" von "+stepsOf(c.id).length+" Schritten erledigt"}`)}>${ringSVG(p,cvar(c.id))}<span>${esc(c.short)}</span></button>`}).join("")||'<div class="empty">Fächer werden geladen …</div>'}</div></section>
-    <section class="panel s5" aria-labelledby="h-top"><div class="ph"><h2 id="h-top">Priorität</h2><button class="btn small" data-go="aufgaben">Alle Aufgaben</button></div>
-      ${top.length?top.map(taskItem).join(""):'<div class="empty">Keine offenen Aufgaben. Im Reiter Aufgaben mit + anlegen oder Claude im Chat darum bitten.</div>'}
+    <section class="panel s5" aria-labelledby="h-top"><div class="ph"><h2 id="h-top">Priorität</h2></div>
+      ${top.length?top.map(taskItem).join(""):'<div class="empty">Keine offenen Aufgaben. Claude im Chat darum bitten, welche anzulegen.</div>'}
       ${dueSteps.length?`<div class="label" style="margin-top:12px">Plan-Schritte in den nächsten 7 Tagen</div>${dueSteps.map(s=>`<div class="item"><input type="checkbox" class="check" data-toggle="steps/${s.id}" aria-label="Erledigt"><div class="body"><div class="title">${esc(s.title)}</div><div class="meta">${cChip(s.course)}${relDue(s.due)}</div></div></div>`).join("")}`:""}</section>
 
     <section class="panel s7" aria-labelledby="h-act"><div class="ph"><h2 id="h-act">Aktivität · 14 Tage</h2><span class="faint" style="font-size:.76rem">erledigte Aufgaben und Schritte</span></div><div class="chart" data-chart="activity"></div></section>
