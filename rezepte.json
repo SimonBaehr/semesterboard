@@ -1,0 +1,1465 @@
+{
+ "note": "Preise sind geschätzte Discounter-Preise (Aldi/Lidl, Stand Oktober 2026) und nicht tagesaktuell. Nährwerte pro Portion sind grobe Schätzungen.",
+ "prices": {
+  "hafer": [
+   "Haferflocken",
+   500,
+   "g",
+   0.79,
+   "Trocken"
+  ],
+  "banane": [
+   "Bananen",
+   6,
+   "Stk",
+   1.59,
+   "Obst & Gemüse"
+  ],
+  "apfel": [
+   "Äpfel",
+   6,
+   "Stk",
+   2.29,
+   "Obst & Gemüse"
+  ],
+  "milch": [
+   "Milch oder Haferdrink",
+   1000,
+   "ml",
+   1.09,
+   "Kühlregal"
+  ],
+  "joghurt": [
+   "Naturjoghurt 3,5 %",
+   500,
+   "g",
+   0.79,
+   "Kühlregal"
+  ],
+  "eier": [
+   "Eier (Freiland)",
+   10,
+   "Stk",
+   2.49,
+   "Kühlregal"
+  ],
+  "brot": [
+   "Vollkornbrot",
+   500,
+   "g",
+   1.29,
+   "Brot"
+  ],
+  "feta": [
+   "Feta",
+   200,
+   "g",
+   1.49,
+   "Kühlregal"
+  ],
+  "beeren": [
+   "TK-Beerenmischung",
+   750,
+   "g",
+   2.49,
+   "Tiefkühl"
+  ],
+  "erdnuss": [
+   "Erdnussbutter",
+   350,
+   "g",
+   2.49,
+   "Trocken"
+  ],
+  "tomate": [
+   "Tomaten",
+   500,
+   "g",
+   1.49,
+   "Obst & Gemüse"
+  ],
+  "paprika": [
+   "Paprika",
+   3,
+   "Stk",
+   1.99,
+   "Obst & Gemüse"
+  ],
+  "spinat": [
+   "TK-Blattspinat",
+   450,
+   "g",
+   1.29,
+   "Tiefkühl"
+  ],
+  "kartoffel": [
+   "Kartoffeln",
+   2000,
+   "g",
+   2.49,
+   "Obst & Gemüse"
+  ],
+  "karotte": [
+   "Karotten",
+   1000,
+   "g",
+   0.99,
+   "Obst & Gemüse"
+  ],
+  "zwiebel": [
+   "Zwiebeln",
+   1000,
+   "g",
+   1.19,
+   "Obst & Gemüse"
+  ],
+  "knoblauch": [
+   "Knoblauch",
+   1,
+   "Knolle",
+   0.49,
+   "Obst & Gemüse"
+  ],
+  "zucchini": [
+   "Zucchini",
+   2,
+   "Stk",
+   1.49,
+   "Obst & Gemüse"
+  ],
+  "aubergine": [
+   "Aubergine",
+   1,
+   "Stk",
+   0.99,
+   "Obst & Gemüse"
+  ],
+  "fzwiebel": [
+   "Frühlingszwiebeln",
+   1,
+   "Bund",
+   0.69,
+   "Obst & Gemüse"
+  ],
+  "zitrone": [
+   "Zitronen",
+   3,
+   "Stk",
+   1.29,
+   "Obst & Gemüse"
+  ],
+  "linsen": [
+   "Rote Linsen",
+   500,
+   "g",
+   1.79,
+   "Trocken"
+  ],
+  "kicher": [
+   "Kichererbsen (Dose, 400 g)",
+   1,
+   "Dose",
+   0.79,
+   "Konserven"
+  ],
+  "kidney": [
+   "Kidneybohnen (Dose, 400 g)",
+   1,
+   "Dose",
+   0.69,
+   "Konserven"
+  ],
+  "weisse": [
+   "Weiße Bohnen (Dose, 400 g)",
+   1,
+   "Dose",
+   0.79,
+   "Konserven"
+  ],
+  "mais": [
+   "Mais (Dose, 285 g)",
+   1,
+   "Dose",
+   0.89,
+   "Konserven"
+  ],
+  "dosentom": [
+   "Gehackte Tomaten (Dose, 400 g)",
+   1,
+   "Dose",
+   0.59,
+   "Konserven"
+  ],
+  "kokos": [
+   "Kokosmilch (400 ml)",
+   1,
+   "Dose",
+   1.29,
+   "Konserven"
+  ],
+  "sardinen": [
+   "Sardinen in Öl (125 g)",
+   1,
+   "Dose",
+   1.29,
+   "Konserven"
+  ],
+  "oliven": [
+   "Schwarze Oliven",
+   160,
+   "g",
+   0.99,
+   "Konserven"
+  ],
+  "reis": [
+   "Langkornreis",
+   1000,
+   "g",
+   1.29,
+   "Trocken"
+  ],
+  "penne": [
+   "Vollkorn-Penne",
+   500,
+   "g",
+   0.99,
+   "Trocken"
+  ],
+  "spaghetti": [
+   "Spaghetti",
+   500,
+   "g",
+   0.79,
+   "Trocken"
+  ],
+  "wraps": [
+   "Tortilla-Wraps",
+   6,
+   "Stk",
+   1.29,
+   "Brot"
+  ],
+  "haehnchen": [
+   "Hähnchenbrustfilet",
+   400,
+   "g",
+   4.79,
+   "Kühlregal"
+  ],
+  "erbsen": [
+   "TK-Erbsen",
+   450,
+   "g",
+   1.19,
+   "Tiefkühl"
+  ]
+ },
+ "recipes": [
+  {
+   "day": 0,
+   "slot": "fruehstueck",
+   "title": "Bananen-Hafer-Pfannkuchen",
+   "img": "https://www.themealdb.com/images/media/meals/sywswr1511383814.jpg",
+   "imgNote": "Foto: TheMealDB",
+   "time": 15,
+   "kcal": 520,
+   "protein": 19,
+   "ing": [
+    {
+     "n": "Banane, reif",
+     "q": 1,
+     "u": "Stk",
+     "k": "banane"
+    },
+    {
+     "n": "Ei",
+     "q": 1,
+     "u": "Stk",
+     "k": "eier"
+    },
+    {
+     "n": "Haferflocken",
+     "q": 50,
+     "u": "g",
+     "k": "hafer"
+    },
+    {
+     "n": "Milch",
+     "q": 60,
+     "u": "ml",
+     "k": "milch"
+    },
+    {
+     "n": "Naturjoghurt",
+     "q": 100,
+     "u": "g",
+     "k": "joghurt"
+    },
+    {
+     "n": "TK-Beeren",
+     "q": 60,
+     "u": "g",
+     "k": "beeren"
+    },
+    {
+     "n": "Öl, Zimt",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Banane mit einer Gabel zerdrücken, Ei, Haferflocken, Milch und eine Prise Zimt unterrühren. 5 Minuten quellen lassen.",
+    "Pfanne mit wenig Öl auf mittlerer Hitze erwärmen, kleine Pfannkuchen (je 2 EL Teig) ausbacken, nach 2 bis 3 Minuten wenden.",
+    "Beeren in einem Topf oder in der Mikrowelle kurz auftauen.",
+    "Pfannkuchen mit Joghurt und Beeren servieren."
+   ],
+   "tip": "Je reifer die Banane, desto süßer. Zucker braucht es nicht."
+  },
+  {
+   "day": 0,
+   "slot": "mittag",
+   "title": "Kichererbsen-Wraps mit Paprika",
+   "img": "https://www.themealdb.com/images/media/meals/tvtxpq1511464705.jpg",
+   "imgNote": "Foto: TheMealDB",
+   "time": 20,
+   "kcal": 610,
+   "protein": 22,
+   "ing": [
+    {
+     "n": "Kichererbsen (Dose)",
+     "q": 0.5,
+     "u": "Dose",
+     "k": "kicher"
+    },
+    {
+     "n": "Paprika",
+     "q": 1,
+     "u": "Stk",
+     "k": "paprika"
+    },
+    {
+     "n": "Zwiebel",
+     "q": 50,
+     "u": "g",
+     "k": "zwiebel"
+    },
+    {
+     "n": "Tortilla-Wraps",
+     "q": 2,
+     "u": "Stk",
+     "k": "wraps"
+    },
+    {
+     "n": "Naturjoghurt",
+     "q": 80,
+     "u": "g",
+     "k": "joghurt"
+    },
+    {
+     "n": "Zitronensaft",
+     "q": 0.25,
+     "u": "Stk",
+     "k": "zitrone"
+    },
+    {
+     "n": "Öl, Paprikapulver, Kreuzkümmel, Salz",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Kichererbsen abgießen und abspülen. Paprika und Zwiebel in Streifen schneiden.",
+    "In einer Pfanne mit 1 EL Öl Paprika und Zwiebel 5 Minuten anbraten, Kichererbsen dazugeben, mit Paprikapulver, Kreuzkümmel und Salz würzen und 3 Minuten mitbraten.",
+    "Joghurt mit Zitronensaft und einer Prise Salz verrühren.",
+    "Wraps kurz in der trockenen Pfanne erwärmen, Füllung und Joghurt daraufgeben, einrollen."
+   ],
+   "tip": "Die zweite Dosenhälfte kommt am Donnerstag in die Patatas bravas."
+  },
+  {
+   "day": 0,
+   "slot": "abend",
+   "title": "Rote-Linsen-Dal mit Reis",
+   "img": "https://www.themealdb.com/images/media/meals/wuxrtu1483564410.jpg",
+   "imgNote": "Foto: TheMealDB",
+   "time": 30,
+   "kcal": 640,
+   "protein": 25,
+   "ing": [
+    {
+     "n": "Rote Linsen",
+     "q": 80,
+     "u": "g",
+     "k": "linsen"
+    },
+    {
+     "n": "Reis",
+     "q": 70,
+     "u": "g",
+     "k": "reis"
+    },
+    {
+     "n": "Zwiebel",
+     "q": 50,
+     "u": "g",
+     "k": "zwiebel"
+    },
+    {
+     "n": "Knoblauch",
+     "q": 1,
+     "u": "Zehe",
+     "k": "knoblauch"
+    },
+    {
+     "n": "Gehackte Tomaten (Dose)",
+     "q": 0.5,
+     "u": "Dose",
+     "k": "dosentom"
+    },
+    {
+     "n": "Kokosmilch",
+     "q": 0.25,
+     "u": "Dose",
+     "k": "kokos"
+    },
+    {
+     "n": "TK-Spinat",
+     "q": 75,
+     "u": "g",
+     "k": "spinat"
+    },
+    {
+     "n": "Öl, Curry, Kreuzkümmel, Salz, Brühe",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Reis nach Packung kochen.",
+    "Zwiebel und Knoblauch fein hacken, in 1 EL Öl glasig dünsten, 1 TL Curry und ½ TL Kreuzkümmel kurz mitrösten.",
+    "Linsen abspülen, mit den Tomaten, der Kokosmilch und 200 ml Brühe dazugeben. 15 Minuten köcheln, bis die Linsen zerfallen. Ab und zu umrühren.",
+    "Spinat in den letzten 5 Minuten unterrühren, mit Salz abschmecken und mit dem Reis servieren."
+   ],
+   "tip": "Gut für die doppelte Menge: hält 3 Tage im Kühlschrank und schmeckt aufgewärmt noch besser."
+  },
+  {
+   "day": 1,
+   "slot": "fruehstueck",
+   "title": "Zimt-Apfel-Porridge",
+   "img": "https://www.themealdb.com/images/media/meals/sng9bm1765320170.jpg",
+   "imgNote": "Foto: TheMealDB (ähnliches Gericht)",
+   "time": 10,
+   "kcal": 450,
+   "protein": 15,
+   "ing": [
+    {
+     "n": "Haferflocken",
+     "q": 60,
+     "u": "g",
+     "k": "hafer"
+    },
+    {
+     "n": "Milch",
+     "q": 250,
+     "u": "ml",
+     "k": "milch"
+    },
+    {
+     "n": "Apfel",
+     "q": 1,
+     "u": "Stk",
+     "k": "apfel"
+    },
+    {
+     "n": "Erdnussbutter",
+     "q": 10,
+     "u": "g",
+     "k": "erdnuss"
+    },
+    {
+     "n": "Zimt, Salz",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Haferflocken mit Milch und einer Prise Salz aufkochen und unter Rühren 3 bis 4 Minuten köcheln, bis es cremig ist.",
+    "Apfel klein würfeln, die Hälfte mitköcheln lassen.",
+    "Mit Zimt, dem restlichen Apfel und einem Klecks Erdnussbutter servieren."
+   ],
+   "tip": "Am Vorabend kalt angesetzt (Overnight Oats) geht es morgens ohne Kochen."
+  },
+  {
+   "day": 1,
+   "slot": "mittag",
+   "title": "Tomaten-Ei-Pfanne mit Reis",
+   "img": "https://www.themealdb.com/images/media/meals/rwvw8q1765660071.jpg",
+   "imgNote": "Foto: TheMealDB",
+   "time": 20,
+   "kcal": 560,
+   "protein": 20,
+   "ing": [
+    {
+     "n": "Reis",
+     "q": 70,
+     "u": "g",
+     "k": "reis"
+    },
+    {
+     "n": "Eier",
+     "q": 2,
+     "u": "Stk",
+     "k": "eier"
+    },
+    {
+     "n": "Tomaten",
+     "q": 250,
+     "u": "g",
+     "k": "tomate"
+    },
+    {
+     "n": "Frühlingszwiebeln",
+     "q": 2,
+     "u": "Stängel",
+     "k": "fzwiebel"
+    },
+    {
+     "n": "Öl, Sojasauce, Salz, Zucker",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Reis nach Packung kochen.",
+    "Eier mit einer Prise Salz verquirlen, in 1 EL heißem Öl stocken lassen, grob zerteilen und herausnehmen.",
+    "Tomaten in Spalten schneiden und mit etwas Öl 4 Minuten braten, bis sie saftig werden. 1 TL Sojasauce und eine Prise Zucker dazu.",
+    "Ei zurück in die Pfanne geben, Frühlingszwiebeln in Ringen darüberstreuen, mit dem Reis servieren."
+   ],
+   "tip": "Reis gleich für Mittwoch und Donnerstag mitkochen."
+  },
+  {
+   "day": 1,
+   "slot": "abend",
+   "title": "Chili sin Carne",
+   "img": "https://www.themealdb.com/images/media/meals/wqurxy1511453156.jpg",
+   "imgNote": "Foto: TheMealDB",
+   "time": 30,
+   "kcal": 620,
+   "protein": 26,
+   "ing": [
+    {
+     "n": "Kidneybohnen (Dose)",
+     "q": 1,
+     "u": "Dose",
+     "k": "kidney"
+    },
+    {
+     "n": "Mais (Dose)",
+     "q": 0.5,
+     "u": "Dose",
+     "k": "mais"
+    },
+    {
+     "n": "Gehackte Tomaten (Dose)",
+     "q": 0.5,
+     "u": "Dose",
+     "k": "dosentom"
+    },
+    {
+     "n": "Rote Linsen",
+     "q": 30,
+     "u": "g",
+     "k": "linsen"
+    },
+    {
+     "n": "Paprika",
+     "q": 1,
+     "u": "Stk",
+     "k": "paprika"
+    },
+    {
+     "n": "Zwiebel",
+     "q": 50,
+     "u": "g",
+     "k": "zwiebel"
+    },
+    {
+     "n": "Knoblauch",
+     "q": 1,
+     "u": "Zehe",
+     "k": "knoblauch"
+    },
+    {
+     "n": "Naturjoghurt",
+     "q": 50,
+     "u": "g",
+     "k": "joghurt"
+    },
+    {
+     "n": "Öl, Paprikapulver, Kreuzkümmel, Chili, Salz",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Zwiebel, Knoblauch und Paprika würfeln und in 1 EL Öl 5 Minuten anbraten. 1 TL Paprikapulver, ½ TL Kreuzkümmel und Chili nach Geschmack mitrösten.",
+    "Tomaten, abgespülte Linsen und 150 ml Wasser dazugeben und 10 Minuten köcheln.",
+    "Bohnen und Mais abgießen, dazugeben, 5 Minuten weiter köcheln und salzen.",
+    "Mit einem Klecks Joghurt servieren, dazu passt Brot oder Reis."
+   ],
+   "tip": "Die Linsen ersetzen das Hackfleisch: billiger und genauso sättigend. Rest einfrieren."
+  },
+  {
+   "day": 2,
+   "slot": "fruehstueck",
+   "title": "Tomatenbrot mit Feta",
+   "img": "https://www.themealdb.com/images/media/meals/lz9rw91779733434.jpg",
+   "imgNote": "Foto: TheMealDB",
+   "time": 10,
+   "kcal": 430,
+   "protein": 17,
+   "ing": [
+    {
+     "n": "Vollkornbrot",
+     "q": 2,
+     "u": "Scheiben",
+     "k": "brot"
+    },
+    {
+     "n": "Tomate",
+     "q": 1,
+     "u": "Stk",
+     "k": "tomate"
+    },
+    {
+     "n": "Feta",
+     "q": 40,
+     "u": "g",
+     "k": "feta"
+    },
+    {
+     "n": "Knoblauch",
+     "q": 0.5,
+     "u": "Zehe",
+     "k": "knoblauch"
+    },
+    {
+     "n": "Olivenöl, Salz, Oregano",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Brot toasten oder in der Pfanne rösten.",
+    "Mit der angeschnittenen Knoblauchzehe einreiben.",
+    "Tomate halbieren und kräftig auf dem Brot verreiben, Rest in Scheiben darauflegen.",
+    "Feta darüberbröseln, mit Olivenöl, Salz und Oregano würzen."
+   ],
+   "tip": "Dazu ein Apfel oder eine Banane, dann hält es bis mittags."
+  },
+  {
+   "day": 2,
+   "slot": "mittag",
+   "title": "Weiße-Bohnen-Suppe mit Brot",
+   "img": "https://www.themealdb.com/images/media/meals/p5nzbk1782680889.jpg",
+   "imgNote": "Foto: TheMealDB",
+   "time": 25,
+   "kcal": 520,
+   "protein": 22,
+   "ing": [
+    {
+     "n": "Weiße Bohnen (Dose)",
+     "q": 1,
+     "u": "Dose",
+     "k": "weisse"
+    },
+    {
+     "n": "Karotte",
+     "q": 100,
+     "u": "g",
+     "k": "karotte"
+    },
+    {
+     "n": "Zwiebel",
+     "q": 50,
+     "u": "g",
+     "k": "zwiebel"
+    },
+    {
+     "n": "Knoblauch",
+     "q": 1,
+     "u": "Zehe",
+     "k": "knoblauch"
+    },
+    {
+     "n": "TK-Spinat",
+     "q": 75,
+     "u": "g",
+     "k": "spinat"
+    },
+    {
+     "n": "Vollkornbrot",
+     "q": 1,
+     "u": "Scheibe",
+     "k": "brot"
+    },
+    {
+     "n": "Öl, Brühe, Salz, Pfeffer",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Zwiebel, Knoblauch und Karotte klein würfeln und in 1 EL Öl 5 Minuten andünsten.",
+    "Bohnen mit Flüssigkeit und 300 ml Brühe dazugeben, 10 Minuten köcheln.",
+    "Ein Drittel der Suppe pürieren oder mit einer Gabel zerdrücken, damit sie cremig wird. Spinat unterrühren.",
+    "Mit Salz und Pfeffer abschmecken und mit Brot servieren."
+   ],
+   "tip": "Lässt sich gut in einem Glas mit in die Uni nehmen."
+  },
+  {
+   "day": 2,
+   "slot": "abend",
+   "title": "Shakshuka mit Brot",
+   "img": "https://www.themealdb.com/images/media/meals/g373701551450225.jpg",
+   "imgNote": "Foto: TheMealDB",
+   "time": 25,
+   "kcal": 560,
+   "protein": 25,
+   "ing": [
+    {
+     "n": "Eier",
+     "q": 2,
+     "u": "Stk",
+     "k": "eier"
+    },
+    {
+     "n": "Gehackte Tomaten (Dose)",
+     "q": 1,
+     "u": "Dose",
+     "k": "dosentom"
+    },
+    {
+     "n": "Paprika",
+     "q": 0.5,
+     "u": "Stk",
+     "k": "paprika"
+    },
+    {
+     "n": "Zwiebel",
+     "q": 50,
+     "u": "g",
+     "k": "zwiebel"
+    },
+    {
+     "n": "Knoblauch",
+     "q": 1,
+     "u": "Zehe",
+     "k": "knoblauch"
+    },
+    {
+     "n": "Feta",
+     "q": 30,
+     "u": "g",
+     "k": "feta"
+    },
+    {
+     "n": "Vollkornbrot",
+     "q": 2,
+     "u": "Scheiben",
+     "k": "brot"
+    },
+    {
+     "n": "Öl, Paprikapulver, Kreuzkümmel, Salz",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Zwiebel, Paprika und Knoblauch würfeln und in 1 EL Öl 5 Minuten anbraten. Mit Paprikapulver und Kreuzkümmel würzen.",
+    "Tomaten dazugeben, salzen und 8 Minuten einköcheln lassen.",
+    "Zwei Mulden formen, die Eier hineinschlagen. Deckel drauf und 6 bis 8 Minuten auf kleiner Hitze stocken lassen.",
+    "Feta darüberbröseln und direkt aus der Pfanne mit Brot essen."
+   ],
+   "tip": "Eigelb noch flüssig? Dann ist es genau richtig."
+  },
+  {
+   "day": 3,
+   "slot": "fruehstueck",
+   "title": "Erdnuss-Bananen-Porridge",
+   "img": "https://www.themealdb.com/images/media/meals/hyk47c1762772689.jpg",
+   "imgNote": "Foto: TheMealDB (ähnliches Gericht)",
+   "time": 10,
+   "kcal": 520,
+   "protein": 18,
+   "ing": [
+    {
+     "n": "Haferflocken",
+     "q": 60,
+     "u": "g",
+     "k": "hafer"
+    },
+    {
+     "n": "Milch",
+     "q": 250,
+     "u": "ml",
+     "k": "milch"
+    },
+    {
+     "n": "Banane",
+     "q": 1,
+     "u": "Stk",
+     "k": "banane"
+    },
+    {
+     "n": "Erdnussbutter",
+     "q": 15,
+     "u": "g",
+     "k": "erdnuss"
+    },
+    {
+     "n": "Zimt, Salz",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Haferflocken mit Milch und einer Prise Salz aufkochen und 3 bis 4 Minuten cremig köcheln.",
+    "Die Hälfte der Banane hineinzerdrücken, so wird es süß.",
+    "Mit Bananenscheiben, Erdnussbutter und Zimt servieren."
+   ],
+   "tip": ""
+  },
+  {
+   "day": 3,
+   "slot": "mittag",
+   "title": "Penne all’arrabbiata",
+   "img": "https://www.themealdb.com/images/media/meals/ustsqw1468250014.jpg",
+   "imgNote": "Foto: TheMealDB",
+   "time": 20,
+   "kcal": 600,
+   "protein": 21,
+   "ing": [
+    {
+     "n": "Vollkorn-Penne",
+     "q": 100,
+     "u": "g",
+     "k": "penne"
+    },
+    {
+     "n": "Gehackte Tomaten (Dose)",
+     "q": 0.5,
+     "u": "Dose",
+     "k": "dosentom"
+    },
+    {
+     "n": "Knoblauch",
+     "q": 1,
+     "u": "Zehe",
+     "k": "knoblauch"
+    },
+    {
+     "n": "Feta",
+     "q": 20,
+     "u": "g",
+     "k": "feta"
+    },
+    {
+     "n": "Olivenöl, Chili, Salz, Oregano",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Penne in Salzwasser nach Packung kochen.",
+    "Knoblauch in Scheiben schneiden und mit Chili in 1 EL Olivenöl kurz anbraten (nicht braun werden lassen).",
+    "Tomaten dazu, salzen und mit Oregano 8 Minuten köcheln.",
+    "Nudeln abgießen, mit der Sauce mischen und mit zerbröseltem Feta servieren."
+   ],
+   "tip": "Der Klassiker unter 1 € pro Portion."
+  },
+  {
+   "day": 3,
+   "slot": "abend",
+   "title": "Gebratener Reis mit Hähnchen und Gemüse",
+   "img": "https://www.themealdb.com/images/media/meals/wuyd2h1765655837.jpg",
+   "imgNote": "Foto: TheMealDB",
+   "time": 25,
+   "kcal": 650,
+   "protein": 38,
+   "ing": [
+    {
+     "n": "Reis (am Vortag gekocht, roh gewogen)",
+     "q": 70,
+     "u": "g",
+     "k": "reis"
+    },
+    {
+     "n": "Hähnchenbrust",
+     "q": 150,
+     "u": "g",
+     "k": "haehnchen"
+    },
+    {
+     "n": "Ei",
+     "q": 1,
+     "u": "Stk",
+     "k": "eier"
+    },
+    {
+     "n": "TK-Erbsen",
+     "q": 75,
+     "u": "g",
+     "k": "erbsen"
+    },
+    {
+     "n": "Karotte",
+     "q": 80,
+     "u": "g",
+     "k": "karotte"
+    },
+    {
+     "n": "Frühlingszwiebeln",
+     "q": 2,
+     "u": "Stängel",
+     "k": "fzwiebel"
+    },
+    {
+     "n": "Öl, Sojasauce, Pfeffer",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Hähnchen in kleine Würfel, Karotte in kleine Stücke schneiden.",
+    "Hähnchen in 1 EL heißem Öl 5 Minuten rundum braten, herausnehmen.",
+    "Karotte und Erbsen 3 Minuten braten, Reis dazugeben und 4 Minuten bei hoher Hitze mitbraten.",
+    "Ei an den Rand schlagen, verrühren, stocken lassen und alles mit Hähnchen, 2 EL Sojasauce und Frühlingszwiebeln vermischen."
+   ],
+   "tip": "Kalter Reis vom Vortag klebt nicht. 70 g roher Reis ergeben etwa 200 g gekochten."
+  },
+  {
+   "day": 4,
+   "slot": "fruehstueck",
+   "title": "Omelett mit Spinat",
+   "img": "https://www.themealdb.com/images/media/meals/yvpuuy1511797244.jpg",
+   "imgNote": "Foto: TheMealDB",
+   "time": 10,
+   "kcal": 420,
+   "protein": 24,
+   "ing": [
+    {
+     "n": "Eier",
+     "q": 2,
+     "u": "Stk",
+     "k": "eier"
+    },
+    {
+     "n": "TK-Spinat",
+     "q": 50,
+     "u": "g",
+     "k": "spinat"
+    },
+    {
+     "n": "Feta",
+     "q": 20,
+     "u": "g",
+     "k": "feta"
+    },
+    {
+     "n": "Vollkornbrot",
+     "q": 1,
+     "u": "Scheibe",
+     "k": "brot"
+    },
+    {
+     "n": "Öl, Salz, Pfeffer",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Spinat in der Pfanne auftauen lassen und gut ausdrücken.",
+    "Eier mit Salz und Pfeffer verquirlen.",
+    "In einer Pfanne mit wenig Öl auf mittlerer Hitze stocken lassen, Spinat und Feta auf eine Hälfte geben und das Omelett zusammenklappen.",
+    "Mit Brot servieren."
+   ],
+   "tip": ""
+  },
+  {
+   "day": 4,
+   "slot": "mittag",
+   "title": "Marokkanische Karottensuppe",
+   "img": "https://www.themealdb.com/images/media/meals/jcr46d1614763831.jpg",
+   "imgNote": "Foto: TheMealDB",
+   "time": 30,
+   "kcal": 450,
+   "protein": 15,
+   "ing": [
+    {
+     "n": "Karotten",
+     "q": 300,
+     "u": "g",
+     "k": "karotte"
+    },
+    {
+     "n": "Kartoffel",
+     "q": 100,
+     "u": "g",
+     "k": "kartoffel"
+    },
+    {
+     "n": "Zwiebel",
+     "q": 50,
+     "u": "g",
+     "k": "zwiebel"
+    },
+    {
+     "n": "Rote Linsen",
+     "q": 30,
+     "u": "g",
+     "k": "linsen"
+    },
+    {
+     "n": "Naturjoghurt",
+     "q": 50,
+     "u": "g",
+     "k": "joghurt"
+    },
+    {
+     "n": "Vollkornbrot",
+     "q": 1,
+     "u": "Scheibe",
+     "k": "brot"
+    },
+    {
+     "n": "Öl, Kreuzkümmel, Zimt, Brühe, Salz",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Karotten, Kartoffel und Zwiebel schälen und würfeln.",
+    "In 1 EL Öl 3 Minuten andünsten, 1 TL Kreuzkümmel und eine Prise Zimt kurz mitrösten.",
+    "Linsen und 500 ml Brühe dazugeben, 15 Minuten köcheln, bis alles weich ist.",
+    "Fein pürieren, salzen und mit einem Klecks Joghurt und Brot servieren."
+   ],
+   "tip": "Die Linsen machen die Suppe sämig und liefern Eiweiß."
+  },
+  {
+   "day": 4,
+   "slot": "abend",
+   "title": "Patatas bravas mit Kichererbsen",
+   "img": "https://www.themealdb.com/images/media/meals/bvg8sn1763298713.jpg",
+   "imgNote": "Foto: TheMealDB",
+   "time": 40,
+   "kcal": 640,
+   "protein": 20,
+   "ing": [
+    {
+     "n": "Kartoffeln",
+     "q": 350,
+     "u": "g",
+     "k": "kartoffel"
+    },
+    {
+     "n": "Kichererbsen (Dose)",
+     "q": 0.5,
+     "u": "Dose",
+     "k": "kicher"
+    },
+    {
+     "n": "Gehackte Tomaten (Dose)",
+     "q": 0.5,
+     "u": "Dose",
+     "k": "dosentom"
+    },
+    {
+     "n": "Knoblauch",
+     "q": 1,
+     "u": "Zehe",
+     "k": "knoblauch"
+    },
+    {
+     "n": "Naturjoghurt",
+     "q": 80,
+     "u": "g",
+     "k": "joghurt"
+    },
+    {
+     "n": "Öl, Paprikapulver, Chili, Salz",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Ofen auf 220 °C vorheizen. Kartoffeln mit Schale in 2 cm Würfel schneiden, mit 1 EL Öl, Salz und Paprikapulver mischen.",
+    "Auf einem Blech 25 Minuten rösten, nach 10 Minuten die abgetropften Kichererbsen dazugeben.",
+    "Für die Sauce Knoblauch fein hacken, in wenig Öl anbraten, Tomaten, Paprikapulver und Chili dazu, 10 Minuten dick einköcheln und salzen.",
+    "Kartoffeln mit Sauce und Joghurt-Knoblauch-Dip servieren."
+   ],
+   "tip": "Mehr Kartoffeln mitrösten: Die Reste werden am Samstag zu Frühstückskartoffeln."
+  },
+  {
+   "day": 5,
+   "slot": "fruehstueck",
+   "title": "Frühstückskartoffeln mit Joghurt-Dip",
+   "img": "https://www.themealdb.com/images/media/meals/1550441882.jpg",
+   "imgNote": "Foto: TheMealDB",
+   "time": 15,
+   "kcal": 450,
+   "protein": 14,
+   "ing": [
+    {
+     "n": "Kartoffeln (gekocht oder geröstet)",
+     "q": 250,
+     "u": "g",
+     "k": "kartoffel"
+    },
+    {
+     "n": "Zwiebel",
+     "q": 50,
+     "u": "g",
+     "k": "zwiebel"
+    },
+    {
+     "n": "Paprika",
+     "q": 0.5,
+     "u": "Stk",
+     "k": "paprika"
+    },
+    {
+     "n": "Naturjoghurt",
+     "q": 80,
+     "u": "g",
+     "k": "joghurt"
+    },
+    {
+     "n": "Öl, Paprikapulver, Salz",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Kartoffeln, Zwiebel und Paprika würfeln.",
+    "In 1 EL Öl bei mittlerer bis hoher Hitze 10 Minuten knusprig braten, nicht zu oft wenden.",
+    "Mit Paprikapulver und Salz würzen.",
+    "Joghurt mit Salz verrühren und dazu servieren."
+   ],
+   "tip": "Wer mehr Hunger hat, brät ein Spiegelei dazu."
+  },
+  {
+   "day": 5,
+   "slot": "mittag",
+   "title": "Nordafrikanischer Kartoffelsalat",
+   "img": "https://www.themealdb.com/images/media/meals/urtwux1486983078.jpg",
+   "imgNote": "Foto: TheMealDB",
+   "time": 25,
+   "kcal": 480,
+   "protein": 13,
+   "ing": [
+    {
+     "n": "Kartoffeln",
+     "q": 300,
+     "u": "g",
+     "k": "kartoffel"
+    },
+    {
+     "n": "Tomate",
+     "q": 1,
+     "u": "Stk",
+     "k": "tomate"
+    },
+    {
+     "n": "Frühlingszwiebeln",
+     "q": 2,
+     "u": "Stängel",
+     "k": "fzwiebel"
+    },
+    {
+     "n": "Oliven",
+     "q": 30,
+     "u": "g",
+     "k": "oliven"
+    },
+    {
+     "n": "Zitrone",
+     "q": 0.5,
+     "u": "Stk",
+     "k": "zitrone"
+    },
+    {
+     "n": "Olivenöl, Kreuzkümmel, Paprikapulver, Chili, Salz",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Kartoffeln mit Schale 20 Minuten in Salzwasser kochen, abkühlen lassen und in Stücke schneiden.",
+    "Tomate würfeln, Frühlingszwiebeln in Ringe schneiden.",
+    "Dressing aus 2 EL Olivenöl, Saft einer halben Zitrone, ½ TL Kreuzkümmel, Paprikapulver, Chili und Salz rühren.",
+    "Alles mit den Oliven mischen und 10 Minuten ziehen lassen."
+   ],
+   "tip": "Ohne Mayo, hält im Kühlschrank 2 Tage und passt gut in die Brotdose."
+  },
+  {
+   "day": 5,
+   "slot": "abend",
+   "title": "Sardinen-Puttanesca",
+   "img": "https://www.themealdb.com/images/media/meals/vvtvtr1511180578.jpg",
+   "imgNote": "Foto: TheMealDB",
+   "time": 20,
+   "kcal": 700,
+   "protein": 32,
+   "ing": [
+    {
+     "n": "Spaghetti",
+     "q": 100,
+     "u": "g",
+     "k": "spaghetti"
+    },
+    {
+     "n": "Sardinen in Öl",
+     "q": 1,
+     "u": "Dose",
+     "k": "sardinen"
+    },
+    {
+     "n": "Gehackte Tomaten (Dose)",
+     "q": 0.5,
+     "u": "Dose",
+     "k": "dosentom"
+    },
+    {
+     "n": "Oliven",
+     "q": 30,
+     "u": "g",
+     "k": "oliven"
+    },
+    {
+     "n": "Knoblauch",
+     "q": 1,
+     "u": "Zehe",
+     "k": "knoblauch"
+    },
+    {
+     "n": "Chili, Salz",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Spaghetti nach Packung kochen.",
+    "Knoblauch in Scheiben schneiden und mit etwas Öl aus der Sardinendose anbraten, Chili dazu.",
+    "Tomaten und halbierte Oliven dazugeben und 8 Minuten köcheln.",
+    "Sardinen in Stücken unterheben, nur kurz erwärmen und mit den Nudeln mischen."
+   ],
+   "tip": "Sardinen sind die günstigste Art, Omega-3-Fettsäuren zu essen."
+  },
+  {
+   "day": 6,
+   "slot": "fruehstueck",
+   "title": "Hafer-Pfannkuchen mit Beeren",
+   "img": "https://www.themealdb.com/images/media/meals/c400ok1764439058.jpg",
+   "imgNote": "Foto: TheMealDB",
+   "time": 20,
+   "kcal": 500,
+   "protein": 22,
+   "ing": [
+    {
+     "n": "Haferflocken",
+     "q": 60,
+     "u": "g",
+     "k": "hafer"
+    },
+    {
+     "n": "Ei",
+     "q": 1,
+     "u": "Stk",
+     "k": "eier"
+    },
+    {
+     "n": "Milch",
+     "q": 100,
+     "u": "ml",
+     "k": "milch"
+    },
+    {
+     "n": "Naturjoghurt",
+     "q": 100,
+     "u": "g",
+     "k": "joghurt"
+    },
+    {
+     "n": "TK-Beeren",
+     "q": 80,
+     "u": "g",
+     "k": "beeren"
+    },
+    {
+     "n": "Öl, Zimt, Salz",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Haferflocken mit Milch, Ei, einer Prise Salz und Zimt verrühren und 10 Minuten quellen lassen (oder fein pürieren).",
+    "In einer Pfanne mit wenig Öl 3 bis 4 kleine Pfannkuchen auf mittlerer Hitze ausbacken.",
+    "Beeren auftauen und mit Joghurt auf die Pfannkuchen geben."
+   ],
+   "tip": ""
+  },
+  {
+   "day": 6,
+   "slot": "mittag",
+   "title": "Reis mit Bohnen",
+   "img": "https://www.themealdb.com/images/media/meals/j8c1d51782772399.jpg",
+   "imgNote": "Foto: TheMealDB",
+   "time": 20,
+   "kcal": 580,
+   "protein": 20,
+   "ing": [
+    {
+     "n": "Reis",
+     "q": 70,
+     "u": "g",
+     "k": "reis"
+    },
+    {
+     "n": "Kidneybohnen (Dose)",
+     "q": 0.5,
+     "u": "Dose",
+     "k": "kidney"
+    },
+    {
+     "n": "Mais (Dose)",
+     "q": 0.5,
+     "u": "Dose",
+     "k": "mais"
+    },
+    {
+     "n": "Paprika",
+     "q": 0.5,
+     "u": "Stk",
+     "k": "paprika"
+    },
+    {
+     "n": "Zwiebel",
+     "q": 50,
+     "u": "g",
+     "k": "zwiebel"
+    },
+    {
+     "n": "Zitrone",
+     "q": 0.25,
+     "u": "Stk",
+     "k": "zitrone"
+    },
+    {
+     "n": "Öl, Kreuzkümmel, Paprikapulver, Salz",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Reis nach Packung kochen.",
+    "Zwiebel und Paprika würfeln und in 1 EL Öl 5 Minuten anbraten, mit Kreuzkümmel und Paprikapulver würzen.",
+    "Bohnen und Mais abgießen und 3 Minuten mitbraten.",
+    "Mit dem Reis mischen, salzen und mit Zitronensaft abschmecken."
+   ],
+   "tip": "Bohnen plus Reis ergeben zusammen ein vollständiges Eiweiß, ganz ohne Fleisch."
+  },
+  {
+   "day": 6,
+   "slot": "abend",
+   "title": "Ratatouille mit Reis",
+   "img": "https://www.themealdb.com/images/media/meals/wrpwuu1511786491.jpg",
+   "imgNote": "Foto: TheMealDB",
+   "time": 40,
+   "kcal": 520,
+   "protein": 12,
+   "ing": [
+    {
+     "n": "Zucchini",
+     "q": 1,
+     "u": "Stk",
+     "k": "zucchini"
+    },
+    {
+     "n": "Aubergine",
+     "q": 0.5,
+     "u": "Stk",
+     "k": "aubergine"
+    },
+    {
+     "n": "Paprika",
+     "q": 0.5,
+     "u": "Stk",
+     "k": "paprika"
+    },
+    {
+     "n": "Zwiebel",
+     "q": 50,
+     "u": "g",
+     "k": "zwiebel"
+    },
+    {
+     "n": "Knoblauch",
+     "q": 1,
+     "u": "Zehe",
+     "k": "knoblauch"
+    },
+    {
+     "n": "Gehackte Tomaten (Dose)",
+     "q": 0.5,
+     "u": "Dose",
+     "k": "dosentom"
+    },
+    {
+     "n": "Reis",
+     "q": 70,
+     "u": "g",
+     "k": "reis"
+    },
+    {
+     "n": "Feta",
+     "q": 30,
+     "u": "g",
+     "k": "feta"
+    },
+    {
+     "n": "Olivenöl, Oregano, Salz, Pfeffer",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Reis nach Packung kochen.",
+    "Gemüse in 2 cm Würfel schneiden. Zwiebel und Knoblauch in 2 EL Olivenöl andünsten.",
+    "Aubergine und Paprika 5 Minuten braten, Zucchini und Tomaten dazugeben, mit Oregano, Salz und Pfeffer würzen.",
+    "Zugedeckt 15 Minuten köcheln, mit Feta und Reis servieren."
+   ],
+   "tip": "Die doppelte Menge ist das Mittagessen für Montag."
+  }
+ ]
+}

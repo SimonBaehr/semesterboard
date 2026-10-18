@@ -382,6 +382,31 @@ h2{font-size:.95rem;font-weight:600;text-transform:none;letter-spacing:-.005em;c
 .cm-line{background:#00975F}
 .notice{background:rgba(217,119,6,.08)}
 @media (max-width:760px){.tabbar{background:var(--glass);backdrop-filter:blur(14px)}.tabbar .nav-btn[aria-current="page"]::before{display:none}}
+
+.meals{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:760px){.meals{grid-template-columns:minmax(0,1fr)}}
+.meal{display:flex;flex-direction:column;text-align:left;border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:0;overflow:hidden;cursor:pointer;color:inherit}
+.meal:hover{border-color:var(--accent)}
+.meal img{width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--bg2);display:block}
+@media (max-width:760px){.meal{flex-direction:row}.meal img{width:112px;aspect-ratio:1;flex:none}}
+.meal .mb{padding:10px 12px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.meal .mt{font-weight:600;line-height:1.3}
+.mm{display:flex;gap:10px;flex-wrap:wrap;font-size:.78rem;color:var(--ink3)}
+.rz{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:20px}
+@media (max-width:860px){.rz{grid-template-columns:minmax(0,1fr)}}
+.rz figure{margin:0}.rz figure img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;background:var(--bg2);display:block}
+.rz figcaption{font-size:.72rem;color:var(--ink3);margin-top:4px}
+.rzt{font-size:1.3rem;margin:2px 0 6px}
+.rzh{font-size:.9rem;margin:16px 0 6px}
+.ing{list-style:none;margin:0;padding:0}.ing li{display:grid;grid-template-columns:96px minmax(0,1fr);gap:10px;padding:5px 0;border-top:1px solid var(--line);font-size:.9rem}.ing li:first-child{border-top:0}
+.ing .q{color:var(--ink2);font-variant-numeric:tabular-nums}
+.steps{margin:0;padding-left:20px}.steps li{margin:0 0 8px;line-height:1.5}
+.tipline{margin:10px 0 0;padding:8px 12px;border-radius:10px;background:var(--accent-soft);font-size:.85rem;color:var(--ink2)}
+.sgrp{margin-bottom:10px}.sgrp .label{padding:4px 0}
+.sitem{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"c n p" "c q p";column-gap:10px;align-items:center;padding:7px 0;border-top:1px solid var(--line);cursor:pointer}
+.sitem .check{grid-area:c;margin:0}.sitem .sn{grid-area:n;font-weight:500}.sitem .sq{grid-area:q;font-size:.76rem;color:var(--ink3)}.sitem .sp{grid-area:p;font-variant-numeric:tabular-nums;color:var(--ink2)}
+.sitem.done .sn{text-decoration:line-through;color:var(--ink3)}
+.stot{display:flex;flex-direction:column;gap:2px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line2)}
 </style>
 </head>
 <body>
@@ -419,7 +444,7 @@ const ICONS={
   gewicht:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 10a5 5 0 0 1 8 0M12 10l1.5-2"/></svg>'
 };
 const VIEWS=[["heute","Cockpit"],["woche","Woche"],["faecher","Fächer"],["aufgaben","Aufgaben"],["notizen","Notizen"]];
-const AVIEWS=[["alltag","Übersicht"],["training","Training"]];
+const AVIEWS=[["alltag","Übersicht"],["training","Training"],["essen","Essen"]];
 const COLS=["courses","events","tasks","steps","notes","digests","literature","timelog","reviews"];
 // Alltag-Daten liegen in eigenen Tabellen (fit_*), getrennt von den Uni-Tabellen.
 const FCOLS=["fit_workouts","fit_meals","fit_weight","fit_goals"];
@@ -919,25 +944,6 @@ function mealForm(){const h=new Date().getHours();const def=h<11?"fruehstueck":h
   return `<div class="addbox"><form class="inline" id="f-meal"><select name="meal" aria-label="Mahlzeit">${Object.entries(MEALS).map(([k,v])=>`<option value="${k}"${k===def?" selected":""}>${v}</option>`).join("")}</select><input type="text" name="title" placeholder="z. B. Haferflocken mit Beeren" required><input type="number" name="kcal" min="0" placeholder="kcal" required style="width:90px"><input type="number" name="protein" min="0" step="0.1" placeholder="Eiweiß g" style="width:100px"><button class="btn primary">Hinzufügen</button></form></div>`}
 function meter(label,val,target,unit,col){const p=target?Math.min(100,100*val/target):0,over=target&&val>target;
   return `<div class="meter"><div class="row"><span>${label}</span><span class="num">${num(val)}${target?" / "+num(target):""} ${unit}</span></div><div class="bar"><i style="width:${p}%;background:${over?"var(--serious)":col}"></i></div></div>`}
-function vEssen(){
-  const d=foodDay,g=goals(),ms=mealsOn(d),kin=kcalIn(d),pin=protIn(d),out=kcalOut(d),isToday=d===iso(new Date());
-  // häufigste Mahlzeiten der letzten 30 Tage zum schnellen Wiedereintragen
-  const since=iso(addDays(new Date(),-30)),freq={};
-  S.fit_meals.filter(m=>m.date>=since).sort((a,b)=>(a.date+(a.createdAt||"")).localeCompare(b.date+(b.createdAt||""))).forEach(m=>{const k=m.title.trim().toLowerCase();freq[k]={m,n:(freq[k]?freq[k].n:0)+1}});
-  const recent=Object.values(freq).sort((a,b)=>b.n-a.n).slice(0,10).map(x=>x.m);
-  return `<div class="ph"><h1>Ernährung</h1><div class="daynav"><button class="btn" data-fday="-1" aria-label="Vorheriger Tag">‹</button><input type="date" id="fday" value="${d}" aria-label="Tag"><button class="btn" data-fday="1" aria-label="Nächster Tag">›</button>${isToday?"":'<button class="btn" data-fday="0">Heute</button>'}</div></div>
-  <div class="grid">
-  <section class="panel hud s5"><div class="label" style="margin-bottom:8px">${isToday?"Heute":fDate(fromIso(d),{weekday:"long",day:"2-digit",month:"2-digit"})}</div>
-    ${meter("Kalorien",kin,g.kcalTarget,"kcal","var(--accent)")}${meter("Eiweiß",pin,g.proteinTarget,"g","#a58bff")}
-    ${out!=null?statRow("Verbrauch inkl. Training",num(out)+" kcal")+statRow("Bilanz",`<span class="${kin-out>0?"up":"down"}">${kin-out>0?"+":"−"}${num(Math.abs(kin-out))} kcal</span>`):'<div class="faint" style="font-size:.8rem">Trag in der Übersicht unter Ziele deinen Grundverbrauch ein, dann siehst du hier die Bilanz.</div>'}
-  </section>
-  <section class="panel s7"><div class="ph"><h2>Kalorien · 14 Tage</h2></div><div class="chart" data-chart="kcal"></div></section>
-  <section class="panel s12">${listHead("Mahlzeiten",ms.length,"meal","Mahlzeit eintragen")}${addOpen.meal?mealForm():""}
-    ${recent.length?`<div style="padding:10px 0 4px"><div class="label" style="margin-bottom:6px">Schnell eintragen</div><div class="recent">${recent.map(m=>`<button data-reeat="${m.id}" title="${esc(MEALS[m.meal])} · ${m.kcal} kcal">+ ${esc(m.title)} <span class="faint">${m.kcal}</span></button>`).join("")}</div></div>`:""}
-    ${ms.length?Object.entries(MEALS).map(([k,v])=>{const xs=ms.filter(m=>m.meal===k);if(!xs.length)return"";return `<div class="mgroup"><div class="label"><span>${v}</span><span>${num(xs.reduce((a,m)=>a+m.kcal,0))} kcal</span></div>${xs.map(m=>`<div class="trow"><div class="body"><div class="title">${esc(m.title)}</div>${m.protein!=null?`<div class="meta"><span>${num(m.protein)} g Eiweiß</span></div>`:""}</div><span class="kc">${num(m.kcal)} kcal</span><button class="minus" data-del="fit_meals/${m.id}" aria-label="Entfernen">−</button></div>`).join("")}</div>`}).join(""):'<div class="empty">Für diesen Tag ist noch nichts eingetragen.</div>'}
-  </section></div>`;
-}
-
 function vGewicht(){
   const ws=weights(),st=weightStats(),g=goals();
   // Tempo: Steigung der Messwerte der letzten 28 Tage, in kg pro Woche
@@ -974,6 +980,7 @@ function vAlltag(){
   <blockquote class="quote s12">IF YOU DON’T CHANGE IT, YOU CHOOSE IT.</blockquote>
   ${(()=>{const s=S.fit_workouts.filter(w=>w.date===today&&/^Laufvorschlag/i.test(w.title||""))[0];
     return `<section class="panel hud s12" aria-labelledby="h-run"><div class="ph"><h2 id="h-run">Laufvorschlag heute</h2><span class="label">aus deinen Strava-Daten</span></div>${s?`<div class="item${s.done?" done":""}" style="align-items:flex-start"><input type="checkbox" class="check" data-toggle="fit_workouts/${s.id}" ${s.done?"checked":""} aria-label="Erledigt"><div class="body"><div class="title" style="font-size:1.05rem">${esc(s.title.replace(/^Laufvorschlag:\s*/i,""))}</div><div class="meta">${s.durationMin?`<span>${s.durationMin} min</span>`:""}</div>${s.details?`<div style="white-space:pre-wrap;color:var(--ink2);margin-top:6px;font-size:.9rem">${esc(s.details)}</div>`:""}</div></div>`:'<div class="empty">Der Vorschlag für heute kommt jeden Morgen gegen 6 Uhr.</div>'}</section>`})()}
+  ${essenToday()}
   <section class="panel s12"><div class="kpis">
     <div class="kpi"><div><div class="label">Läufe diese Woche</div><div class="big">${runsWk.length}<small>/ 3</small></div><div class="sub">${f1(kmWk)} km</div></div></div>
     <div class="kpi"><div><div class="label">Training KW ${kw(new Date())}</div><div class="big">${wd.length}<small>Einheiten</small></div><div class="sub">${wd.reduce((s,w)=>s+(w.durationMin||0),0)} min</div></div></div>
@@ -991,6 +998,67 @@ function vAlltag(){
   <section class="panel s12"><div class="ph"><h2>Pace-Entwicklung</h2><span class="faint" style="font-size:.76rem">Straßenläufe, letzte 6 Monate</span></div><div class="chart" data-chart="pace"></div></section>
   </div>`;
 }
+
+/* ---------- Essen: Wochenplan mit Rezept, Einkaufsliste und Foto (Daten in rezepte.json) ---------- */
+let REZ=null,essDay=null,essTab="tag";
+fetch("rezepte.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(d=>{if(d){REZ=d;if(isAlltag(view))render()}}).catch(()=>{});
+const SLOT={fruehstueck:"Frühstück",mittag:"Mittagessen",abend:"Abendessen"};
+const WDAYS=["Mo","Di","Mi","Do","Fr","Sa","So"];
+const wdIdx=d=>(new Date(d).getDay()+6)%7;
+const mealsOf=i=>REZ?REZ.recipes.filter(r=>r.day===i).sort((a,b)=>Object.keys(SLOT).indexOf(a.slot)-Object.keys(SLOT).indexOf(b.slot)):[];
+const eur=v=>v.toLocaleString("de-DE",{style:"currency",currency:"EUR"});
+function inPack(i,p){let q=i.q;if(i.u===p[2])return q;if(i.u==="Scheibe"||i.u==="Scheiben")return q*50;if(i.u==="Zehe")return q/10;if(i.u==="Stängel")return q/8;if(i.u==="Stk"&&p[2]==="g")return q*100;return q}
+const costOf=r=>r.ing.reduce((s,i)=>{const p=REZ.prices[i.k];return p?s+inPack(i,p)/p[1]*p[3]:s},0);
+const qty=i=>i.q==null?"":`${(+i.q).toLocaleString("de-DE",{maximumFractionDigits:2})}${i.u?" "+i.u:""}`;
+function chk(key){try{return localStorage.getItem("sb-shop-"+key)==="1"}catch(e){return false}}
+function essenToday(){
+  if(!REZ)return `<section class="panel s12"><div class="ph"><h2>Essen heute</h2></div><div class="empty">Rezepte werden geladen …</div></section>`;
+  const i=wdIdx(new Date()),ms=mealsOf(i);
+  return `<section class="panel s12" aria-labelledby="h-eat"><div class="ph"><h2 id="h-eat">Essen heute</h2><button class="btn small" data-essday="${i}">Rezepte und Einkaufsliste</button></div>
+    <div class="meals">${ms.map(r=>mealCard(r,i)).join("")}</div></section>`;
+}
+function mealCard(r,i){
+  return `<button class="meal" data-essday="${i}" data-esso="${esc(r.slot)}"><img src="${r.img}" alt="${esc(r.title)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"><div class="mb"><div class="label">${SLOT[r.slot]}</div><div class="mt">${esc(r.title)}</div><div class="mm"><span>${r.time} min</span><span>ca. ${r.kcal} kcal</span><span>ca. ${eur(costOf(r))}</span></div></div></button>`;
+}
+function recipeBlock(r){
+  return `<section class="panel s12 recipe" id="rz-${r.slot}"><div class="rz">
+    <figure><img src="${r.img}" alt="${esc(r.title)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentNode.style.display='none'"><figcaption>${esc(r.imgNote)}</figcaption></figure>
+    <div class="rzb"><div class="label">${SLOT[r.slot]}</div><h2 class="rzt">${esc(r.title)}</h2>
+      <div class="mm"><span>${r.time} min</span><span>ca. ${r.kcal} kcal</span><span>ca. ${r.protein} g Eiweiß</span><span>ca. ${eur(costOf(r))} pro Portion</span></div>
+      <h3 class="rzh">Zutaten für 1 Portion</h3><ul class="ing">${r.ing.map(i=>`<li><span class="q">${qty(i)}</span><span>${esc(i.n)}${i.k==="Vorrat"?' <span class="faint">(Vorrat)</span>':""}</span></li>`).join("")}</ul>
+      <h3 class="rzh">Zubereitung</h3><ol class="steps">${r.steps.map(s=>`<li>${esc(s)}</li>`).join("")}</ol>
+      ${r.tip?`<p class="tipline">${esc(r.tip)}</p>`:""}</div></div></section>`;
+}
+function shopList(recipes,scope){
+  const need={},vor=new Set();
+  recipes.forEach(r=>r.ing.forEach(i=>{if(i.k==="Vorrat"){i.n.split(",").forEach(x=>vor.add(x.trim()));return}const p=REZ.prices[i.k];if(!p)return;need[i.k]=(need[i.k]||0)+inPack(i,p)}));
+  const cats={};let tot=0,used=0;
+  Object.entries(need).forEach(([k,q])=>{const p=REZ.prices[k],packs=Math.max(1,Math.ceil(q/p[1]-1e-9));tot+=packs*p[3];used+=q/p[1]*p[3];(cats[p[4]]=cats[p[4]]||[]).push({k,q,p,packs})});
+  const amt=(q,p)=>p[2]==="g"||p[2]==="ml"?`${Math.round(q)} ${p[2]}`:`${(Math.round(q*10)/10).toLocaleString("de-DE")} ${p[2]}`;
+  return `<div class="shop">${Object.keys(cats).sort().map(c=>`<div class="sgrp"><div class="label">${esc(c)}</div>${cats[c].sort((a,b)=>a.p[0].localeCompare(b.p[0])).map(x=>{const key=scope+"-"+x.k,on=chk(key);
+      return `<label class="sitem${on?" done":""}"><input type="checkbox" class="check" data-shop="${esc(key)}" ${on?"checked":""}><span class="sn">${esc(x.p[0])}</span><span class="sq">${amt(x.q,x.p)} gebraucht · ${x.packs} × ${x.p[1]} ${x.p[2]}</span><span class="sp">${eur(x.packs*x.p[3])}</span></label>`}).join("")}</div>`).join("")}
+    <div class="stot"><span>Einkauf ca. <b>${eur(tot)}</b></span><span class="faint">davon in diesen Rezepten verbraucht ca. ${eur(used)}, der Rest reicht für die nächsten Tage</span></div>
+    ${vor.size?`<div class="faint" style="font-size:.8rem;margin-top:8px">Aus dem Vorrat: ${[...vor].map(esc).join(", ")}</div>`:""}</div>`;
+}
+function vEssen(){
+  if(!REZ)return '<div class="ph"><h1>Essen</h1></div><section class="panel"><div class="empty">Rezepte werden geladen …</div></section>';
+  const ti=wdIdx(new Date());if(essDay==null)essDay=ti;const ms=mealsOf(essDay);
+  const wkStart=iso(monday(new Date()));
+  return `<div class="ph"><h1>Essen</h1><span class="label">günstig, ausgewogen, mit Zutaten, die sich wiederholen</span></div>
+  <div class="row" style="margin-bottom:14px"><div class="seg" role="group" aria-label="Ansicht"><button data-esstab="tag" aria-pressed="${essTab==="tag"}">Tag</button><button data-esstab="woche" aria-pressed="${essTab==="woche"}">Wocheneinkauf</button></div>
+  ${essTab==="tag"?`<div class="seg" role="group" aria-label="Tag">${WDAYS.map((d,i)=>`<button data-essday="${i}" aria-pressed="${essDay===i}">${d}${i===ti?" ·":""}</button>`).join("")}</div>`:""}</div>
+  ${essTab==="tag"?`<div class="grid">
+    <section class="panel s12"><div class="meals">${ms.map(r=>mealCard(r,essDay)).join("")}</div></section>
+    ${ms.map(recipeBlock).join("")}
+    <section class="panel s12"><div class="ph"><h2>Einkaufsliste für ${["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"][essDay]}</h2></div>${shopList(ms,wkStart+"-d"+essDay)}</section>
+  </div>`:`<div class="grid"><section class="panel s12"><div class="ph"><h2>Wocheneinkauf für alle 21 Gerichte</h2><span class="label">ein Einkauf für Montag bis Sonntag</span></div>${shopList(REZ.recipes,wkStart+"-w")}</section></div>`}
+  <p class="faint" style="font-size:.78rem;margin-top:14px">${esc(REZ.note)}</p>`;
+}
+document.addEventListener("click",e=>{
+  const d=e.target.closest("[data-essday]");if(d){essDay=+d.dataset.essday;essTab="tag";const s=d.dataset.esso;if(view!=="essen")go("essen");else render();if(s)setTimeout(()=>{const el=document.getElementById("rz-"+s);if(el)el.scrollIntoView({behavior:"smooth",block:"start"})},60);return}
+  const t=e.target.closest("[data-esstab]");if(t){essTab=t.dataset.esstab;render();return}
+});
+document.addEventListener("change",e=>{const c=e.target.closest("[data-shop]");if(!c)return;try{localStorage.setItem("sb-shop-"+c.dataset.shop,c.checked?"1":"0")}catch(err){}c.closest(".sitem").classList.toggle("done",c.checked)});
 
 /* Diagramme Alltag */
 function chartWeight(el){
@@ -1107,7 +1175,7 @@ function render(){
   const body={heute:vHeute,woche:vWoche,faecher:vFaecher,aufgaben:vAufgaben,notizen:vNotizen,mail:vMail,alltag:vAlltag,training:vTraining,essen:vEssen,gewicht:vGewicht}[view]();
   const h=new Date().getHours(),al=isAlltag(view),home=view==="heute"||view==="alltag";
   const modeSeg=`<div class="seg mode" role="group" aria-label="Bereich"><button data-mode="uni" aria-pressed="${!al}">Uni</button><button data-mode="alltag" aria-pressed="${al}">Fitness</button></div>`;
-  $("#main").innerHTML=`<div class="top"><div><div class="label">${al?"Fitness · Training und Laufen":"Semesterboard · M.Sc. Applied Business Innovation"}</div>${view==="heute"?`<h1>Guten ${h<11?"Morgen":h<18?"Tag":"Abend"}, Simon</h1>`:""}${view==="alltag"?"<h1>Fitness</h1>":""}${view==="heute"?'<button class="btn" data-brief="open" style="margin-top:8px">☀ Tages-Briefing</button>':""}</div><div class="topr">${modeSeg}${home?'<button class="refresh" id="refresh" data-refresh="1" aria-label="Aktualisieren" title="Aktualisieren"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button>':""}</div></div>
+  $("#main").innerHTML=`<div class="top"><div><div class="label">${al?"Fitness · Training, Laufen und Essen":"Semesterboard · M.Sc. Applied Business Innovation"}</div>${view==="heute"?`<h1>Guten ${h<11?"Morgen":h<18?"Tag":"Abend"}, Simon</h1>`:""}${view==="alltag"?"<h1>Fitness</h1>":""}${view==="heute"?'<button class="btn" data-brief="open" style="margin-top:8px">☀ Tages-Briefing</button>':""}</div><div class="topr">${modeSeg}${home?'<button class="refresh" id="refresh" data-refresh="1" aria-label="Aktualisieren" title="Aktualisieren"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button>':""}</div></div>
     ${!navigator.onLine?'<div class="notice">Offline: Du siehst den letzten Stand. Änderungen gehen erst wieder mit Verbindung.</div>':""}${body}`;
   drawCharts();
   const b=$("#brief");if(b&&!b.hidden){const sc=b.firstElementChild?b.firstElementChild.scrollTop:0;b.innerHTML=briefingHTML();b.firstElementChild.scrollTop=sc}
