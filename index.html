@@ -1527,7 +1527,8 @@ const TILES=[
 function addTiles(map,i,dark){const t=TILES[i];if(!t)return;let ok=0,bad=0;const lay=L.tileLayer(t.url(dark),t.o).addTo(map);const lbl=(t.labels||[]).map(u=>L.tileLayer(u,{maxZoom:19,maxNativeZoom:18,opacity:.85}).addTo(map));
   lay.on("tileload",()=>ok++);lay.on("tileerror",()=>{bad++;if(!ok&&bad>=4&&!lay._sbGone&&TILES[i+1]){lay._sbGone=true;map.removeLayer(lay);lbl.forEach(x=>map.removeLayer(x));addTiles(map,i+1,dark)}})}
 const cssv=n=>getComputedStyle(document.body).getPropertyValue(n).trim();
-const CMPCOL=["#e8590c","#1c7ed6"];
+// Farbenblind-sichere Palette (Okabe-Ito): Routen hellblau, Vergleich orange und violett.
+const ROUTECOL="#56B4E9",CMPCOL=["#E69F00","#CC79A7"];
 /* Die Karte wird nur einmal angelegt und bei jedem Neuzeichnen der Seite wieder eingehängt.
    Vorher entstand sie bei jedem render() und jedem resize (am Handy schon beim Scrollen) neu, die Kacheln kamen nie an. */
 let MAPEL=null,LREND=null;
@@ -1547,7 +1548,7 @@ function initMap(el){
 }
 function drawRoutes(fit){
   const list=anaList();if(LMAP&&LGROUP){LGROUP.clearLayers();const acc=cssv("--accent")||"#4f46e5",r=LREND||(LREND=L.canvas({tolerance:6}));
-    const bounds=[];list.forEach(w=>{const p=ptsOf(w);if(p.length<2)return;if(!anaSel.includes(w.id)){const pl=L.polyline(p,{color:acc,weight:2.5,opacity:anaSel.length?.3:.75,renderer:r}).addTo(LGROUP);pl.on("click",()=>anaPick(w.id));pl.bindTooltip(`${esc(w.title)} · ${fDate(fromIso(w.date))}`,{sticky:true})}p.forEach(x=>bounds.push(x))});
+    const bounds=[];list.forEach(w=>{const p=ptsOf(w);if(p.length<2)return;if(!anaSel.includes(w.id)){const pl=L.polyline(p,{color:ROUTECOL,weight:2.5,opacity:anaSel.length?.3:.75,renderer:r}).addTo(LGROUP);pl.on("click",()=>anaPick(w.id));pl.bindTooltip(`${esc(w.title)} · ${fDate(fromIso(w.date))}`,{sticky:true})}p.forEach(x=>bounds.push(x))});
     anaSel.forEach((id,i)=>{const w=wById(id);if(!w)return;const p=ptsOf(w);if(p.length<2)return;L.polyline(p,{color:CMPCOL[i],weight:4.5,opacity:.95}).addTo(LGROUP).bindTooltip(`${esc(w.title)} · ${fDate(fromIso(w.date))}`,{sticky:true});L.circleMarker(p[0],{radius:5,color:CMPCOL[i],fillOpacity:1}).addTo(LGROUP)});
     if(fit){if(anaView&&anaView.k===anaSport+anaRange)LMAP.setView(anaView.c,anaView.z);else if(anaSel.length){const b=[];anaSel.forEach(id=>{const w=wById(id);if(w)ptsOf(w).forEach(x=>b.push(x))});if(b.length)LMAP.fitBounds(b,{padding:[24,24]})}else if(bounds.length)LMAP.fitBounds(focusBounds(list),{padding:[20,20]});else LMAP.setView([48.137,11.575],11)}}
   sidePanel(list);cmpPanel();
