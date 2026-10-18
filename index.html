@@ -601,6 +601,11 @@ h2{font-size:.9rem;font-weight:600;color:var(--ink)}
 /* Karte in eigenem Stapelkontext: Leaflet-Ebenen (z-index 400–1000) bleiben unter Tab-Leiste und Hinweisen */
 .anamap{position:relative;z-index:0;isolation:isolate}
 @media (max-width:760px){.tabbar{z-index:1100}}
+
+.car-row{display:flex;justify-content:space-between;align-items:flex-end;gap:12px}
+.car-t{font-size:2.4rem;font-weight:650;line-height:1;font-variant-numeric:tabular-nums}.car-t small{font-size:.9rem;color:var(--ink2);font-weight:500}
+.car-d{text-align:right;display:flex;flex-direction:column}.car-d b{font-size:1.3rem}.car-d span{font-size:.8rem}
+.car-bar{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--panel2);margin-top:12px}.car-bar i{display:block;height:100%;background:var(--ink3)}
 </style>
 </head>
 <body>
@@ -749,6 +754,27 @@ function commutePanel(){
 /* ---------- Mensa Pasing: Speiseplan über die Supabase-Funktion mensa (Quelle: Studierendenwerk München Oberbayern) ---------- */
 const MENSA={data:null,asked:0,err:false,url:"https://www.studierendenwerk-muenchen-oberbayern.de/gastronomie/speiseplan/speiseplan_432_-de.html"};
 try{const c=JSON.parse(localStorage.getItem("sb-mensa")||"null");if(c&&c.days)MENSA.data=c}catch(e){}
+/* ---------- Auto: aktuelle Fahrzeit zur Hochschule mit Verkehr (Supabase-Funktion traffic, Daten TomTom) ---------- */
+const CAR={data:null,t:0,err:null};
+async function loadCar(){if(Date.now()-CAR.t<4*6e4)return;CAR.t=Date.now();
+  try{const r=await fetch(window.SB_URL+"/functions/v1/traffic?r=hm",{headers:{apikey:window.SB_KEY}});const js=await r.json();
+    if(r.status===503&&js.error==="no_key"){CAR.err="nokey"}else if(!r.ok||!js.travel_s){CAR.err="fail"}else{CAR.data=js;CAR.err=null}}catch(e){CAR.err="fail"}
+  if(view==="heute")render()}
+setInterval(()=>{if(view==="heute"&&document.visibilityState==="visible"){CAR.t=0;loadCar()}},5*6e4);
+function carPanel(){loadCar();
+  const gm="https://www.google.com/maps/dir/?api=1&origin="+encodeURIComponent("Johanneskirchen, München")+"&destination="+encodeURIComponent("Hochschule München Campus Pasing, Am Stadtpark 20, 81243 München")+"&travelmode=driving";
+  const head=`<div class="ph"><h2 id="h-car">Mit dem Auto zur Hochschule</h2><a class="btn small" href="${gm}" target="_blank" rel="noopener">Route ↗</a></div>`;
+  if(!CAR.data)return `<section class="panel s12" aria-labelledby="h-car">${head}<div class="empty">${CAR.err==="nokey"?"Für die Live-Verkehrslage fehlt noch der TomTom-Schlüssel in Supabase.":CAR.err?"Verkehrslage gerade nicht abrufbar.":"Verkehrslage wird geladen …"}</div></section>`;
+  const d=CAR.data,min=Math.round(d.travel_s/60),free=Math.round((d.free_s||d.travel_s)/60),del=Math.max(0,Math.round((d.delay_s||0)/60));
+  const lvl=del>=15?"viel Stau":del>=6?"etwas Stau":del>=2?"leicht zäh":"frei";
+  const col=del>=6?"var(--serious)":"var(--accent)";
+  const arr=d.arrival?fTime(new Date(d.arrival)):"";const jams=(d.jams||[]).filter(j=>j.delay>=60).length;
+  return `<section class="panel s12 car" aria-labelledby="h-car">${head}
+    <div class="car-row"><div><div class="car-t">${min}<small> min</small></div><div class="lz-lab">jetzt losfahren · an ca. ${arr}</div></div>
+      <div class="car-d" style="color:${col}"><b>${del?"+"+del+" min":"±0 min"}</b><span>${lvl}</span></div></div>
+    <div class="car-bar" aria-hidden="true"><i style="width:${Math.min(100,100*free/Math.max(min,1)).toFixed(0)}%"></i><i style="width:${Math.min(100,100*(min-free)/Math.max(min,1)).toFixed(0)}%;background:${col}"></i></div>
+    <div class="faint" style="font-size:.78rem;margin-top:8px">Ohne Verkehr ${free} min · ${(d.length_m/1000).toLocaleString("de-DE",{maximumFractionDigits:1})} km ab Johanneskirchen${jams?` · ${jams} ${jams===1?"Staustelle":"Staustellen"} auf der Strecke`:""} · Stand ${fTime(new Date(d.at))} · Verkehrsdaten TomTom</div>
+  </section>`}
 async function loadMensa(){
   if(Date.now()-MENSA.asked<30*6e4)return;MENSA.asked=Date.now();
   try{const r=await fetch(window.SB_URL+"/functions/v1/mensa",{headers:{apikey:window.SB_KEY}});const js=await r.json();
@@ -962,6 +988,7 @@ function vHeute(){
         <h3>${esc(next.title)}</h3><div class="where">${esc(next.location||"Kein Ort")} ${mapLink(next.location)}</div><div>${cChip(next.course)}</div>${commuteMini()}`:'<div class="empty">Keine weiteren Termine.</div>'}</div>
     </div></section>
     ${commutePanel()}
+    ${carPanel()}
     ${mensaPanel()}
     ${wxPanel("s7")}
     ${newsPanel("s5")}
