@@ -481,36 +481,46 @@ const short=t=>t.replace(/^M 1\.\d+\s*/,"").replace(/^(ZWISCHENABGABE|ZWISCHENPR
 function toast(t){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,2200)}
 const upcomingEvents=()=>S.events.filter(e=>new Date(e.end||e.start)>=new Date()).sort((a,b)=>new Date(a.start)-new Date(b.start));
 const isTimed=e=>!e.allDay&&["lecture","other","private","own"].includes(e.kind);
-/* ---------- Anfahrt: S8 Johanneskirchen → Pasing, mindestens 20 min vor Beginn am Campus ---------- */
-// Fahrplan-Muster (Stand Okt. 2026, MVG): S8 ab Johanneskirchen xx:05/xx:25/xx:45, 28 min bis Pasing.
-// Fußweg Bahnhof Pasing → Campus (Am Stadtpark 20) ca. 15 min. Live-Daten von der MVG, sonst das Muster.
-const COMMUTE={from:"de:09162:720",to:"de:09162:10",ride:28,walk:15,buffer:20,mins:[5,25,45]};
+/* ---------- Anfahrt: S8 ab Johanneskirchen, zum Campus Pasing oder zur Arbeit am Ostbahnhof ---------- */
+// Fahrplan-Muster (Stand Okt. 2026, MVG): S8 ab Johanneskirchen xx:05/xx:25/xx:45.
+// Campus: 28 min bis Pasing, 15 min Fußweg zum Campus (Am Stadtpark 20), mindestens 20 min vor Beginn da.
+// Arbeit: ca. 10 min bis Ostbahnhof (geschätzt), 10 min Fußweg, pünktlich zu Arbeitsbeginn da.
+// Live-Daten von der MVG, sonst das Muster.
+const COMMUTE={from:"de:09162:720",mins:[5,25,45]};
+const DEST={
+  campus:{to:"de:09162:10",stop:"Pasing",place:"am Campus",title:"Anfahrt zum Campus Pasing",ride:28,walk:15,buffer:20,maps:"Hochschule München Campus Pasing, Am Stadtpark 20, 81243 München"},
+  work:{to:"de:09162:5",stop:"Ostbahnhof",place:"bei der Arbeit",title:"Anfahrt zur Arbeit",ride:10,walk:10,buffer:0,maps:"München Ostbahnhof"}
+};
 const onCampus=e=>e&&!e.allDay&&["lecture","exam","other"].includes(e.kind)&&!/zoom|online/i.test(e.location||"")&&/(^|\s)(L[UOE]\s?\d|Kapelle|Pasing|Campus)/i.test(e.location||"");
+const onWork=e=>e&&!e.allDay&&(e.source==="work"||/^Arbeit\b/i.test(e.title||""));
+const destOf=e=>onWork(e)?DEST.work:DEST.campus;
 function nextCampusEvent(){
   const now=new Date();
-  const evs=S.events.filter(onCampus).sort((a,b)=>new Date(a.start)-new Date(b.start));
+  const evs=S.events.filter(e=>onCampus(e)||onWork(e)).sort((a,b)=>new Date(a.start)-new Date(b.start));
   for(const e of evs){const s=new Date(e.start);if(s<=now)continue;
-    // Nur den ersten Campus-Termin eines Tages: wer schon da ist, braucht keine Bahn mehr.
+    // Nur den ersten Termin eines Tages: wer schon unterwegs ist, braucht keine zweite Verbindung.
     const first=evs.find(x=>iso(new Date(x.start))===iso(s));if(first!==e)continue;return e}
   return null;
 }
 function commutePlan(e){
-  const start=new Date(e.start),arriveBy=new Date(start-(COMMUTE.buffer+COMMUTE.walk)*6e4);
+  const D=destOf(e);
+  const start=new Date(e.start),arriveBy=new Date(start-(D.buffer+D.walk)*6e4);
   const live=CM.live[e.id];
   if(live&&live.length){const ok=live.filter(c=>c.arr<=arriveBy&&!c.cancelled).sort((a,b)=>b.dep-a.dep);
-    if(ok.length)return {dep:ok[0].dep,arr:ok[0].arr,line:ok[0].line,live:true,alt:ok[1]||null,start,arriveBy}}
-  const lim=new Date(arriveBy-COMMUTE.ride*6e4);let dep=null;
+    if(ok.length)return {dep:ok[0].dep,arr:ok[0].arr,line:ok[0].line,live:true,alt:ok[1]||null,start,arriveBy,D}}
+  const lim=new Date(arriveBy-D.ride*6e4);let dep=null;
   for(let t=new Date(lim);t>lim-90*6e4;t=new Date(t-6e4)){if(COMMUTE.mins.includes(t.getMinutes())){dep=new Date(t);dep.setSeconds(0,0);break}}
   if(!dep)return null;
-  return {dep,arr:new Date(+dep+COMMUTE.ride*6e4),line:"S8",live:false,alt:{dep:new Date(dep-20*6e4),arr:new Date(dep-20*6e4+COMMUTE.ride*6e4)},start,arriveBy};
+  return {dep,arr:new Date(+dep+D.ride*6e4),line:"S8",live:false,alt:{dep:new Date(dep-20*6e4),arr:new Date(dep-20*6e4+D.ride*6e4)},start,arriveBy,D};
 }
 const CM={live:{},asked:{}};
 async function loadCommute(e){
   if(!e||CM.asked[e.id]&&Date.now()-CM.asked[e.id]<5*6e4)return;CM.asked[e.id]=Date.now();
-  const arriveBy=new Date(new Date(e.start)-(COMMUTE.buffer+COMMUTE.walk)*6e4);
+  const D=destOf(e);
+  const arriveBy=new Date(new Date(e.start)-(D.buffer+D.walk)*6e4);
   if(arriveBy-new Date()>36*36e5)return; // MVG-Daten erst ab etwa 1,5 Tagen vorher abfragen
   try{
-    const u=`https://www.mvg.de/api/bgw-pt/v3/routes?originStationGlobalId=${COMMUTE.from}&destinationStationGlobalId=${COMMUTE.to}&routingDateTime=${arriveBy.toISOString()}&routingDateTimeIsArrival=true&transportTypes=SBAHN`;
+    const u=`https://www.mvg.de/api/bgw-pt/v3/routes?originStationGlobalId=${COMMUTE.from}&destinationStationGlobalId=${D.to}&routingDateTime=${arriveBy.toISOString()}&routingDateTimeIsArrival=true&transportTypes=SBAHN`;
     const r=await fetch(u);if(!r.ok)return;const js=await r.json();
     const list=(js||[]).filter(c=>c.parts&&c.parts.length===1).map(c=>{const p=c.parts[0];
       const dep=new Date(p.from.plannedDeparture),arr=new Date(p.to.plannedDeparture);
@@ -521,21 +531,21 @@ async function loadCommute(e){
 }
 const TRAIN_SVG='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="13" rx="3"/><path d="M5 10h14M9 20l-2 2M15 20l2 2M8.5 16v.01M15.5 16v.01"/></svg>';
 function commuteMini(){
-  const e=nextCampusEvent();if(!e)return"";loadCommute(e);const p=commutePlan(e);if(!p)return"";
-  return `<div class="commute-mini" ${tipAttr(`<b>${esc(p.line)} ab Johanneskirchen ${fTime(p.dep)}</b><br>an Pasing ${fTime(p.arr)}, dann ca. ${COMMUTE.walk} min zu Fuß<br>am Campus ca. ${fTime(new Date(+p.arr+COMMUTE.walk*6e4))}, Beginn ${fTime(p.start)}`)}>${TRAIN_SVG}<span><b>${esc(p.line)} ${fTime(p.dep)}</b> ab Johanneskirchen${daysUntil(p.dep)===0?"":daysUntil(p.dep)===1?" · morgen":" · "+fDate(p.dep,{weekday:"short"})}</span></div>`;
+  const e=nextCampusEvent();if(!e)return"";loadCommute(e);const p=commutePlan(e);if(!p)return"";const D=p.D;
+  return `<div class="commute-mini" ${tipAttr(`<b>${esc(p.line)} ab Johanneskirchen ${fTime(p.dep)}</b><br>an ${D.stop} ${fTime(p.arr)}, dann ca. ${D.walk} min zu Fuß<br>${D.place} ca. ${fTime(new Date(+p.arr+D.walk*6e4))}, Beginn ${fTime(p.start)}`)}>${TRAIN_SVG}<span><b>${esc(p.line)} ${fTime(p.dep)}</b> ab Johanneskirchen${daysUntil(p.dep)===0?"":daysUntil(p.dep)===1?" · morgen":" · "+fDate(p.dep,{weekday:"short"})}</span></div>`;
 }
 function commutePanel(){
   const e=nextCampusEvent();
-  if(!e)return `<section class="panel s12" aria-labelledby="h-cm"><div class="ph"><h2 id="h-cm">Anfahrt zum Campus Pasing</h2></div><div class="empty">Kein Präsenztermin am Campus geplant.</div></section>`;
-  loadCommute(e);const p=commutePlan(e);
-  const atCampus=p?new Date(+p.arr+COMMUTE.walk*6e4):null;
+  if(!e)return `<section class="panel s12" aria-labelledby="h-cm"><div class="ph"><h2 id="h-cm">Anfahrt</h2></div><div class="empty">Kein Präsenztermin am Campus und kein Arbeitstag geplant.</div></section>`;
+  loadCommute(e);const p=commutePlan(e);const D=destOf(e);
+  const there=p?new Date(+p.arr+D.walk*6e4):null;
   const day=daysUntil(e.start)===0?"Heute":daysUntil(e.start)===1?"Morgen":fDate(e.start,{weekday:"long",day:"2-digit",month:"2-digit"});
-  const gm=`https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent("S-Bahnhof Johanneskirchen, München")}&destination=${encodeURIComponent("Hochschule München Campus Pasing, Am Stadtpark 20, 81243 München")}&travelmode=transit`;
-  return `<section class="panel s12 commute" aria-labelledby="h-cm"><div class="ph"><h2 id="h-cm">Anfahrt zum Campus Pasing</h2><span class="label">${p&&p.live?"live · MVG":"Taktfahrplan"}</span></div>
+  const gm=`https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent("S-Bahnhof Johanneskirchen, München")}&destination=${encodeURIComponent(D.maps)}&travelmode=transit`;
+  return `<section class="panel s12 commute" aria-labelledby="h-cm"><div class="ph"><h2 id="h-cm">${D.title}</h2><span class="label">${p&&p.live?"live · MVG":"Taktfahrplan"}</span></div>
     ${p?`<div class="cm-main">${TRAIN_SVG}<div><div class="cm-dep"><span class="cm-line">${esc(p.line)}</span> ab Johanneskirchen <b>${fTime(p.dep)}</b></div>
-      <div class="meta">${day} · an Pasing ${fTime(p.arr)} · ca. ${COMMUTE.walk} min zu Fuß · am Campus ca. ${fTime(atCampus)}</div></div></div>
-      <div class="item"><span class="tm">${fTime(p.start)}</span><div class="body"><div class="title">${esc(short(e.title))}</div><div class="meta">${cChip(e.course)}<span>${esc(roomOf(e.location))}</span><span>${Math.round((p.start-atCampus)/6e4)} min Puffer</span></div></div></div>
-      ${p.alt?`<div class="faint" style="font-size:.8rem;margin-top:6px">Sicherer: ${fTime(p.alt.dep)} ab Johanneskirchen, an Pasing ${fTime(p.alt.arr)}.</div>`:""}
+      <div class="meta">${day} · an ${D.stop} ${fTime(p.arr)} · ca. ${D.walk} min zu Fuß · ${D.place} ca. ${fTime(there)}</div></div></div>
+      <div class="item"><span class="tm">${fTime(p.start)}</span><div class="body"><div class="title">${esc(short(e.title))}</div><div class="meta">${cChip(e.course)}<span>${esc(D===DEST.work?(e.location||""):roomOf(e.location))}</span><span>${Math.round((p.start-there)/6e4)} min Puffer</span></div></div></div>
+      ${p.alt?`<div class="faint" style="font-size:.8rem;margin-top:6px">Sicherer: ${fTime(p.alt.dep)} ab Johanneskirchen, an ${D.stop} ${fTime(p.alt.arr)}.</div>`:""}
       ${p.live?"":`<div class="faint" style="font-size:.76rem;margin-top:6px">Aus dem 20-Minuten-Takt berechnet. Bei Bauarbeiten oder nach dem Fahrplanwechsel kurz prüfen.</div>`}`
     :'<div class="empty">Keine passende Verbindung berechnet.</div>'}
     <div class="row" style="margin-top:10px"><a class="btn small" href="${gm}" target="_blank" rel="noopener">Route in Google Maps ↗</a><a class="btn small" href="https://www.mvg.de/verbindungen.html" target="_blank" rel="noopener">MVG-Auskunft ↗</a></div></section>`;
@@ -776,7 +786,7 @@ function briefingHTML(){
   ${sec("Aufgaben",nTasks||"",(tasks.length||steps.length)?tasks.map(taskItem).join("")+steps.map(s=>`<div class="item"><input type="checkbox" class="check" data-toggle="steps/${s.id}" aria-label="Erledigt"><div class="body"><div class="title">${esc(s.title)}</div><div class="meta">${cChip(s.course)}<span>Plan-Schritt</span>${relDue(s.due)}</div></div></div>`).join(""):'<div class="empty">Nichts fällig oder überfällig.</div>')}
   ${prio.length?sec("Wichtig, ohne Frist heute","",prio.map(taskItem).join("")):""}
   ${soon.length?sec("Abgaben und Prüfungen in 14 Tagen","",soon.map(e=>{const n=daysUntil(e.start);return `<div class="item"><span class="tm">${n===0?"heute":n===1?"morgen":"in "+n+" T"}</span><div class="body"><div class="title">${esc(short(e.title))}</div><div class="meta">${cChip(e.course)}<span>${fDate(e.start)}</span></div></div></div>`}).join("")):""}
-  ${(()=>{const e=nextCampusEvent();if(!e||daysUntil(e.start)!==0)return"";const p=commutePlan(e);return p?sec("Anfahrt","",`<div class="item"><span class="tm">${fTime(p.dep)}</span><div class="body"><div class="title">${esc(p.line)} ab Johanneskirchen</div><div class="meta"><span>an Pasing ${fTime(p.arr)}</span><span>Beginn ${fTime(p.start)}</span></div></div></div>`):""})()}
+  ${(()=>{const e=nextCampusEvent();if(!e||daysUntil(e.start)!==0)return"";const p=commutePlan(e);return p?sec("Anfahrt","",`<div class="item"><span class="tm">${fTime(p.dep)}</span><div class="body"><div class="title">${esc(p.line)} ab Johanneskirchen</div><div class="meta"><span>an ${p.D.stop} ${fTime(p.arr)}</span><span>Beginn ${fTime(p.start)}</span></div></div></div>`):""})()}
   <div class="foot"><button class="btn primary" data-brief="close">Los geht’s</button></div></div>`;
 }
 function openBrief(){const b=$("#brief");b.innerHTML=briefingHTML();b.hidden=false;try{localStorage.setItem("sb-brief-seen",iso(new Date()))}catch(e){}const c=b.querySelector(".foot .btn");if(c)c.focus({preventScroll:true})}
@@ -1036,7 +1046,7 @@ function shopList(recipes,scope){
   Object.entries(need).forEach(([k,q])=>{const p=REZ.prices[k],packs=Math.max(1,Math.ceil(q/p[1]-1e-9));tot+=packs*p[3];used+=q/p[1]*p[3];(cats[p[4]]=cats[p[4]]||[]).push({k,q,p,packs})});
   const amt=(q,p)=>p[2]==="g"||p[2]==="ml"?`${Math.round(q)} ${p[2]}`:`${(Math.round(q*10)/10).toLocaleString("de-DE")} ${p[2]}`;
   return `<div class="shop">${Object.keys(cats).sort().map(c=>`<div class="sgrp"><div class="label">${esc(c)}</div>${cats[c].sort((a,b)=>a.p[0].localeCompare(b.p[0])).map(x=>{const key=scope+"-"+x.k,on=chk(key);
-      return `<label class="sitem${on?" done":""}"><input type="checkbox" class="check" data-shop="${esc(key)}" ${on?"checked":""}><span class="sn">${esc(x.p[0])}</span><span class="sq">${amt(x.q,x.p)} gebraucht · ${x.packs} × ${x.p[1]} ${x.p[2]}${x.p[5]?" · Preis "+esc(x.p[5]):""}</span><span class="sp">${eur(x.packs*x.p[3])}</span></label>`}).join("")}</div>`).join("")}
+      return `<label class="sitem${on?" done":""}"><input type="checkbox" class="check" data-shop="${esc(key)}" ${on?"checked":""}><span class="sn">${esc(x.p[0])}</span><span class="sq">${amt(x.q,x.p)} gebraucht · ${x.packs} × ${x.p[1]} ${x.p[2]}</span><span class="sp">${eur(x.packs*x.p[3])}</span></label>`}).join("")}</div>`).join("")}
     <div class="stot"><span>Einkauf ca. <b>${eur(tot)}</b></span><span class="faint">davon in diesen Rezepten verbraucht ca. ${eur(used)}, der Rest reicht für die nächsten Tage</span></div>
     ${vor.size?`<div class="faint" style="font-size:.8rem;margin-top:8px">Aus dem Vorrat: ${[...vor].map(esc).join(", ")}</div>`:""}</div>`;
 }
@@ -1044,7 +1054,7 @@ function vEssen(){
   if(!REZ)return '<div class="ph"><h1>Essen</h1></div><section class="panel"><div class="empty">Rezepte werden geladen …</div></section>';
   const ti=wdIdx(new Date());if(essDay==null)essDay=ti;const ms=mealsOf(essDay);
   const wkStart=iso(monday(new Date()));
-  return `<div class="ph"><h1>Essen</h1><span class="label">günstig, ausgewogen, Preise für REWE</span></div>
+  return `<div class="ph"><h1>Essen</h1><span class="label">günstig, ausgewogen, mit Zutaten, die sich wiederholen</span></div>
   <div class="row" style="margin-bottom:14px"><div class="seg" role="group" aria-label="Ansicht"><button data-esstab="tag" aria-pressed="${essTab==="tag"}">Tag</button><button data-esstab="woche" aria-pressed="${essTab==="woche"}">Wocheneinkauf</button></div>
   ${essTab==="tag"?`<div class="seg" role="group" aria-label="Tag">${WDAYS.map((d,i)=>`<button data-essday="${i}" aria-pressed="${essDay===i}">${d}${i===ti?" ·":""}</button>`).join("")}</div>`:""}</div>
   ${essTab==="tag"?`<div class="grid">
