@@ -549,7 +549,7 @@ const VIEWS=[["heute","Cockpit"],["woche","Woche"],["faecher","Fächer"],["aufga
 const AVIEWS=[["alltag","Fitness"],["training","Training"],["analyse","Analyse"],["essen","Abendessen"]];
 const COLS=["courses","events","tasks","steps","notes","digests","literature","timelog","reviews","news"];
 // Alltag-Daten liegen in eigenen Tabellen (fit_*), getrennt von den Uni-Tabellen.
-const FCOLS=["fit_workouts","fit_meals","fit_weight","fit_goals"];
+const FCOLS=["fit_workouts","fit_meals","fit_weight","fit_goals","fit_wellness"];
 const ALLC=[...COLS,...FCOLS];
 const SEM_START=new Date(2026,9,1), SEM_END=new Date(2027,1,15);
 const S={}; ALLC.forEach(c=>S[c]=[]);
@@ -796,7 +796,7 @@ function chartBurndown(el,cid){
 }
 function drawCharts(){
   document.querySelectorAll("[data-chart]").forEach(el=>{const k=el.dataset.chart;
-    if(k==="timeline")chartTimeline(el);else if(k==="activity")chartActivity(el);else if(k==="study")chartStudy(el);else if(k==="burndown")chartBurndown(el,el.dataset.cid);else if(k==="weight")chartWeight(el);else if(k==="kcal")chartKcal(el);else if(k==="train")chartTrain(el);else if(k==="runkm")chartRunKm(el);else if(k==="runyear")chartRunYear(el);else if(k==="mix")chartMix(el);else if(k==="pace")chartPace(el);else if(k==="pmc")chartPMC(el);else if(k==="acwr")chartACWR(el);else if(k==="heat")chartHeat(el);else if(k==="volume")chartVolume(el)});
+    if(k==="timeline")chartTimeline(el);else if(k==="activity")chartActivity(el);else if(k==="study")chartStudy(el);else if(k==="burndown")chartBurndown(el,el.dataset.cid);else if(k==="weight")chartWeight(el);else if(k==="kcal")chartKcal(el);else if(k==="train")chartTrain(el);else if(k==="runkm")chartRunKm(el);else if(k==="runyear")chartRunYear(el);else if(k==="mix")chartMix(el);else if(k==="pace")chartPace(el);else if(k==="pmc")chartPMC(el);else if(k==="acwr")chartACWR(el);else if(k==="heat")chartHeat(el);else if(k==="volume")chartVolume(el);else if(k==="hrv")chartHRV(el);else if(k==="sleep")chartSleep(el)});
   const am=document.getElementById("anamap-slot");if(am)mountMap(am);else if(LMAP&&MAPEL&&document.body.contains(MAPEL))LMAP.invalidateSize();
   document.querySelectorAll(".kpi .rg").forEach(c=>c.style.strokeDashoffset=c.dataset.off);
   if(!ringsDone&&S.steps.length){requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll(".rg").forEach(c=>c.style.strokeDashoffset=c.dataset.off)));ringsDone=true}
@@ -1096,6 +1096,7 @@ function vAlltag(){
   <blockquote class="quote s12">IF YOU DON’T CHANGE IT, YOU CHOOSE IT.</blockquote>
   ${(()=>{const s=S.fit_workouts.filter(w=>w.date===today&&/^Laufvorschlag/i.test(w.title||""))[0];
     return `<section class="panel hud s12" aria-labelledby="h-run"><div class="ph"><h2 id="h-run">Laufvorschlag heute</h2><span class="label">aus deinen Strava-Daten</span></div>${s?`<div class="item${s.done?" done":""}" style="align-items:flex-start"><input type="checkbox" class="check" data-toggle="fit_workouts/${s.id}" ${s.done?"checked":""} aria-label="Erledigt"><div class="body"><div class="title" style="font-size:1.05rem">${esc(s.title.replace(/^Laufvorschlag:\s*/i,""))}</div><div class="meta">${s.durationMin?`<span>${s.durationMin} min</span>`:""}</div>${s.details?`<div style="white-space:pre-wrap;color:var(--ink2);margin-top:6px;font-size:.9rem">${esc(s.details)}</div>`:""}</div></div>`:'<div class="empty">Der Vorschlag für heute kommt jeden Morgen gegen 6 Uhr.</div>'}</section>`})()}
+  ${recoveryPanel()}
   ${wxPanel()}
   ${essenToday()}
   <section class="panel s12"><div class="kpis">
@@ -1351,6 +1352,51 @@ function wxPanel(cls="s12"){
       <span class="tr"><b>${r0(x.hi)}°</b><i style="--a:${((x.lo-lo)/rng*100).toFixed(0)}%;--b:${((x.hi-lo)/rng*100).toFixed(0)}%"></i><span>${r0(x.lo)}°</span></span></div>`).join("")}</div>
   </section>`}
 
+/* ---------- Erholung (Garmin: HRV, Schlaf, Ruhepuls, Body Battery, Readiness) ---------- */
+function wellRows(){return S.fit_wellness.slice().sort((a,b)=>a.date.localeCompare(b.date))}
+function hrvBase(rows,endIdx){const xs=rows.slice(Math.max(0,endIdx-60),endIdx).map(r=>r.hrv).filter(v=>v>0);if(xs.length<7)return null;const mu=xs.reduce((a,b)=>a+b,0)/xs.length,sd=Math.sqrt(xs.reduce((a,b)=>a+(b-mu)**2,0)/xs.length);return {mu,lo:mu-sd,hi:mu+sd}}
+function recoveryPanel(full){
+  const rows=wellRows();
+  if(!rows.length)return full?`<section class="panel s12"><div class="ph"><h2>Erholung</h2><span class="label">Garmin</span></div><div class="empty">Noch keine Garmin-Daten. Sobald der Garmin-Sync eingerichtet ist, erscheinen hier HRV, Schlaf, Ruhepuls, Body Battery und Training Readiness.</div></section>`:"";
+  const last=rows[rows.length-1],i=rows.length-1,b=hrvBase(rows,i),h7=rows.slice(-7).map(r=>r.hrv).filter(v=>v>0),h7m=h7.length?h7.reduce((a,c)=>a+c,0)/h7.length:null;
+  const r7=rows.slice(-8,-1).map(r=>r.rhr).filter(v=>v>0),rm=r7.length?r7.reduce((a,c)=>a+c,0)/r7.length:null;
+  const hv=last.hrv,hstate=!hv||!b?"":hv<b.lo?"unter deinem Normalbereich":hv>b.hi?"über deinem Normalbereich":"im Normalbereich";
+  const advice=(()=>{const low=(hv&&b&&hv<b.lo)||(last.readiness!=null&&last.readiness<40)||(last.sleepH!=null&&last.sleepH<6)||(rm&&last.rhr&&last.rhr>rm+4);
+    const good=(hv&&b&&hv>=b.mu)&&(last.readiness==null||last.readiness>=60)&&(last.sleepH==null||last.sleepH>=7);
+    return low?"Erholung eher schwach: heute locker oder Ruhetag.":good?"Gut erholt: ein intensiver Reiz passt heute.":"Normal erholt: lockerer bis mittlerer Lauf passt."})();
+  const age=daysUntil(fromIso(last.date));
+  const kpi=(l,v,sub)=>`<div class="kpi"><div><div class="label">${l}</div><div class="big">${v}</div><div class="sub">${sub}</div></div></div>`;
+  return `<section class="panel s12"><div class="ph"><h2>Erholung</h2><span class="label">Garmin · ${age===0?"heute":age===-1?"gestern":fDate(fromIso(last.date),{day:"2-digit",month:"2-digit"})}</span></div>
+    <div class="kpis kpis-s">
+      ${kpi("HRV letzte Nacht",hv?hv+"<small>ms</small>":"–",hstate||(last.hrvStatus?esc(String(last.hrvStatus).toLowerCase()):"")+(h7m?` · Ø7 ${Math.round(h7m)}`:""))}
+      ${kpi("Schlaf",last.sleepH!=null?fh(last.sleepH)+"<small>h</small>":"–",last.sleepScore!=null?"Score "+last.sleepScore:"")}
+      ${kpi("Ruhepuls",last.rhr?last.rhr+"<small>bpm</small>":"–",rm&&last.rhr?(last.rhr-rm>=0?"+":"−")+fh(Math.abs(last.rhr-rm))+" zum Wochenschnitt":"")}
+      ${kpi("Body Battery",last.bbMax!=null?last.bbMax+"<small>max</small>":"–",last.bbMin!=null?"tiefster Wert "+last.bbMin:"")}
+      ${kpi("Readiness",last.readiness!=null?last.readiness:"–",last.stress!=null?"Stress Ø "+last.stress:"")}
+    </div><div class="wx-run" style="margin-top:12px">${advice}</div>
+    ${full?'<div class="chart" data-chart="hrv" style="margin-top:14px"></div><div class="chart" data-chart="sleep" style="margin-top:10px"></div>':""}</section>`}
+function chartHRV(el){const rows=wellRows().slice(-90);const pts=rows.map((r,i)=>({r,i})).filter(x=>x.r.hrv>0);if(pts.length<3){el.innerHTML='<div class="empty">Zu wenige HRV-Werte für einen Verlauf.</div>';return}
+  const all=wellRows(),off=all.length-rows.length;const W=el.clientWidth,H=200,L=36,B=22,T=10,R=10;
+  const band=rows.map((r,i)=>hrvBase(all,off+i));const vals=pts.map(x=>x.r.hrv).concat(band.filter(Boolean).flatMap(b=>[b.lo,b.hi]));
+  const lo=Math.floor(Math.min(...vals)*.9),hi=Math.ceil(Math.max(...vals)*1.05),X=i=>L+(W-L-R)*i/Math.max(1,rows.length-1),Y=v=>T+(H-T-B)*(1-(v-lo)/(hi-lo||1));
+  let g='<g class="grid">';const st=niceStep(hi-lo,4);for(let v=Math.ceil(lo/st)*st;v<=hi;v+=st)g+=`<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}"/>`;g+='</g>';
+  for(let v=Math.ceil(lo/st)*st;v<=hi;v+=st)g+=`<text x="${L-6}" y="${Y(v)}" text-anchor="end" dominant-baseline="central">${v}</text>`;
+  const bi=band.map((b,i)=>b&&[i,b]).filter(Boolean);if(bi.length>1)g+=`<path d="M${bi.map(([i,b])=>`${X(i).toFixed(1)},${Y(b.hi).toFixed(1)}`).join("L")}L${bi.slice().reverse().map(([i,b])=>`${X(i).toFixed(1)},${Y(b.lo).toFixed(1)}`).join("L")}Z" fill="var(--accent)" opacity=".1"/>`;
+  const roll=pts.map((x,k)=>{const w=pts.slice(Math.max(0,k-6),k+1);return [x.i,w.reduce((a,c)=>a+c.r.hrv,0)/w.length]});
+  g+=`<polyline fill="none" stroke="var(--accent)" stroke-width="2.2" points="${roll.map(([i,v])=>`${X(i).toFixed(1)},${Y(v).toFixed(1)}`).join(" ")}"/>`;
+  pts.forEach(({r,i})=>{const b=band[i],out=b&&(r.hrv<b.lo);g+=`<circle class="hit" cx="${X(i).toFixed(1)}" cy="${Y(r.hrv).toFixed(1)}" r="3" fill="${out?"#e8590c":"var(--accent)"}" opacity="${out?1:.45}" data-tip="${esc(`<b>${fDate(fromIso(r.date),{weekday:"short",day:"2-digit",month:"2-digit"})}</b><br>HRV ${r.hrv} ms${b?`<br>Normalbereich ${Math.round(b.lo)}–${Math.round(b.hi)}`:""}${r.sleepH!=null?`<br>Schlaf ${fh(r.sleepH)} h`:""}`)}"/>`});
+  rows.forEach((r,i)=>{if(r.date.slice(8)==="01")g+=`<text x="${X(i)}" y="${H-6}" text-anchor="middle">${fDate(fromIso(r.date),{month:"short"})}</text>`});
+  el.innerHTML=`<svg width="${W}" height="${H}" role="img" aria-label="HRV-Verlauf der letzten 90 Tage">${g}</svg><div class="legend"><span><i style="background:var(--accent)"></i>HRV, Schnitt 7 Tage</span><span><i style="background:var(--accent);opacity:.25"></i>dein Normalbereich (60 Tage)</span><span><i style="background:#e8590c"></i>Nacht darunter</span></div>`}
+function chartSleep(el){const rows=wellRows().slice(-30);if(rows.filter(r=>r.sleepH).length<3){el.innerHTML="";return}
+  const W=el.clientWidth,H=150,L=36,B=22,T=8,n=rows.length,bw=(W-L)/n,max=10;let {g,Y}=axisY(W,L,T,H,B,max,2.5,v=>fh(v)+" h");
+  rows.forEach((r,i)=>{const x=L+i*bw+bw*.15,w=bw*.7;if(r.sleepH){const tot=r.sleepH,d=r.deepH||0,rem=r.remH||0;
+    g+=`<rect x="${x}" y="${Y(tot)}" width="${w}" height="${Y(0)-Y(tot)}" rx="2" fill="var(--accent)" opacity=".3"/>`;
+    if(d)g+=`<rect x="${x}" y="${Y(d)}" width="${w}" height="${Y(0)-Y(d)}" fill="var(--accent)"/>`;
+    if(rem)g+=`<rect x="${x}" y="${Y(d+rem)}" width="${w}" height="${Y(0)-Y(rem)}" fill="var(--accent)" opacity=".6"/>`}
+    if(i%5===(n-1)%5)g+=`<text x="${x+w/2}" y="${H-6}" text-anchor="middle">${fDate(fromIso(r.date),{day:"2-digit",month:"2-digit"})}</text>`;
+    g+=`<rect class="hit" x="${L+i*bw}" y="${T}" width="${bw}" height="${H-T-B}" fill="transparent" data-tip="${esc(`<b>${fDate(fromIso(r.date),{weekday:"short",day:"2-digit",month:"2-digit"})}</b><br>Schlaf ${r.sleepH!=null?fh(r.sleepH)+" h":"–"}${r.sleepScore!=null?` · Score ${r.sleepScore}`:""}${r.deepH?`<br>Tief ${fh(r.deepH)} h · REM ${fh(r.remH||0)} h`:""}`)}"/>`});
+  g+=`<line x1="${L}" x2="${W}" y1="${Y(8)}" y2="${Y(8)}" stroke="var(--ink3)" stroke-dasharray="4 4"/>`;
+  el.innerHTML=`<svg width="${W}" height="${H}" role="img" aria-label="Schlafdauer der letzten 30 Nächte">${g}</svg><div class="legend"><span><i style="background:var(--accent)"></i>Tiefschlaf</span><span><i style="background:var(--accent);opacity:.6"></i>REM</span><span><i style="background:var(--accent);opacity:.3"></i>gesamt</span><span>gestrichelt: 8 h</span></div>`}
 /* ---------- Analyse: Belastung, Form, Karte und Streckenvergleich ---------- */
 const RUNS=/^(Run|TrailRun|VirtualRun)$/,RIDES=/Ride$/,HIKES=/^(Walk|Hike|Snowshoe)$/;
 const wSport=w=>w.sport||spOf(w);
@@ -1414,6 +1460,7 @@ function vAnalyse(){
     ${withPoly&&withPoly<doneStrava*.6?`<div class="faint" style="font-size:.76rem;margin-top:8px">${withPoly} von ${doneStrava} Strava-Aktivitäten haben schon eine Route, der Rest wird jeden Morgen nachgeladen.</div>`:""}
   </section>
   <div id="ana-cmp" class="s12" style="display:contents"></div>
+  ${recoveryPanel(true)}
   <section class="panel s12"><div class="ph"><h2>Fitness, Ermüdung und Form</h2><span class="faint" style="font-size:.76rem">letzte 6 Monate</span></div><div class="chart" data-chart="pmc"></div></section>
   <section class="panel s7"><div class="ph"><h2>Belastungsverhältnis (ACWR)</h2><span class="faint" style="font-size:.76rem">7 Tage zu 28 Tagen, letzte 26 Wochen</span></div><div class="chart" data-chart="acwr"></div></section>
   <section class="panel s5"><div class="ph"><h2>Prognose Wettkampfzeiten</h2><span class="faint" style="font-size:.76rem">Schätzung</span></div>${racePred()}</section>

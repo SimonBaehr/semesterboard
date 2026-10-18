@@ -27,3 +27,12 @@ Persönlicher Master-Leitstand (Vorlesungen, Aufgaben, Modularbeits-Pläne, Noti
 - **Anfahrt:** Im Cockpit steht für den nächsten Präsenztermin am Campus Pasing die S8 ab Johanneskirchen, mit der man mindestens 20 Minuten vor Beginn da ist (28 min Fahrt, ca. 15 min Fußweg). Wenn möglich mit MVG-Fahrplandaten, sonst aus dem 20-Minuten-Takt berechnet.
 - **Laufvorschlag:** Eine tägliche Routine liest die Strava-Daten und legt um ca. 6 Uhr einen Eintrag „Laufvorschlag: …“ in `fit_workouts` an, der im Bereich Fitness oben erscheint.
 - Kein Mail-Briefing.
+
+## Garmin-Erholungswerte (optional)
+
+`garmin/sync_garmin.py` holt Schlaf, HRV, Ruhepuls, Body Battery, Stress und Training Readiness
+(über die inoffizielle Bibliothek [python-garminconnect](https://github.com/cyberjunky/python-garminconnect))
+und schickt sie an die Supabase Edge Function `garmin-ingest`, die sie in `fit_wellness` schreibt.
+Der Workflow `.github/workflows/garmin-sync.yml` läuft jeden Morgen. Benötigte GitHub-Secrets:
+`GARMIN_TOKEN_B64` (aus `--export-ci-token`) und `GARMIN_INGEST_SECRET` (identisch mit dem
+Edge-Function-Secret gleichen Namens in Supabase). Werte werden im Log nicht ausgegeben.

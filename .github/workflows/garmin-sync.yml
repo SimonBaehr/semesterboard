@@ -1,0 +1,29 @@
+name: Garmin-Sync
+# Holt jeden Morgen Schlaf, HRV, Ruhepuls, Body Battery, Stress und Readiness der letzten 3 Tage
+# und schreibt sie über die Supabase-Funktion garmin-ingest ins Semesterboard.
+on:
+  schedule:
+    - cron: "17 4 * * *"   # 05:17 bzw. 06:17 deutscher Zeit (GitHub rechnet in UTC)
+  workflow_dispatch:
+    inputs:
+      days:
+        description: "Wie viele Tage holen (z. B. 90 für den ersten Import)"
+        default: "3"
+permissions:
+  contents: read
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r garmin/requirements.txt
+      - name: Sync
+        env:
+          GARMIN_TOKEN_B64: ${{ secrets.GARMIN_TOKEN_B64 }}
+          GARMIN_INGEST_SECRET: ${{ secrets.GARMIN_INGEST_SECRET }}
+          DAYS: ${{ github.event.inputs.days || '3' }}
+        run: python garmin/sync_garmin.py --days "$DAYS"
