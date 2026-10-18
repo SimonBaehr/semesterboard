@@ -394,7 +394,7 @@ h2{font-size:.95rem;font-weight:600;text-transform:none;letter-spacing:-.005em;c
 .mm{display:flex;gap:10px;flex-wrap:wrap;font-size:.78rem;color:var(--ink3)}
 .rz{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:20px}
 @media (max-width:860px){.rz{grid-template-columns:minmax(0,1fr)}}
-.rz figure{margin:0}.rz figure img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;background:var(--bg2);display:block}
+.rz.noimg{grid-template-columns:minmax(0,1fr)}.rz figure{margin:0}.rz figure img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;background:var(--bg2);display:block}
 .rz figcaption{font-size:.72rem;color:var(--ink3);margin-top:4px}
 .rzt{font-size:1.3rem;margin:2px 0 6px}
 .rzh{font-size:.9rem;margin:16px 0 6px}
@@ -411,6 +411,11 @@ h2{font-size:.95rem;font-weight:600;text-transform:none;letter-spacing:-.005em;c
 .meal.picked{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
 .shopd{margin-top:14px;border-top:1px solid var(--line);padding-top:10px}.shopd summary{cursor:pointer;font-weight:600;font-size:.9rem;padding:4px 0}.shopd[open] summary{margin-bottom:8px}
 .wkpick{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}.wkpick .chip{cursor:pointer;white-space:normal;text-align:left}
+
+.ing li{display:block}.ingl{display:grid;grid-template-columns:auto 84px minmax(0,1fr) auto;gap:10px;align-items:center;cursor:pointer}
+.ingl .check{margin:0}.ingl .ip{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink2);font-size:.85rem;line-height:1.15}.ingl .ip small{display:block;font-size:.7rem;color:var(--ink3)}
+.ing li.done .in,.ing li.done .q{text-decoration:line-through;color:var(--ink3)}
+@media (max-width:560px){.ingl{grid-template-columns:auto 64px minmax(0,1fr) auto;gap:8px}}
 </style>
 </head>
 <body>
@@ -1021,6 +1026,7 @@ const wdIdx=d=>(new Date(d).getDay()+6)%7;
 const mealsOf=i=>REZ?REZ.recipes.filter(r=>r.day===i).sort((a,b)=>(a.opt||0)-(b.opt||0)):[];
 const eur=v=>v.toLocaleString("de-DE",{style:"currency",currency:"EUR"});
 function inPack(i,p){let q=i.q;if(i.u===p[2])return q;if(i.u==="Scheibe"||i.u==="Scheiben")return q*50;if(i.u==="Zehe")return q/10;if(i.u==="Stängel")return q/8;if(i.u==="Stk"&&p[2]==="g")return q*100;return q}
+const unitP=p=>p[2]==="g"?` (${eur(p[3]/p[1]*1000)}/kg)`:p[2]==="ml"?` (${eur(p[3]/p[1]*1000)}/l)`:p[1]>1?` (${eur(p[3]/p[1])}/${p[2]})`:"";
 const costOf=r=>r.ing.reduce((s,i)=>{const p=REZ.prices[i.k];return p?s+inPack(i,p)/p[1]*p[3]:s},0);
 const qty=i=>i.q==null?"":`${(+i.q).toLocaleString("de-DE",{maximumFractionDigits:2})}${i.u?" "+i.u:""}`;
 const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}};
@@ -1039,11 +1045,12 @@ function mealCard(r,i){const pk=pickOf(i)===r.opt,t=tagOf(r);
 }
 function recipeBlock(r,i){const pk=pickOf(i)===r.opt;
   return `<section class="panel s12 recipe" id="rz-${r.opt}"><div class="rz">
-    <figure><img src="${r.img}" alt="${esc(r.title)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentNode.style.display='none'"><figcaption>${esc(r.imgNote)}</figcaption></figure>
+    <figure><img src="${r.img}" alt="${esc(r.title)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentNode.style.display='none';this.closest('.rz').classList.add('noimg')"><figcaption>${esc(r.imgNote)}</figcaption></figure>
     <div class="rzb"><div class="row" style="justify-content:space-between"><div class="label">Vorschlag ${r.opt+1}</div><button class="btn small${pk?" primary":""}" data-pick="${i}:${r.opt}">${pk?"✓ Gewählt":"Das koche ich"}</button></div>
       <h2 class="rzt">${esc(r.title)}</h2>
       <div class="mm"><span>${r.time} min</span><span>ca. ${r.kcal} kcal</span><span>ca. ${r.protein} g Eiweiß</span><span>ca. ${eur(costOf(r))} pro Portion</span></div>
-      <h3 class="rzh">Zutaten für 1 Portion</h3><ul class="ing">${r.ing.map(x=>`<li><span class="q">${qty(x)}</span><span>${esc(x.n)}${x.k==="Vorrat"?' <span class="faint">(Vorrat)</span>':""}</span></li>`).join("")}</ul>
+      <h3 class="rzh">Zutaten für 1 Portion</h3><ul class="ing">${r.ing.map((x,j)=>{const key=wkKey()+"-i"+i+"-"+r.opt+"-"+j,on=chk(key),p=REZ.prices[x.k];
+        return `<li class="${on?"done":""}"><label class="ingl"><input type="checkbox" class="check" data-shop="${esc(key)}" ${on?"checked":""}><span class="q">${qty(x)}</span><span class="in">${esc(x.n)}${x.k==="Vorrat"?' <span class="faint">(Vorrat)</span>':""}</span><span class="ip">${p?`${eur(p[3])}<small>${esc(p[1]+" "+p[2])}</small>`:""}</span></label></li>`}).join("")}</ul>
       <h3 class="rzh">Zubereitung</h3><ol class="steps">${r.steps.map(s=>`<li>${esc(s)}</li>`).join("")}</ol>
       ${r.tip?`<p class="tipline">${esc(r.tip)}</p>`:""}
       <details class="shopd"><summary>Einkaufsliste für dieses Gericht</summary>${shopList([r],wkKey()+"-r"+i+"-"+r.opt)}</details></div></div></section>`;
@@ -1055,7 +1062,7 @@ function shopList(recipes,scope){
   Object.entries(need).forEach(([k,q])=>{const p=REZ.prices[k],packs=Math.max(1,Math.ceil(q/p[1]-1e-9));tot+=packs*p[3];used+=q/p[1]*p[3];(cats[p[4]]=cats[p[4]]||[]).push({k,q,p,packs})});
   const amt=(q,p)=>p[2]==="g"||p[2]==="ml"?`${Math.round(q)} ${p[2]}`:`${(Math.round(q*10)/10).toLocaleString("de-DE")} ${p[2]}`;
   return `<div class="shop">${Object.keys(cats).sort().map(c=>`<div class="sgrp"><div class="label">${esc(c)}</div>${cats[c].sort((a,b)=>a.p[0].localeCompare(b.p[0])).map(x=>{const key=scope+"-"+x.k,on=chk(key);
-      return `<label class="sitem${on?" done":""}"><input type="checkbox" class="check" data-shop="${esc(key)}" ${on?"checked":""}><span class="sn">${esc(x.p[0])}</span><span class="sq">${amt(x.q,x.p)} gebraucht · ${x.packs} × ${x.p[1]} ${x.p[2]}${x.p[5]?" · Preis "+esc(x.p[5]):""}</span><span class="sp">${eur(x.packs*x.p[3])}</span></label>`}).join("")}</div>`).join("")}
+      return `<label class="sitem${on?" done":""}"><input type="checkbox" class="check" data-shop="${esc(key)}" ${on?"checked":""}><span class="sn">${esc(x.p[0])}</span><span class="sq">${amt(x.q,x.p)} gebraucht · ${x.packs} × ${x.p[1]} ${x.p[2]} à ${eur(x.p[3])}${unitP(x.p)}${x.p[5]?" · Preis "+esc(x.p[5]):""}</span><span class="sp">${eur(x.packs*x.p[3])}</span></label>`}).join("")}</div>`).join("")}
     <div class="stot"><span>Einkauf ca. <b>${eur(tot)}</b></span><span class="faint">davon für ${recipes.length===1?"dieses Gericht":"diese Gerichte"} verbraucht ca. ${eur(used)}, der Rest der Packungen reicht für weitere Gerichte</span></div>
     ${vor.size?`<div class="faint" style="font-size:.8rem;margin-top:8px">Aus dem Vorrat: ${[...vor].map(esc).join(", ")}</div>`:""}</div>`;
 }
@@ -1080,7 +1087,7 @@ document.addEventListener("click",e=>{
   const d=e.target.closest("[data-essday]");if(d){essDay=+d.dataset.essday;essTab="tag";const s=d.dataset.esso;if(view!=="essen")go("essen");else render();if(s!=null)setTimeout(()=>{const el=document.getElementById("rz-"+s);if(el)el.scrollIntoView({behavior:"smooth",block:"start"})},60);return}
   const t=e.target.closest("[data-esstab]");if(t){essTab=t.dataset.esstab;render();return}
 });
-document.addEventListener("change",e=>{const c=e.target.closest("[data-shop]");if(!c)return;ls("sb-shop-"+c.dataset.shop,c.checked?"1":"0");c.closest(".sitem").classList.toggle("done",c.checked)});
+document.addEventListener("change",e=>{const c=e.target.closest("[data-shop]");if(!c)return;ls("sb-shop-"+c.dataset.shop,c.checked?"1":"0");(c.closest(".sitem")||c.closest("li")).classList.toggle("done",c.checked)});
 
 /* Diagramme Alltag */
 function chartWeight(el){
