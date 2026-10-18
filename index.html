@@ -466,6 +466,38 @@ h2{font-size:.95rem;font-weight:600;text-transform:none;letter-spacing:-.005em;c
   .tabbar .nav-btn{flex:0 0 auto;min-width:68px;scroll-snap-align:center}
   .tab-sep{flex:0 0 1px;align-self:stretch;margin:8px 4px;background:var(--line)}
 }
+
+/* Leaflet-Grundregeln direkt in der App, damit die Karte auch ohne externes Stylesheet richtig sitzt */
+.leaflet-pane,.leaflet-tile,.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-tile-container,.leaflet-pane>svg,.leaflet-pane>canvas,.leaflet-zoom-box,.leaflet-image-layer,.leaflet-layer{position:absolute;left:0;top:0}
+.leaflet-container{overflow:hidden;-webkit-tap-highlight-color:transparent;outline-offset:1px}
+.leaflet-tile,.leaflet-marker-icon,.leaflet-marker-shadow{user-select:none;-webkit-user-select:none;-webkit-user-drag:none}
+.leaflet-safari .leaflet-tile{image-rendering:-webkit-optimize-contrast}
+.leaflet-safari .leaflet-tile-container{width:1600px;height:1600px;-webkit-transform-origin:0 0}
+.leaflet-container .leaflet-overlay-pane svg{max-width:none!important;max-height:none!important}
+.leaflet-container .leaflet-marker-pane img,.leaflet-container .leaflet-shadow-pane img,.leaflet-container .leaflet-tile-pane img,.leaflet-container img.leaflet-image-layer,.leaflet-container .leaflet-tile{max-width:none!important;max-height:none!important;width:auto;padding:0}
+.leaflet-container.leaflet-touch-zoom{touch-action:pan-x pan-y}
+.leaflet-container.leaflet-touch-drag{touch-action:none}
+.leaflet-tile{filter:inherit;visibility:hidden}
+.leaflet-tile-loaded{visibility:inherit}
+.leaflet-pane{z-index:400}.leaflet-tile-pane{z-index:200}.leaflet-overlay-pane{z-index:400}.leaflet-shadow-pane{z-index:500}.leaflet-marker-pane{z-index:600}.leaflet-tooltip-pane{z-index:650}.leaflet-popup-pane{z-index:700}
+.leaflet-map-pane canvas{z-index:100}.leaflet-map-pane svg{z-index:200}
+.leaflet-control{position:relative;z-index:800;pointer-events:auto;float:left;clear:both}
+.leaflet-top,.leaflet-bottom{position:absolute;z-index:1000;pointer-events:none}
+.leaflet-top{top:0}.leaflet-right{right:0}.leaflet-bottom{bottom:0}.leaflet-left{left:0}
+.leaflet-right .leaflet-control{float:right}
+.leaflet-top .leaflet-control{margin-top:10px}.leaflet-bottom .leaflet-control{margin-bottom:0}.leaflet-left .leaflet-control{margin-left:10px}.leaflet-right .leaflet-control{margin-right:0}
+.leaflet-zoom-animated{transform-origin:0 0}
+.leaflet-zoom-anim .leaflet-zoom-animated{will-change:transform;transition:transform .25s cubic-bezier(0,0,.25,1)}
+.leaflet-zoom-anim .leaflet-tile,.leaflet-pan-anim .leaflet-tile{transition:none}
+.leaflet-zoom-anim .leaflet-zoom-hide{visibility:hidden}
+.leaflet-interactive{cursor:pointer}.leaflet-grab{cursor:grab}.leaflet-dragging .leaflet-grab{cursor:move}
+.leaflet-bar{box-shadow:0 1px 4px rgba(0,0,0,.3);border-radius:6px}
+.leaflet-bar a{background:#fff;border-bottom:1px solid #ccc;width:30px;height:30px;line-height:30px;display:block;text-align:center;text-decoration:none;color:#222;font:bold 18px/30px system-ui,sans-serif}
+.leaflet-bar a:first-child{border-radius:6px 6px 0 0}.leaflet-bar a:last-child{border-radius:0 0 6px 6px;border-bottom:none}
+.leaflet-control-attribution{background:rgba(255,255,255,.8);padding:0 5px;color:#333;font-size:10px;line-height:1.5}
+.leaflet-control-attribution a{color:#0078a8}
+.leaflet-tooltip{position:absolute;padding:5px 8px;background:#fff;border-radius:6px;color:#222;white-space:nowrap;pointer-events:none;box-shadow:0 1px 4px rgba(0,0,0,.3);font-size:12px}
+.leaflet-tooltip-top:before,.leaflet-tooltip-bottom:before,.leaflet-tooltip-left:before,.leaflet-tooltip-right:before{display:none}
 </style>
 </head>
 <body>
@@ -1379,7 +1411,17 @@ function racePred(){
     <div class="faint" style="font-size:.76rem;margin-top:8px">Riegel-Formel aus deinem stärksten Lauf der letzten 4 Monate. Trainingsläufe sind keine Bestzeiten, die Werte sind eher vorsichtig.</div>`}
 /* ---------- Karte ---------- */
 let LMAP=null,LGROUP=null,leafP=null;
-function leaflet(){if(window.L)return Promise.resolve();return leafP||(leafP=new Promise((res,rej)=>{const c=document.createElement("link");c.rel="stylesheet";c.href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";document.head.appendChild(c);const s=document.createElement("script");s.src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";s.onload=()=>res();s.onerror=()=>{leafP=null;rej()};document.head.appendChild(s)}))}
+const LEAF_CDN=["https://unpkg.com/leaflet@1.9.4/dist/","https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/"];
+function leaflet(){if(window.L&&L.map)return Promise.resolve();return leafP||(leafP=new Promise((res,rej)=>{
+  const tryCdn=i=>{if(i>=LEAF_CDN.length){leafP=null;rej();return}
+    const c=document.createElement("link");c.rel="stylesheet";c.href=LEAF_CDN[i]+"leaflet.css";document.head.appendChild(c);
+    const s=document.createElement("script");s.src=LEAF_CDN[i]+"leaflet.js";s.onload=()=>res();s.onerror=()=>{s.remove();c.remove();tryCdn(i+1)};document.head.appendChild(s)};
+  tryCdn(0)}))}
+const TILES=[
+  {url:d=>`https://{s}.basemaps.cartocdn.com/${d?"dark_all":"light_all"}/{z}/{x}/{y}{r}.png`,o:{subdomains:"abcd",maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'}},
+  {url:()=>"https://tile.openstreetmap.org/{z}/{x}/{y}.png",o:{maxZoom:19,attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}}];
+function addTiles(map,i,dark){const t=TILES[i];if(!t)return;let ok=0,bad=0;const lay=L.tileLayer(t.url(dark),t.o).addTo(map);
+  lay.on("tileload",()=>ok++);lay.on("tileerror",()=>{bad++;if(!ok&&bad>=4&&!lay._sbGone&&TILES[i+1]){lay._sbGone=true;map.removeLayer(lay);addTiles(map,i+1,dark)}})}
 const cssv=n=>getComputedStyle(document.body).getPropertyValue(n).trim();
 const CMPCOL=["#e8590c","#1c7ed6"];
 function initMap(el){
@@ -1387,9 +1429,9 @@ function initMap(el){
   leaflet().then(()=>{if(!document.body.contains(el))return;if(LMAP){LMAP.remove();LMAP=null}
     const dark=matchMedia("(prefers-color-scheme: dark)").matches;
     LMAP=L.map(el,{preferCanvas:true,zoomControl:true,attributionControl:true});
-    L.tileLayer(`https://{s}.basemaps.cartocdn.com/${dark?"dark_all":"light_all"}/{z}/{x}/{y}{r}.png`,{maxZoom:19,subdomains:"abcd",attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'}).addTo(LMAP);
+    addTiles(LMAP,0,dark);
     LGROUP=L.layerGroup().addTo(LMAP);LMAP.on("moveend",()=>{anaView={c:LMAP.getCenter(),z:LMAP.getZoom(),k:anaSport+anaRange}});
-    drawRoutes(true)}).catch(()=>{el.innerHTML='<div class="empty">Die Karte konnte nicht geladen werden (keine Verbindung?).</div>'});
+    drawRoutes(true);setTimeout(()=>{if(LMAP)LMAP.invalidateSize()},250)}).catch(()=>{el.innerHTML='<div class="empty">Die Karte konnte nicht geladen werden (keine Verbindung?).</div>'});
 }
 function drawRoutes(fit){
   const list=anaList();if(LMAP&&LGROUP){LGROUP.clearLayers();const acc=cssv("--accent")||"#4f46e5",r=L.canvas({tolerance:6});
