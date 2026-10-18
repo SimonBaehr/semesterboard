@@ -542,6 +542,7 @@ h2{font-size:.9rem;font-weight:600;color:var(--ink)}
 .leaflet-control-attribution{background:rgba(11,12,14,.75)!important;color:var(--ink3)!important}
 .leaflet-control-attribution a{color:var(--ink2)!important}
 *{text-shadow:none!important}
+.mensa-cat{min-width:120px;color:var(--ink3);font-size:.78rem;white-space:normal}.mensa-row.nogo .title{color:var(--ink3);text-decoration:line-through;text-decoration-color:var(--line2)}
 </style>
 </head>
 <body>
@@ -685,6 +686,30 @@ function commutePanel(){
       ${p.live?"":`<div class="faint" style="font-size:.76rem;margin-top:6px">Aus dem 20-Minuten-Takt berechnet. Bei Bauarbeiten oder nach dem Fahrplanwechsel kurz prüfen.</div>`}`
     :'<div class="empty">Keine passende Verbindung berechnet.</div>'}
     <div class="row" style="margin-top:10px"><a class="btn small" href="${gm}" target="_blank" rel="noopener">Route in Google Maps ↗</a><a class="btn small" href="https://www.mvg.de/verbindungen.html" target="_blank" rel="noopener">MVG-Auskunft ↗</a></div></section>`;
+}
+/* ---------- Mensa Pasing: Speiseplan über die Supabase-Funktion mensa (Quelle: Studierendenwerk München Oberbayern) ---------- */
+const MENSA={data:null,asked:0,err:false,url:"https://www.studierendenwerk-muenchen-oberbayern.de/gastronomie/speiseplan/speiseplan_432_-de.html"};
+try{const c=JSON.parse(localStorage.getItem("sb-mensa")||"null");if(c&&c.days)MENSA.data=c}catch(e){}
+async function loadMensa(){
+  if(Date.now()-MENSA.asked<30*6e4)return;MENSA.asked=Date.now();
+  try{const r=await fetch(window.SB_URL+"/functions/v1/mensa",{headers:{apikey:window.SB_KEY}});const js=await r.json();
+    if(!r.ok||!js.days)throw 0;MENSA.data=js;MENSA.err=false;try{localStorage.setItem("sb-mensa",JSON.stringify(js))}catch(e){}
+    if(view==="heute")render()}catch(e){MENSA.err=true}
+}
+// Bis 14:30 der heutige Plan, danach der nächste Tag mit Plan (Wochenende wird übersprungen).
+function mensaDay(){
+  const d=MENSA.data;if(!d||!d.days.length)return null;const now=new Date(),today=iso(now);
+  const late=now.getHours()*60+now.getMinutes()>14*60+30;
+  return d.days.find(x=>late?x.date>today:x.date>=today)||null;
+}
+const NOGO=/aubergine|zucchini|pilz|champignon|steinpilz|pfifferling/i;
+function mensaPanel(){
+  loadMensa();const day=mensaDay();
+  const head=`<div class="ph"><h2 id="h-mensa">Mensa Pasing${day?" · "+(daysUntil(fromIso(day.date))===0?"heute":daysUntil(fromIso(day.date))===1?"morgen":fDate(fromIso(day.date),{weekday:"long",day:"2-digit",month:"2-digit"})):""}</h2><a class="btn small" href="${MENSA.url}" target="_blank" rel="noopener">Ganzer Plan ↗</a></div>`;
+  if(!day)return `<section class="panel s12" aria-labelledby="h-mensa">${head}<div class="empty">${MENSA.data?"Für die nächsten Tage ist noch kein Speiseplan veröffentlicht.":MENSA.err?"Speiseplan konnte nicht geladen werden.":"Speiseplan wird geladen …"}</div></section>`;
+  const vl=v=>v===2?"vegan":v===1?"vegetarisch":"";
+  const rows=day.dishes.map(x=>{const no=NOGO.test(x.title);return `<div class="item mensa-row${no?" nogo":""}"><span class="tm mensa-cat">${esc(x.cat)}</span><div class="body"><div class="title">${esc(x.title)}</div><div class="meta">${vl(x.veg)?`<span>${vl(x.veg)}</span>`:""}${no?"<span>enthält etwas, das du nicht magst</span>":""}</div></div></div>`}).join("");
+  return `<section class="panel s12" aria-labelledby="h-mensa">${head}${rows||'<div class="empty">Heute keine Gerichte eingetragen.</div>'}</section>`;
 }
 const nextLecture=cid=>upcomingEvents().find(e=>e.kind==="lecture"&&(!cid||e.course===cid));
 const DUE_KINDS=["deadline","exam","interim"],isDue=e=>DUE_KINDS.includes(e.kind);
@@ -878,6 +903,7 @@ function vHeute(){
         <h3>${esc(next.title)}</h3><div class="where">${esc(next.location||"Kein Ort")} ${mapLink(next.location)}</div><div>${cChip(next.course)}</div>${commuteMini()}`:'<div class="empty">Keine weiteren Termine.</div>'}</div>
     </div></section>
     ${commutePanel()}
+    ${mensaPanel()}
     ${wxPanel("s7")}
     ${newsPanel("s5")}
 
