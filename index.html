@@ -3,10 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#F5F6F8" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0E0F13" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#0B0C0E">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
@@ -508,6 +507,41 @@ h2{font-size:.95rem;font-weight:600;text-transform:none;letter-spacing:-.005em;c
 .nlist .nt:hover{text-decoration:underline}
 .nlist .ns{color:var(--ink2);font-size:.84rem;margin-top:3px;line-height:1.4}
 .nlist .nm{color:var(--ink3);font-size:.74rem;margin-top:4px}
+
+/* ===== Design: schlicht, dunkel, professionell =====
+   Immer dunkel (unabhängig von der Systemeinstellung), neutrale Grautöne, eine ruhige Akzentfarbe (Blau)
+   für Uni und Fitness, keine Verläufe, kein Leuchten. Statusfarben bewusst blau/orange statt grün/rot,
+   damit sie auch bei Rot-Grün-Schwäche unterscheidbar bleiben. */
+:root{
+  color-scheme:dark;
+  --bg:#0B0C0E; --bg2:#111215; --panel:#141518; --panel2:#1A1B1F; --line:#232429; --line2:#2E3036;
+  --ink:#E6E7EA; --ink2:#A3A6AE; --ink3:#6F737C;
+  --accent:#5B9BF0; --accent2:#7DB0F5; --accent-soft:rgba(91,155,240,.10); --on-accent:#0B0C0E;
+  --good:#5B9BF0; --good-ink:#7DB0F5; --warn:#D9A43A; --serious:#E8833A; --crit:#E8833A; --crit-ink:#F0A060;
+  --c-m11:#6C9FE0; --c-m13:#D08A55; --c-m14:#5FB3A8; --c-m15:#C9A44A; --c-m16:#B888C8; --c-m19:#8FA6BF; --c-none:#6F737C;
+  --r:10px; --shadow:none; --glass:rgba(17,18,21,.92);
+}
+body.alltag{--accent:#5B9BF0;--accent2:#7DB0F5;--accent-soft:rgba(91,155,240,.10);--on-accent:#0B0C0E}
+body{background:var(--bg)!important;background-image:none!important}
+.side{background:var(--bg2);backdrop-filter:none;border-right:1px solid var(--line)}
+.logo{background:var(--panel2)!important;color:var(--ink)!important;box-shadow:none!important;border:1px solid var(--line2)}
+.panel,.panel.hud{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);box-shadow:none}
+h1{font-size:1.5rem;font-weight:600;letter-spacing:-.015em}
+h2{font-size:.9rem;font-weight:600;color:var(--ink)}
+.nav-btn[aria-current="page"]{color:var(--ink);background:var(--panel2)}
+.nav-btn[aria-current="page"]::before{background:var(--accent);box-shadow:none}
+.refresh,.refresh:hover{box-shadow:none!important}
+.refresh{background:var(--panel);border:1px solid var(--line);color:var(--ink2)}
+.refresh:hover{border-color:var(--line2);color:var(--ink)}
+.btn{box-shadow:none!important}
+.dot.live{background:var(--accent);animation:none!important;box-shadow:none!important}
+.cm-line{background:var(--accent);color:var(--on-accent)}
+.chip.crit{background:rgba(232,131,58,.12)}
+.toast{background:var(--panel2)!important;color:var(--ink)!important;border:1px solid var(--line2)!important;box-shadow:none!important}
+.brief{background:rgba(0,0,0,.6)}
+.leaflet-control-attribution{background:rgba(11,12,14,.75)!important;color:var(--ink3)!important}
+.leaflet-control-attribution a{color:var(--ink2)!important}
+*{text-shadow:none!important}
 </style>
 </head>
 <body>
