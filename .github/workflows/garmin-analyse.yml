@@ -1,0 +1,33 @@
+name: Garmin-Analyse
+# Rechnet aus den Garmin-Punktreihen Belastung, Zonen, Bestleistungen, Fitness/Frische und den Coach-Befund.
+on:
+  schedule:
+    - cron: "27 4 * * *"   # täglich nach dem Wellness-Sync, nur die letzten 21 Tage neu
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "inspect = Rohblöcke ansehen, run = rechnen"
+        default: "run"
+      days:
+        description: "Zeitraum in Tagen (365 für den vollen Lauf)"
+        default: "21"
+permissions:
+  contents: read
+jobs:
+  analyse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install -r garmin/requirements.txt
+      - name: Analyse
+        env:
+          GARMIN_TOKEN_B64: ${{ secrets.GARMIN_TOKEN_B64 }}
+          GARMIN_INGEST_SECRET: ${{ secrets.GARMIN_INGEST_SECRET }}
+          MODE: ${{ github.event.inputs.mode || 'run' }}
+          DAYS: ${{ github.event.inputs.days || '21' }}
+        run: |
+          if [ "$MODE" = "inspect" ]; then python garmin/analyse_garmin.py --inspect; else python garmin/analyse_garmin.py --days "$DAYS"; fi
