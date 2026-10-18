@@ -796,7 +796,7 @@ function chartBurndown(el,cid){
 }
 function drawCharts(){
   document.querySelectorAll("[data-chart]").forEach(el=>{const k=el.dataset.chart;
-    if(k==="timeline")chartTimeline(el);else if(k==="activity")chartActivity(el);else if(k==="study")chartStudy(el);else if(k==="burndown")chartBurndown(el,el.dataset.cid);else if(k==="weight")chartWeight(el);else if(k==="kcal")chartKcal(el);else if(k==="train")chartTrain(el);else if(k==="runkm")chartRunKm(el);else if(k==="runyear")chartRunYear(el);else if(k==="mix")chartMix(el);else if(k==="pace")chartPace(el);else if(k==="pmc")chartPMC(el);else if(k==="acwr")chartACWR(el);else if(k==="heat")chartHeat(el);else if(k==="volume")chartVolume(el);else if(k==="hrv")chartHRV(el);else if(k==="sleep")chartSleep(el)});
+    if(k==="timeline")chartTimeline(el);else if(k==="activity")chartActivity(el);else if(k==="study")chartStudy(el);else if(k==="burndown")chartBurndown(el,el.dataset.cid);else if(k==="weight")chartWeight(el);else if(k==="kcal")chartKcal(el);else if(k==="train")chartTrain(el);else if(k==="runkm")chartRunKm(el);else if(k==="runyear")chartRunYear(el);else if(k==="mix")chartMix(el);else if(k==="pace")chartPace(el);else if(k==="pmc")chartPMC(el);else if(k==="acwr")chartACWR(el);else if(k==="heat")chartHeat(el);else if(k==="volume")chartVolume(el);else if(k==="hrv")chartHRV(el);else if(k==="sleep")chartSleep(el);else if(k==="wkg")chartWKg(el)});
   const am=document.getElementById("anamap-slot");if(am)mountMap(am);else if(LMAP&&MAPEL&&document.body.contains(MAPEL))LMAP.invalidateSize();
   document.querySelectorAll(".kpi .rg").forEach(c=>c.style.strokeDashoffset=c.dataset.off);
   if(!ringsDone&&S.steps.length){requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll(".rg").forEach(c=>c.style.strokeDashoffset=c.dataset.off)));ringsDone=true}
@@ -1372,9 +1372,11 @@ function recoveryPanel(full){
       ${kpi("Schlaf",last.sleepH!=null?fh(last.sleepH)+"<small>h</small>":"–",last.sleepScore!=null?"Score "+last.sleepScore:"")}
       ${kpi("Ruhepuls",last.rhr?last.rhr+"<small>bpm</small>":"–",rm&&last.rhr?(last.rhr-rm>=0?"+":"−")+fh(Math.abs(last.rhr-rm))+" zum Wochenschnitt":"")}
       ${kpi("Body Battery",last.bbMax!=null?last.bbMax+"<small>max</small>":"–",last.bbMin!=null?"tiefster Wert "+last.bbMin:"")}
-      ${kpi("Readiness",last.readiness!=null?last.readiness:"–",last.stress!=null?"Stress Ø "+last.stress:"")}
+      ${last.readiness!=null?kpi("Readiness",last.readiness,last.stress!=null?"Stress Ø "+last.stress:""):""}
+      ${(()=>{const ws=rows.filter(r=>r.weightKg>0);if(!ws.length)return "";const w=ws[ws.length-1],ref=ws.filter(r=>r.date<=iso(addDays(fromIso(w.date),-28))).pop(),d=ref?w.weightKg-ref.weightKg:null;
+        return kpi("Gewicht",fh(w.weightKg)+"<small>kg</small>",(d!=null?(d>=0?"+":"−")+fh(Math.abs(d))+" kg in 4 Wochen":fDate(fromIso(w.date),{day:"2-digit",month:"2-digit"}))+(w.bodyFat?` · ${fh(w.bodyFat)} % Fett`:""))})()}
     </div><div class="wx-run" style="margin-top:12px">${advice}</div>
-    ${full?'<div class="chart" data-chart="hrv" style="margin-top:14px"></div><div class="chart" data-chart="sleep" style="margin-top:10px"></div>':""}</section>`}
+    ${full?'<div class="chart" data-chart="hrv" style="margin-top:14px"></div><div class="chart" data-chart="sleep" style="margin-top:10px"></div><div class="chart" data-chart="wkg" style="margin-top:10px"></div>':""}</section>`}
 function chartHRV(el){const rows=wellRows().slice(-90);const pts=rows.map((r,i)=>({r,i})).filter(x=>x.r.hrv>0);if(pts.length<3){el.innerHTML='<div class="empty">Zu wenige HRV-Werte für einen Verlauf.</div>';return}
   const all=wellRows(),off=all.length-rows.length;const W=el.clientWidth,H=200,L=36,B=22,T=10,R=10;
   const band=rows.map((r,i)=>hrvBase(all,off+i));const vals=pts.map(x=>x.r.hrv).concat(band.filter(Boolean).flatMap(b=>[b.lo,b.hi]));
@@ -1397,6 +1399,16 @@ function chartSleep(el){const rows=wellRows().slice(-30);if(rows.filter(r=>r.sle
     g+=`<rect class="hit" x="${L+i*bw}" y="${T}" width="${bw}" height="${H-T-B}" fill="transparent" data-tip="${esc(`<b>${fDate(fromIso(r.date),{weekday:"short",day:"2-digit",month:"2-digit"})}</b><br>Schlaf ${r.sleepH!=null?fh(r.sleepH)+" h":"–"}${r.sleepScore!=null?` · Score ${r.sleepScore}`:""}${r.deepH?`<br>Tief ${fh(r.deepH)} h · REM ${fh(r.remH||0)} h`:""}`)}"/>`});
   g+=`<line x1="${L}" x2="${W}" y1="${Y(8)}" y2="${Y(8)}" stroke="var(--ink3)" stroke-dasharray="4 4"/>`;
   el.innerHTML=`<svg width="${W}" height="${H}" role="img" aria-label="Schlafdauer der letzten 30 Nächte">${g}</svg><div class="legend"><span><i style="background:var(--accent)"></i>Tiefschlaf</span><span><i style="background:var(--accent);opacity:.6"></i>REM</span><span><i style="background:var(--accent);opacity:.3"></i>gesamt</span><span>gestrichelt: 8 h</span></div>`}
+function chartWKg(el){const ws=wellRows().filter(r=>r.weightKg>0&&r.date>=iso(addDays(new Date(),-365)));if(ws.length<2){el.innerHTML=ws.length?"":'';return}
+  const W=el.clientWidth,H=170,L=40,B=22,T=10,R=10,vals=ws.map(r=>+r.weightKg),lo=Math.floor(Math.min(...vals)-1),hi=Math.ceil(Math.max(...vals)+1);
+  const t0=fromIso(ws[0].date).getTime(),t1=Math.max(t0+DAY,fromIso(ws[ws.length-1].date).getTime()),X=d=>L+(W-L-R)*(fromIso(d).getTime()-t0)/(t1-t0),Y=v=>T+(H-T-B)*(1-(v-lo)/(hi-lo||1));
+  let g='<g class="grid">';const st=niceStep(hi-lo,3);for(let v=Math.ceil(lo/st)*st;v<=hi;v+=st)g+=`<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}"/>`;g+='</g>';
+  for(let v=Math.ceil(lo/st)*st;v<=hi;v+=st)g+=`<text x="${L-6}" y="${Y(v)}" text-anchor="end" dominant-baseline="central">${fh(v)}</text>`;
+  const roll=ws.map((r,i)=>{const w=ws.filter(x=>x.date<=r.date&&x.date>iso(addDays(fromIso(r.date),-7)));return [r.date,w.reduce((a,c)=>a+ +c.weightKg,0)/w.length]});
+  g+=`<polyline fill="none" stroke="var(--accent)" stroke-width="2.2" points="${roll.map(([d,v])=>`${X(d).toFixed(1)},${Y(v).toFixed(1)}`).join(" ")}"/>`;
+  ws.forEach(r=>g+=`<circle class="hit" cx="${X(r.date).toFixed(1)}" cy="${Y(r.weightKg).toFixed(1)}" r="3" fill="var(--accent)" opacity=".45" data-tip="${esc(`<b>${fDate(fromIso(r.date),{weekday:"short",day:"2-digit",month:"2-digit",year:"numeric"})}</b><br>${fh(r.weightKg)} kg${r.bodyFat?` · ${fh(r.bodyFat)} % Fett`:""}${r.bmi?` · BMI ${fh(r.bmi)}`:""}`)}"/>`);
+  [ws[0],ws[Math.floor(ws.length/2)],ws[ws.length-1]].forEach(r=>g+=`<text x="${X(r.date)}" y="${H-6}" text-anchor="middle">${fDate(fromIso(r.date),{day:"2-digit",month:"2-digit"})}</text>`);
+  el.innerHTML=`<svg width="${W}" height="${H}" role="img" aria-label="Gewichtsverlauf">${g}</svg><div class="legend"><span><i style="background:var(--accent)"></i>Gewicht, Schnitt 7 Tage</span><span>Punkte: einzelne Messungen aus Garmin</span></div>`}
 /* ---------- Analyse: Belastung, Form, Karte und Streckenvergleich ---------- */
 const RUNS=/^(Run|TrailRun|VirtualRun)$/,RIDES=/Ride$/,HIKES=/^(Walk|Hike|Snowshoe)$/;
 const wSport=w=>w.sport||spOf(w);

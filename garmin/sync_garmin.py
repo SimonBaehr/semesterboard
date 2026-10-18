@@ -149,6 +149,20 @@ def day(g, d):
     }
 
 
+def weights(g, start, end):
+    """Gewicht, Körperfett und BMI je Tag (Garmin-Waage oder manuell in Garmin Connect eingetragen)."""
+    data = safe(g.get_body_composition, start.isoformat(), end.isoformat()) or {}
+    out = {}
+    for w in data.get("dateWeightList") or []:
+        d = w.get("calendarDate") or (str(w.get("date"))[:10] if w.get("date") else None)
+        kg = w.get("weight")
+        if not d or not isinstance(kg, (int, float)):
+            continue
+        kg = kg / 1000 if kg > 1000 else kg  # Garmin liefert Gramm
+        out[d] = {"weight_kg": round(kg, 2), "body_fat": w.get("bodyFat"), "bmi": w.get("bmi")}
+    return out
+
+
 def send(rows):
     secret = os.environ.get("GARMIN_INGEST_SECRET", "")
     if len(secret) < 16:
@@ -178,13 +192,16 @@ def main():
     today = dt.date.today()
     n = max(1, min(a.days, 370))
     rows = [day(g, today - dt.timedelta(days=i)) for i in range(n)]
+    wmap = weights(g, today - dt.timedelta(days=n - 1), today)
+    for r in rows:
+        r.update(wmap.get(r["date"], {}))
     rows = [r for r in rows if any(v is not None for k, v in r.items() if k != "date")]
     quiet = bool(os.environ.get("CI"))  # in GitHub Actions keine Gesundheitswerte ins (öffentliche) Log schreiben
     if quiet:
         print(f"{len(rows)} Tage mit Werten gefunden.")
     for r in ([] if quiet else sorted(rows, key=lambda x: x["date"])):
         print(f'{r["date"]}: Ruhepuls {r["rhr"]} · HRV {r["hrv"]} · Schlaf {r["sleep_h"]} h (Score {r["sleep_score"]}) · '
-              f'Body Battery {r["bb_min"]}->{r["bb_max"]} · Readiness {r["readiness"]}')
+              f'Body Battery {r["bb_min"]}->{r["bb_max"]} · Readiness {r["readiness"]} · Gewicht {r.get("weight_kg")}')
     if not rows:
         print("Keine Werte gefunden (Uhr nachts getragen?).")
         return
