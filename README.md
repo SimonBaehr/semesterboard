@@ -36,3 +36,4 @@ und schickt sie an die Supabase Edge Function `garmin-ingest`, die sie in `fit_w
 Der Workflow `.github/workflows/garmin-sync.yml` läuft jeden Morgen. Benötigte GitHub-Secrets:
 `GARMIN_TOKEN_B64` (aus `--export-ci-token`) und `GARMIN_INGEST_SECRET` (identisch mit dem
 Edge-Function-Secret gleichen Namens in Supabase). Werte werden im Log nicht ausgegeben.
+- **Strava sofort abgleichen:** Im Cockpit oben rechts holt der Strava-Knopf neue Aktivitäten direkt über die Supabase-Funktion `strava-sync` (Code in `supabase/functions/strava-sync`). Einmalig nötig: eigene Strava-API-App (strava.com/settings/api, Authorization Callback Domain `aisdyuwigbthyshhutmd.supabase.co`) und die Secrets `STRAVA_CLIENT_ID` und `STRAVA_CLIENT_SECRET` in Supabase. Beim ersten Klick führt der Knopf zur Strava-Freigabe.

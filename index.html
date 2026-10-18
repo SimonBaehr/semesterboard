@@ -1649,7 +1649,7 @@ function render(){
   renderNav();hideTip();
   const body={heute:vHeute,woche:vWoche,faecher:vFaecher,aufgaben:vAufgaben,notizen:vNotizen,mail:vMail,alltag:vAlltag,training:vTraining,analyse:vAnalyse,essen:vEssen,gewicht:vGewicht}[view]();
   const h=new Date().getHours(),al=isAlltag(view);
-  $("#main").innerHTML=`<div class="top"><div><div class="label">${al?"Fitness · Training, Laufen und Essen":"Semesterboard · M.Sc. Applied Business Innovation"}</div>${view==="heute"?`<h1>Guten ${h<11?"Morgen":h<18?"Tag":"Abend"}, Simon</h1>`:""}${view==="alltag"?"<h1>Fitness</h1>":""}${view==="heute"?'<button class="btn" data-brief="open" style="margin-top:8px">☀ Tages-Briefing</button>':""}</div><div class="topr"><button class="refresh" id="refresh" data-refresh="1" aria-label="Aktualisieren" title="Aktualisieren"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button></div></div>
+  $("#main").innerHTML=`<div class="top"><div><div class="label">${al?"Fitness · Training, Laufen und Essen":"Semesterboard · M.Sc. Applied Business Innovation"}</div>${view==="heute"?`<h1>Guten ${h<11?"Morgen":h<18?"Tag":"Abend"}, Simon</h1>`:""}${view==="alltag"?"<h1>Fitness</h1>":""}${view==="heute"?'<button class="btn" data-brief="open" style="margin-top:8px">☀ Tages-Briefing</button>':""}</div><div class="topr">${view==="heute"?`<button class="refresh" id="stravabtn" data-strava="1" aria-label="Strava jetzt abgleichen" title="Strava jetzt abgleichen"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M10.1 2 4 14h3.6l2.5-4.9 2.5 4.9h3.6zM15.2 14l-1.8 3.5-1.8-3.5H9l4.4 8 4.3-8z"/></svg></button>`:""}<button class="refresh" id="refresh" data-refresh="1" aria-label="Aktualisieren" title="Aktualisieren"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button></div></div>
     ${!navigator.onLine?'<div class="notice">Offline: Du siehst den letzten Stand. Änderungen gehen erst wieder mit Verbindung.</div>':""}${body}`;
   drawCharts();
   const b=$("#brief");if(b&&!b.hidden){const sc=b.firstElementChild?b.firstElementChild.scrollTop:0;b.innerHTML=briefingHTML();b.firstElementChild.scrollTop=sc}
@@ -1663,7 +1663,7 @@ document.addEventListener("pointermove",e=>{const t=e.target.closest&&e.target.c
 /* ---------- Ereignisse ---------- */
 document.addEventListener("click",e=>{
   if(e.target.id==="brief")return closeBrief();
-  const t=e.target.closest("[data-wopen],[data-mode],[data-wr],[data-fday],[data-reeat],[data-wrep],[data-evdel],[data-refresh],[data-add],[data-brief],[data-go],[data-course],[data-del],[data-tf],[data-time],[data-lit],[data-accept],[data-backplan],[data-tl],[data-ftab],[data-wk],[data-flen],[data-focus],[data-focusfor]");if(!t)return;
+  const t=e.target.closest("[data-wopen],[data-mode],[data-wr],[data-fday],[data-reeat],[data-wrep],[data-evdel],[data-refresh],[data-strava],[data-add],[data-brief],[data-go],[data-course],[data-del],[data-tf],[data-time],[data-lit],[data-accept],[data-backplan],[data-tl],[data-ftab],[data-wk],[data-flen],[data-focus],[data-focusfor]");if(!t)return;
   if(t.dataset.evdel){const id=t.dataset.evdel;clearTimeout(pendingT);
     if(pendingDel===id){pendingDel=null;if(lastEv===id)lastEv=null;return del("events",id,"Termin gelöscht")}
     pendingDel=id;render();pendingT=setTimeout(()=>{pendingDel=null;render()},4000);return}
@@ -1675,6 +1675,7 @@ document.addEventListener("click",e=>{
   if(t.dataset.wrep){const w=S.fit_workouts.find(x=>x.id===t.dataset.wrep);if(!w)return;let d=addDays(fromIso(w.date),7);while(d<sod(new Date()))d=addDays(d,7);
     return add("fit_workouts",{title:w.title,date:iso(d),time:w.time,type:w.type,durationMin:w.durationMin,kcal:w.kcal,details:w.details,done:false},`Geplant für ${fDate(d)}`)}
   if(t.dataset.refresh)return refreshAll();
+  if(t.dataset.strava)return stravaSync();
   if(t.dataset.add){const k=t.dataset.add;addOpen[k]=!addOpen[k];render();if(addOpen[k]){const i=document.querySelector({task:"#t-title",note:"[data-addnote=''] textarea",workout:"#f-workout [name=title]",meal:"#f-meal [name=title]"}[k]);if(i)i.focus()}return}
   if(t.dataset.brief)return t.dataset.brief==="open"?openBrief():closeBrief();
   if(t.dataset.go){closeBrief();return go(t.dataset.go)}
@@ -1742,6 +1743,26 @@ async function startData(){
 let bootHash=null;
 const pageHash=()=>fetch("index.html",{cache:"no-cache"}).then(r=>r.ok?r.text():null).then(t=>{if(!t)return null;let h=0;for(let i=0;i<t.length;i++)h=(h*31+t.charCodeAt(i))|0;return h}).catch(()=>null);
 pageHash().then(h=>bootHash=h);
+/* Strava sofort abgleichen: Supabase-Funktion strava-sync holt neue Aktivitäten direkt von Strava. */
+let stravaBusy=false;
+async function stravaSync(){
+  if(stravaBusy)return;if(!navigator.onLine)return toast("Du bist offline. Bitte später erneut versuchen.");
+  stravaBusy=true;const b=$("#stravabtn");if(b)b.classList.add("spin");
+  try{
+    const {data:{session}}=await sb.auth.getSession();if(!session)throw new Error("login");
+    const r=await fetch(window.SB_URL+"/functions/v1/strava-sync",{method:"POST",headers:{Authorization:"Bearer "+session.access_token,apikey:window.SB_KEY,"Content-Type":"application/json"},body:"{}"});
+    const js=await r.json().catch(()=>({}));
+    if(js.needsAuth){if(confirm("Strava ist noch nicht verbunden. Jetzt einmalig bei Strava freigeben?"))location.href=js.url;return}
+    if(!r.ok)throw new Error(js.error||r.status);
+    await load("fit_workouts");render();
+    toast(js.added?`${js.added} neue ${js.added===1?"Aktivität":"Aktivitäten"} von Strava`:"Strava ist aktuell");
+  }catch(e){console.warn("Strava-Sync",e);toast("Strava-Abgleich hat nicht geklappt.")}
+  finally{stravaBusy=false;const b2=$("#stravabtn");if(b2)b2.classList.remove("spin")}
+}
+(()=>{const q=new URLSearchParams(location.search),v=q.get("strava");if(!v)return;
+  history.replaceState(null,"",location.pathname+location.hash);
+  if(v==="ok"){setTimeout(()=>{toast("Strava verbunden");stravaSync()},1500)}
+  else setTimeout(()=>toast(v==="rechte"?"Bitte bei Strava das Lesen der Aktivitäten erlauben.":"Strava-Verbindung hat nicht geklappt."),1500)})();
 async function refreshAll(){
   if(!navigator.onLine)return toast("Du bist offline. Bitte später erneut versuchen.");
   const b=$("#refresh");if(b)b.classList.add("spin");
