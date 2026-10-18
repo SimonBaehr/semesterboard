@@ -407,6 +407,10 @@ h2{font-size:.95rem;font-weight:600;text-transform:none;letter-spacing:-.005em;c
 .sitem .check{grid-area:c;margin:0}.sitem .sn{grid-area:n;font-weight:500}.sitem .sq{grid-area:q;font-size:.76rem;color:var(--ink3)}.sitem .sp{grid-area:p;font-variant-numeric:tabular-nums;color:var(--ink2)}
 .sitem.done .sn{text-decoration:line-through;color:var(--ink3)}
 .stot{display:flex;flex-direction:column;gap:2px;margin-top:10px;padding-top:10px;border-top:1px solid var(--line2)}
+
+.meal.picked{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.shopd{margin-top:14px;border-top:1px solid var(--line);padding-top:10px}.shopd summary{cursor:pointer;font-weight:600;font-size:.9rem;padding:4px 0}.shopd[open] summary{margin-bottom:8px}
+.wkpick{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}.wkpick .chip{cursor:pointer;white-space:normal;text-align:left}
 </style>
 </head>
 <body>
@@ -444,7 +448,7 @@ const ICONS={
   gewicht:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 10a5 5 0 0 1 8 0M12 10l1.5-2"/></svg>'
 };
 const VIEWS=[["heute","Cockpit"],["woche","Woche"],["faecher","Fächer"],["aufgaben","Aufgaben"],["notizen","Notizen"]];
-const AVIEWS=[["alltag","Übersicht"],["training","Training"],["essen","Essen"]];
+const AVIEWS=[["alltag","Übersicht"],["training","Training"],["essen","Abendessen"]];
 const COLS=["courses","events","tasks","steps","notes","digests","literature","timelog","reviews"];
 // Alltag-Daten liegen in eigenen Tabellen (fit_*), getrennt von den Uni-Tabellen.
 const FCOLS=["fit_workouts","fit_meals","fit_weight","fit_goals"];
@@ -1009,35 +1013,40 @@ function vAlltag(){
   </div>`;
 }
 
-/* ---------- Essen: Wochenplan mit Rezept, Einkaufsliste und Foto (Daten in rezepte.json) ---------- */
+/* ---------- Essen: jeden Tag 3 Abendessen zur Auswahl, mit Rezept, Einkaufsliste und Foto (Daten in rezepte.json) ---------- */
 let REZ=null,essDay=null,essTab="tag";
 fetch("rezepte.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(d=>{if(d){REZ=d;if(isAlltag(view))render()}}).catch(()=>{});
-const SLOT={fruehstueck:"Frühstück",mittag:"Mittagessen",abend:"Abendessen"};
-const WDAYS=["Mo","Di","Mi","Do","Fr","Sa","So"];
+const WDAYS=["Mo","Di","Mi","Do","Fr","Sa","So"],WDAYL=["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"];
 const wdIdx=d=>(new Date(d).getDay()+6)%7;
-const mealsOf=i=>REZ?REZ.recipes.filter(r=>r.day===i).sort((a,b)=>Object.keys(SLOT).indexOf(a.slot)-Object.keys(SLOT).indexOf(b.slot)):[];
+const mealsOf=i=>REZ?REZ.recipes.filter(r=>r.day===i).sort((a,b)=>(a.opt||0)-(b.opt||0)):[];
 const eur=v=>v.toLocaleString("de-DE",{style:"currency",currency:"EUR"});
 function inPack(i,p){let q=i.q;if(i.u===p[2])return q;if(i.u==="Scheibe"||i.u==="Scheiben")return q*50;if(i.u==="Zehe")return q/10;if(i.u==="Stängel")return q/8;if(i.u==="Stk"&&p[2]==="g")return q*100;return q}
 const costOf=r=>r.ing.reduce((s,i)=>{const p=REZ.prices[i.k];return p?s+inPack(i,p)/p[1]*p[3]:s},0);
 const qty=i=>i.q==null?"":`${(+i.q).toLocaleString("de-DE",{maximumFractionDigits:2})}${i.u?" "+i.u:""}`;
-function chk(key){try{return localStorage.getItem("sb-shop-"+key)==="1"}catch(e){return false}}
+const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}};
+const chk=key=>ls("sb-shop-"+key)==="1";
+const wkKey=()=>iso(monday(new Date()));
+const pickOf=i=>{const v=ls("sb-ess-pick-"+wkKey()+"-"+i);return v==null||v===""?null:+v};
+const tagOf=r=>r.time<=20?"schnell":r.time>=40?"braucht Zeit":"";
 function essenToday(){
-  if(!REZ)return `<section class="panel s12"><div class="ph"><h2>Essen heute</h2></div><div class="empty">Rezepte werden geladen …</div></section>`;
+  if(!REZ)return `<section class="panel s12"><div class="ph"><h2>Abendessen heute</h2></div><div class="empty">Rezepte werden geladen …</div></section>`;
   const i=wdIdx(new Date()),ms=mealsOf(i);
-  return `<section class="panel s12" aria-labelledby="h-eat"><div class="ph"><h2 id="h-eat">Essen heute</h2><button class="btn small" data-essday="${i}">Rezepte und Einkaufsliste</button></div>
+  return `<section class="panel s12" aria-labelledby="h-eat"><div class="ph"><h2 id="h-eat">Abendessen heute</h2><button class="btn small" data-essday="${i}">Rezepte und Einkaufslisten</button></div>
     <div class="meals">${ms.map(r=>mealCard(r,i)).join("")}</div></section>`;
 }
-function mealCard(r,i){
-  return `<button class="meal" data-essday="${i}" data-esso="${esc(r.slot)}"><img src="${r.img}" alt="${esc(r.title)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"><div class="mb"><div class="label">${SLOT[r.slot]}</div><div class="mt">${esc(r.title)}</div><div class="mm"><span>${r.time} min</span><span>ca. ${r.kcal} kcal</span><span>ca. ${eur(costOf(r))}</span></div></div></button>`;
+function mealCard(r,i){const pk=pickOf(i)===r.opt,t=tagOf(r);
+  return `<button class="meal${pk?" picked":""}" data-essday="${i}" data-esso="${r.opt}"><img src="${r.img}" alt="${esc(r.title)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"><div class="mb"><div class="label">Vorschlag ${r.opt+1}${pk?" · gewählt":""}${t?" · "+t:""}</div><div class="mt">${esc(r.title)}</div><div class="mm"><span>${r.time} min</span><span>ca. ${r.kcal} kcal</span><span>ca. ${eur(costOf(r))}</span></div></div></button>`;
 }
-function recipeBlock(r){
-  return `<section class="panel s12 recipe" id="rz-${r.slot}"><div class="rz">
+function recipeBlock(r,i){const pk=pickOf(i)===r.opt;
+  return `<section class="panel s12 recipe" id="rz-${r.opt}"><div class="rz">
     <figure><img src="${r.img}" alt="${esc(r.title)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentNode.style.display='none'"><figcaption>${esc(r.imgNote)}</figcaption></figure>
-    <div class="rzb"><div class="label">${SLOT[r.slot]}</div><h2 class="rzt">${esc(r.title)}</h2>
+    <div class="rzb"><div class="row" style="justify-content:space-between"><div class="label">Vorschlag ${r.opt+1}</div><button class="btn small${pk?" primary":""}" data-pick="${i}:${r.opt}">${pk?"✓ Gewählt":"Das koche ich"}</button></div>
+      <h2 class="rzt">${esc(r.title)}</h2>
       <div class="mm"><span>${r.time} min</span><span>ca. ${r.kcal} kcal</span><span>ca. ${r.protein} g Eiweiß</span><span>ca. ${eur(costOf(r))} pro Portion</span></div>
-      <h3 class="rzh">Zutaten für 1 Portion</h3><ul class="ing">${r.ing.map(i=>`<li><span class="q">${qty(i)}</span><span>${esc(i.n)}${i.k==="Vorrat"?' <span class="faint">(Vorrat)</span>':""}</span></li>`).join("")}</ul>
+      <h3 class="rzh">Zutaten für 1 Portion</h3><ul class="ing">${r.ing.map(x=>`<li><span class="q">${qty(x)}</span><span>${esc(x.n)}${x.k==="Vorrat"?' <span class="faint">(Vorrat)</span>':""}</span></li>`).join("")}</ul>
       <h3 class="rzh">Zubereitung</h3><ol class="steps">${r.steps.map(s=>`<li>${esc(s)}</li>`).join("")}</ol>
-      ${r.tip?`<p class="tipline">${esc(r.tip)}</p>`:""}</div></div></section>`;
+      ${r.tip?`<p class="tipline">${esc(r.tip)}</p>`:""}
+      <details class="shopd"><summary>Einkaufsliste für dieses Gericht</summary>${shopList([r],wkKey()+"-r"+i+"-"+r.opt)}</details></div></div></section>`;
 }
 function shopList(recipes,scope){
   const need={},vor=new Set();
@@ -1046,29 +1055,32 @@ function shopList(recipes,scope){
   Object.entries(need).forEach(([k,q])=>{const p=REZ.prices[k],packs=Math.max(1,Math.ceil(q/p[1]-1e-9));tot+=packs*p[3];used+=q/p[1]*p[3];(cats[p[4]]=cats[p[4]]||[]).push({k,q,p,packs})});
   const amt=(q,p)=>p[2]==="g"||p[2]==="ml"?`${Math.round(q)} ${p[2]}`:`${(Math.round(q*10)/10).toLocaleString("de-DE")} ${p[2]}`;
   return `<div class="shop">${Object.keys(cats).sort().map(c=>`<div class="sgrp"><div class="label">${esc(c)}</div>${cats[c].sort((a,b)=>a.p[0].localeCompare(b.p[0])).map(x=>{const key=scope+"-"+x.k,on=chk(key);
-      return `<label class="sitem${on?" done":""}"><input type="checkbox" class="check" data-shop="${esc(key)}" ${on?"checked":""}><span class="sn">${esc(x.p[0])}</span><span class="sq">${amt(x.q,x.p)} gebraucht · ${x.packs} × ${x.p[1]} ${x.p[2]}</span><span class="sp">${eur(x.packs*x.p[3])}</span></label>`}).join("")}</div>`).join("")}
-    <div class="stot"><span>Einkauf ca. <b>${eur(tot)}</b></span><span class="faint">davon in diesen Rezepten verbraucht ca. ${eur(used)}, der Rest reicht für die nächsten Tage</span></div>
+      return `<label class="sitem${on?" done":""}"><input type="checkbox" class="check" data-shop="${esc(key)}" ${on?"checked":""}><span class="sn">${esc(x.p[0])}</span><span class="sq">${amt(x.q,x.p)} gebraucht · ${x.packs} × ${x.p[1]} ${x.p[2]}${x.p[5]?" · Preis "+esc(x.p[5]):""}</span><span class="sp">${eur(x.packs*x.p[3])}</span></label>`}).join("")}</div>`).join("")}
+    <div class="stot"><span>Einkauf ca. <b>${eur(tot)}</b></span><span class="faint">davon für ${recipes.length===1?"dieses Gericht":"diese Gerichte"} verbraucht ca. ${eur(used)}, der Rest der Packungen reicht für weitere Gerichte</span></div>
     ${vor.size?`<div class="faint" style="font-size:.8rem;margin-top:8px">Aus dem Vorrat: ${[...vor].map(esc).join(", ")}</div>`:""}</div>`;
 }
 function vEssen(){
   if(!REZ)return '<div class="ph"><h1>Essen</h1></div><section class="panel"><div class="empty">Rezepte werden geladen …</div></section>';
   const ti=wdIdx(new Date());if(essDay==null)essDay=ti;const ms=mealsOf(essDay);
-  const wkStart=iso(monday(new Date()));
-  return `<div class="ph"><h1>Essen</h1><span class="label">günstig, ausgewogen, mit Zutaten, die sich wiederholen</span></div>
+  const chosen=[...Array(7)].map((_,i)=>{const o=pickOf(i);return mealsOf(i).find(r=>r.opt===o)||null});
+  const wk=chosen.filter(Boolean);
+  return `<div class="ph"><h1>Abendessen</h1><span class="label">3 Vorschläge pro Tag · günstig, ausgewogen, Preise für REWE</span></div>
   <div class="row" style="margin-bottom:14px"><div class="seg" role="group" aria-label="Ansicht"><button data-esstab="tag" aria-pressed="${essTab==="tag"}">Tag</button><button data-esstab="woche" aria-pressed="${essTab==="woche"}">Wocheneinkauf</button></div>
   ${essTab==="tag"?`<div class="seg" role="group" aria-label="Tag">${WDAYS.map((d,i)=>`<button data-essday="${i}" aria-pressed="${essDay===i}">${d}${i===ti?" ·":""}</button>`).join("")}</div>`:""}</div>
   ${essTab==="tag"?`<div class="grid">
-    <section class="panel s12"><div class="meals">${ms.map(r=>mealCard(r,essDay)).join("")}</div></section>
-    ${ms.map(recipeBlock).join("")}
-    <section class="panel s12"><div class="ph"><h2>Einkaufsliste für ${["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"][essDay]}</h2></div>${shopList(ms,wkStart+"-d"+essDay)}</section>
-  </div>`:`<div class="grid"><section class="panel s12"><div class="ph"><h2>Wocheneinkauf für alle 21 Gerichte</h2><span class="label">ein Einkauf für Montag bis Sonntag</span></div>${shopList(REZ.recipes,wkStart+"-w")}</section></div>`}
+    <section class="panel s12"><div class="ph"><h2>${WDAYL[essDay]}: 3 Vorschläge</h2><span class="faint" style="font-size:.78rem">Wähle eins mit „Das koche ich“, dann landet es im Wocheneinkauf.</span></div><div class="meals">${ms.map(r=>mealCard(r,essDay)).join("")}</div></section>
+    ${ms.map(r=>recipeBlock(r,essDay)).join("")}
+  </div>`:`<div class="grid"><section class="panel s12"><div class="ph"><h2>Wocheneinkauf</h2><span class="label">für deine gewählten Abendessen</span></div>
+    <div class="wkpick">${WDAYS.map((d,i)=>`<button class="chip" data-essday="${i}">${d}: ${chosen[i]?esc(chosen[i].title):'<span class="faint">noch nichts gewählt</span>'}</button>`).join("")}</div>
+    ${wk.length?shopList(wk,wkKey()+"-w"):'<div class="empty">Wähle bei den Tagen je ein Gericht mit „Das koche ich“, dann entsteht hier die Einkaufsliste für die Woche.</div>'}</section></div>`}
   <p class="faint" style="font-size:.78rem;margin-top:14px">${esc(REZ.note)}</p>`;
 }
 document.addEventListener("click",e=>{
-  const d=e.target.closest("[data-essday]");if(d){essDay=+d.dataset.essday;essTab="tag";const s=d.dataset.esso;if(view!=="essen")go("essen");else render();if(s)setTimeout(()=>{const el=document.getElementById("rz-"+s);if(el)el.scrollIntoView({behavior:"smooth",block:"start"})},60);return}
+  const pk=e.target.closest("[data-pick]");if(pk){const [i,o]=pk.dataset.pick.split(":");const cur=pickOf(+i);ls("sb-ess-pick-"+wkKey()+"-"+i,cur===+o?"":o);if(cur===+o){try{localStorage.removeItem("sb-ess-pick-"+wkKey()+"-"+i)}catch(err){}}const y=scrollY;render();scrollTo(0,y);return}
+  const d=e.target.closest("[data-essday]");if(d){essDay=+d.dataset.essday;essTab="tag";const s=d.dataset.esso;if(view!=="essen")go("essen");else render();if(s!=null)setTimeout(()=>{const el=document.getElementById("rz-"+s);if(el)el.scrollIntoView({behavior:"smooth",block:"start"})},60);return}
   const t=e.target.closest("[data-esstab]");if(t){essTab=t.dataset.esstab;render();return}
 });
-document.addEventListener("change",e=>{const c=e.target.closest("[data-shop]");if(!c)return;try{localStorage.setItem("sb-shop-"+c.dataset.shop,c.checked?"1":"0")}catch(err){}c.closest(".sitem").classList.toggle("done",c.checked)});
+document.addEventListener("change",e=>{const c=e.target.closest("[data-shop]");if(!c)return;ls("sb-shop-"+c.dataset.shop,c.checked?"1":"0");c.closest(".sitem").classList.toggle("done",c.checked)});
 
 /* Diagramme Alltag */
 function chartWeight(el){
