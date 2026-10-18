@@ -1,2 +1,3 @@
 garmin-ci-token.txt
 .garminconnect/
+__pycache__/
