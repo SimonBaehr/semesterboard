@@ -1,5 +1,5 @@
 {
- "note": "Preise für REWE, vor allem die Eigenmarke ja!. „gemeldet“ = zuletzt auf supermarktcheck.de von Nutzern gemeldeter REWE-Preis (ohne Datum, kann veraltet sein); „geschätzt“ = eigene Schätzung (Stand Oktober 2026). Frische Ware schwankt je nach Woche und Filiale. Nährwerte pro Portion sind grobe Schätzungen. Ohne Aubergine, Zucchini und Pilze.",
+ "note": "Preise für REWE, vor allem die Eigenmarke ja!. „gemeldet“ = zuletzt auf supermarktcheck.de von Nutzern gemeldeter REWE-Preis (ohne Datum, kann veraltet sein); „geschätzt“ = eigene Schätzung (Stand Oktober 2026). Frische Ware schwankt je nach Woche und Filiale. Nährwerte pro Portion sind grobe Schätzungen. Jeden Tag ist ein asiatisches Gericht dabei. Ohne Aubergine, Zucchini und Pilze.",
  "prices": {
   "joghurt": [
    "ja! Naturjoghurt 3,5 %",
@@ -240,11 +240,74 @@
    1.99,
    "Kühlregal",
    "geschätzt"
+  ],
+  "mie": [
+   "Mie-Nudeln (ohne Ei)",
+   250,
+   "g",
+   1.29,
+   "Trocken",
+   "geschätzt"
+  ],
+  "ingwer": [
+   "Ingwer (Stück, ca. 100 g)",
+   1,
+   "Stk",
+   0.79,
+   "Obst & Gemüse",
+   "geschätzt"
+  ],
+  "tofu": [
+   "Tofu natur",
+   400,
+   "g",
+   1.99,
+   "Kühlregal",
+   "geschätzt"
+  ],
+  "weisskohl": [
+   "Weißkohl (ca. 1,2 kg)",
+   1,
+   "Stk",
+   1.49,
+   "Obst & Gemüse",
+   "geschätzt"
+  ],
+  "currypaste": [
+   "Rote Thai-Currypaste",
+   110,
+   "g",
+   1.99,
+   "Asia",
+   "geschätzt"
+  ],
+  "ananas": [
+   "ja! Ananas in Stücken (Dose)",
+   1,
+   "Dose",
+   1.29,
+   "Konserven",
+   "geschätzt"
+  ],
+  "erdnuss": [
+   "ja! Erdnüsse geröstet und gesalzen",
+   200,
+   "g",
+   1.79,
+   "Trocken",
+   "geschätzt"
+  ],
+  "brokkoli": [
+   "ja! TK-Brokkoli",
+   450,
+   "g",
+   1.49,
+   "Tiefkühl",
+   "geschätzt"
   ]
  },
  "recipes": [
   {
-   "day": 0,
    "slot": "abend",
    "title": "Kichererbsen-Wraps mit Paprika",
    "img": "https://www.themealdb.com/images/media/meals/tvtxpq1511464705.jpg",
@@ -303,10 +366,10 @@
     "Wraps kurz in der trockenen Pfanne erwärmen, Füllung und Joghurt daraufgeben, einrollen."
    ],
    "tip": "Die zweite Dosenhälfte passt in Patatas bravas oder Koshari.",
-   "opt": 0
+   "asian": false,
+   "id": "kichererbsen-wraps-mit-paprika"
   },
   {
-   "day": 0,
    "slot": "abend",
    "title": "Rote-Linsen-Dal mit Reis",
    "img": "https://www.themealdb.com/images/media/meals/wuxrtu1483564410.jpg",
@@ -371,10 +434,10 @@
     "Spinat in den letzten 5 Minuten unterrühren, mit Salz abschmecken und mit dem Reis servieren."
    ],
    "tip": "Gut für die doppelte Menge: hält 3 Tage im Kühlschrank und schmeckt aufgewärmt noch besser.",
-   "opt": 1
+   "asian": true,
+   "id": "rote-linsen-dal-mit-reis"
   },
   {
-   "day": 0,
    "slot": "abend",
    "title": "Spaghetti Carbonara",
    "img": "https://www.themealdb.com/images/media/meals/llcbn01574260722.jpg",
@@ -427,10 +490,10 @@
     "Nudeln und Erbsen in die Pfanne geben, kurz abkühlen lassen, dann Ei-Käse-Mischung und 2 bis 3 EL Nudelwasser unterrühren, bis eine cremige Sauce entsteht. Nicht mehr auf die heiße Platte stellen, sonst stockt das Ei."
    ],
    "tip": "Die Erbsen sind nicht klassisch, bringen aber Gemüse und Eiweiß in den Teller.",
-   "opt": 2
+   "asian": false,
+   "id": "spaghetti-carbonara"
   },
   {
-   "day": 1,
    "slot": "abend",
    "title": "Tomaten-Ei-Pfanne mit Reis",
    "img": "https://www.themealdb.com/images/media/meals/rwvw8q1765660071.jpg",
@@ -477,10 +540,10 @@
     "Ei zurück in die Pfanne geben, Frühlingszwiebeln in Ringen darüberstreuen, mit dem Reis servieren."
    ],
    "tip": "Reis gleich für den nächsten Tag mitkochen, kalt eignet er sich perfekt für gebratenen Reis.",
-   "opt": 0
+   "asian": true,
+   "id": "tomaten-ei-pfanne-mit-reis"
   },
   {
-   "day": 1,
    "slot": "abend",
    "title": "Chili sin Carne",
    "img": "https://www.themealdb.com/images/media/meals/wqurxy1511453156.jpg",
@@ -551,10 +614,10 @@
     "Mit einem Klecks Joghurt servieren, dazu passt Brot oder Reis."
    ],
    "tip": "Die Linsen ersetzen das Hackfleisch: billiger und genauso sättigend. Rest einfrieren.",
-   "opt": 1
+   "asian": false,
+   "id": "chili-sin-carne"
   },
   {
-   "day": 1,
    "slot": "abend",
    "title": "Weiße-Bohnen-Suppe mit Brot",
    "img": "https://www.themealdb.com/images/media/meals/p5nzbk1782680889.jpg",
@@ -613,10 +676,10 @@
     "Mit Salz und Pfeffer abschmecken und mit Brot servieren."
    ],
    "tip": "Lässt sich gut in einem Glas mit in die Uni nehmen.",
-   "opt": 2
+   "asian": false,
+   "id": "weie-bohnen-suppe-mit-brot"
   },
   {
-   "day": 2,
    "slot": "abend",
    "title": "Penne all’arrabbiata",
    "img": "https://www.themealdb.com/images/media/meals/ustsqw1468250014.jpg",
@@ -663,10 +726,10 @@
     "Nudeln abgießen, mit der Sauce mischen und mit zerbröseltem Feta servieren."
    ],
    "tip": "Der Klassiker unter 1 € pro Portion.",
-   "opt": 0
+   "asian": false,
+   "id": "penne-allarrabbiata"
   },
   {
-   "day": 2,
    "slot": "abend",
    "title": "Shakshuka mit Brot",
    "img": "https://www.themealdb.com/images/media/meals/g373701551450225.jpg",
@@ -731,10 +794,10 @@
     "Feta darüberbröseln und direkt aus der Pfanne mit Brot essen."
    ],
    "tip": "Eigelb noch flüssig? Dann ist es genau richtig.",
-   "opt": 1
+   "asian": false,
+   "id": "shakshuka-mit-brot"
   },
   {
-   "day": 2,
    "slot": "abend",
    "title": "Ribollita (toskanischer Bohneneintopf)",
    "img": "https://www.themealdb.com/images/media/meals/xrrwpx1487347049.jpg",
@@ -805,10 +868,10 @@
     "Salzen und mit einem Schuss Olivenöl servieren."
    ],
    "tip": "Perfekt für altes Brot.",
-   "opt": 2
+   "asian": false,
+   "id": "ribollita-toskanischer-bohneneintopf"
   },
   {
-   "day": 3,
    "slot": "abend",
    "title": "Gebratener Reis mit Hähnchen und Gemüse",
    "img": "https://www.themealdb.com/images/media/meals/wuyd2h1765655837.jpg",
@@ -867,10 +930,10 @@
     "Ei an den Rand schlagen, verrühren, stocken lassen und alles mit Hähnchen, 2 EL Sojasauce und Frühlingszwiebeln vermischen."
    ],
    "tip": "Kalter Reis vom Vortag klebt nicht. 70 g roher Reis ergeben etwa 200 g gekochten.",
-   "opt": 0
+   "asian": true,
+   "id": "gebratener-reis-mit-hahnchen-und-gemuse"
   },
   {
-   "day": 3,
    "slot": "abend",
    "title": "Kidneybohnen-Curry mit Reis",
    "img": "https://www.themealdb.com/images/media/meals/sywrsu1511463066.jpg",
@@ -929,10 +992,10 @@
     "Ein paar Bohnen mit der Gabel zerdrücken, damit es sämig wird, salzen und mit Reis servieren."
    ],
    "tip": "Nutzt die restliche Kokosmilch vom Dal.",
-   "opt": 1
+   "asian": true,
+   "id": "kidneybohnen-curry-mit-reis"
   },
   {
-   "day": 3,
    "slot": "abend",
    "title": "Marokkanische Karottensuppe",
    "img": "https://www.themealdb.com/images/media/meals/jcr46d1614763831.jpg",
@@ -991,10 +1054,10 @@
     "Fein pürieren, salzen und mit einem Klecks Joghurt und Brot servieren."
    ],
    "tip": "Die Linsen machen die Suppe sämig und liefern Eiweiß.",
-   "opt": 2
+   "asian": false,
+   "id": "marokkanische-karottensuppe"
   },
   {
-   "day": 4,
    "slot": "abend",
    "title": "Reis mit Bohnen",
    "img": "https://www.themealdb.com/images/media/meals/j8c1d51782772399.jpg",
@@ -1053,10 +1116,10 @@
     "Mit dem Reis mischen, salzen und mit Zitronensaft abschmecken."
    ],
    "tip": "Bohnen plus Reis ergeben zusammen ein vollständiges Eiweiß, ganz ohne Fleisch.",
-   "opt": 0
+   "asian": false,
+   "id": "reis-mit-bohnen"
   },
   {
-   "day": 4,
    "slot": "abend",
    "title": "Patatas bravas mit Kichererbsen",
    "img": "https://www.themealdb.com/images/media/meals/bvg8sn1763298713.jpg",
@@ -1109,10 +1172,10 @@
     "Kartoffeln mit Sauce und Joghurt-Knoblauch-Dip servieren."
    ],
    "tip": "Doppelte Menge Kartoffeln rösten, Reste lassen sich am nächsten Tag kurz anbraten.",
-   "opt": 1
+   "asian": false,
+   "id": "patatas-bravas-mit-kichererbsen"
   },
   {
-   "day": 4,
    "slot": "abend",
    "title": "Kartoffel-Tortilla",
    "img": "https://www.themealdb.com/images/media/meals/quuxsx1511476154.jpg",
@@ -1159,10 +1222,10 @@
     "Mit einem Teller wenden und 3 Minuten fertig braten. Mit Tomatenscheiben servieren."
    ],
    "tip": "Schmeckt auch kalt am nächsten Tag.",
-   "opt": 2
+   "asian": false,
+   "id": "kartoffel-tortilla"
   },
   {
-   "day": 5,
    "slot": "abend",
    "title": "Sardinen-Puttanesca",
    "img": "https://www.themealdb.com/images/media/meals/vvtvtr1511180578.jpg",
@@ -1215,10 +1278,10 @@
     "Sardinen in Stücken unterheben, nur kurz erwärmen und mit den Nudeln mischen."
    ],
    "tip": "Sardinen sind die günstigste Art, Omega-3-Fettsäuren zu essen.",
-   "opt": 0
+   "asian": false,
+   "id": "sardinen-puttanesca"
   },
   {
-   "day": 5,
    "slot": "abend",
    "title": "Nordafrikanischer Kartoffelsalat",
    "img": "https://www.themealdb.com/images/media/meals/urtwux1486983078.jpg",
@@ -1271,10 +1334,10 @@
     "Alles mit den Oliven mischen und 10 Minuten ziehen lassen."
    ],
    "tip": "Leichtes Abendessen ohne Mayo. Wer mehr Hunger hat, isst ein Ei oder etwas Feta dazu.",
-   "opt": 1
+   "asian": false,
+   "id": "nordafrikanischer-kartoffelsalat"
   },
   {
-   "day": 5,
    "slot": "abend",
    "title": "Koshari (Linsen, Reis und Nudeln)",
    "img": "https://www.themealdb.com/images/media/meals/4er7mj1598733193.jpg",
@@ -1339,10 +1402,10 @@
     "Reis-Linsen, Nudeln und Kichererbsen schichten, Sauce und Röstzwiebeln darüber."
    ],
    "tip": "Ägyptisches Straßenessen: sehr günstig und sehr sättigend.",
-   "opt": 2
+   "asian": false,
+   "id": "koshari-linsen-reis-und-nudeln"
   },
   {
-   "day": 6,
    "slot": "abend",
    "title": "Paprika-Tomaten-Pfanne mit Ei",
    "img": "https://www.themealdb.com/images/media/meals/0nswfe1763279040.jpg",
@@ -1401,10 +1464,10 @@
     "Mit Brot servieren."
    ],
    "tip": "Spanische Resteküche: Fast jedes Gemüse aus dem Kühlschrank passt hinein.",
-   "opt": 0
+   "asian": false,
+   "id": "paprika-tomaten-pfanne-mit-ei"
   },
   {
-   "day": 6,
    "slot": "abend",
    "title": "Ofen-Bohnen in Tomatensauce mit Feta",
    "img": "https://www.themealdb.com/images/media/meals/b79r6f1585566277.jpg",
@@ -1469,10 +1532,10 @@
     "Mit Brot servieren."
    ],
    "tip": "Griechischer Klassiker (Gigantes plaki), in der doppelten Menge auch gut für den nächsten Tag.",
-   "opt": 1
+   "asian": false,
+   "id": "ofen-bohnen-in-tomatensauce-mit-feta"
   },
   {
-   "day": 6,
    "slot": "abend",
    "title": "Gemüse-Linsen-Eintopf",
    "img": "https://www.themealdb.com/images/media/meals/vptwyt1511450962.jpg",
@@ -1531,7 +1594,510 @@
     "Mit Salz und Pfeffer abschmecken."
    ],
    "tip": "Doppelte Menge kochen und einfrieren.",
-   "opt": 2
+   "asian": false,
+   "id": "gemuse-linsen-eintopf"
+  },
+  {
+   "title": "Mee goreng: gebratene Nudeln mit Ei und Kohl",
+   "img": "https://www.themealdb.com/images/media/meals/xquakq1619787532.jpg",
+   "time": 20,
+   "kcal": 640,
+   "protein": 24,
+   "ing": [
+    {
+     "n": "Mie-Nudeln",
+     "q": 100,
+     "u": "g",
+     "k": "mie"
+    },
+    {
+     "n": "Eier",
+     "q": 2,
+     "u": "Stk",
+     "k": "eier"
+    },
+    {
+     "n": "Weißkohl",
+     "q": 150,
+     "u": "g",
+     "k": "weisskohl"
+    },
+    {
+     "n": "Karotte",
+     "q": 80,
+     "u": "g",
+     "k": "karotte"
+    },
+    {
+     "n": "Frühlingszwiebeln",
+     "q": 2,
+     "u": "Stängel",
+     "k": "fzwiebel"
+    },
+    {
+     "n": "Knoblauch",
+     "q": 1,
+     "u": "Zehe",
+     "k": "knoblauch"
+    },
+    {
+     "n": "Öl, Sojasauce, Ketchup, Chili",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Nudeln nach Packung kochen, abgießen und kurz kalt abspülen.",
+    "Kohl in feine Streifen, Karotte in dünne Stifte, Knoblauch fein schneiden.",
+    "Gemüse in 1 EL heißem Öl 4 Minuten scharf anbraten, an den Rand schieben, Eier hineinschlagen und verrühren.",
+    "Nudeln, 2 EL Sojasauce, 1 EL Ketchup und etwas Chili dazu, 2 Minuten durchschwenken, mit Frühlingszwiebeln bestreuen."
+   ],
+   "tip": "Der Kohlkopf reicht für viele Portionen, er kommt auch in Yaki-Nudeln und Ramen.",
+   "imgNote": "Foto: TheMealDB",
+   "slot": "abend",
+   "asian": true,
+   "id": "mee-goreng-gebratene-nudeln-mit-ei-und-k"
+  },
+  {
+   "title": "Thai-Curry mit Kichererbsen und Kokosmilch",
+   "img": "https://www.themealdb.com/images/media/meals/sstssx1487349585.jpg",
+   "imgNote": "Foto: TheMealDB (ähnliches Gericht)",
+   "time": 25,
+   "kcal": 720,
+   "protein": 20,
+   "ing": [
+    {
+     "n": "Kichererbsen (Dose)",
+     "q": 0.5,
+     "u": "Dose",
+     "k": "kicher"
+    },
+    {
+     "n": "Kokosmilch",
+     "q": 0.5,
+     "u": "Dose",
+     "k": "kokos"
+    },
+    {
+     "n": "Rote Currypaste",
+     "q": 20,
+     "u": "g",
+     "k": "currypaste"
+    },
+    {
+     "n": "Paprika",
+     "q": 1,
+     "u": "Stk",
+     "k": "paprika"
+    },
+    {
+     "n": "TK-Spinat",
+     "q": 100,
+     "u": "g",
+     "k": "spinat"
+    },
+    {
+     "n": "Reis",
+     "q": 70,
+     "u": "g",
+     "k": "reis"
+    },
+    {
+     "n": "Zwiebel",
+     "q": 50,
+     "u": "g",
+     "k": "zwiebel"
+    },
+    {
+     "n": "Öl, Sojasauce, Zitrone",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Reis kochen.",
+    "Zwiebel würfeln, in 1 EL Öl glasig braten, Currypaste 1 Minute mitrösten.",
+    "Kokosmilch, Paprikastreifen und abgetropfte Kichererbsen dazu, 8 Minuten köcheln.",
+    "Spinat unterrühren, mit Sojasauce und Zitronensaft abschmecken, mit Reis servieren."
+   ],
+   "tip": "Die zweite Hälfte Kokosmilch und Kichererbsen hält im Kühlschrank 3 Tage, z. B. für die Kokos-Gemüsesuppe.",
+   "slot": "abend",
+   "asian": true,
+   "id": "thai-curry-mit-kichererbsen-und-kokosmil"
+  },
+  {
+   "title": "Yaki-Nudeln mit Hähnchen und Weißkohl",
+   "img": "https://www.themealdb.com/images/media/meals/wrustq1511475474.jpg",
+   "imgNote": "Foto: TheMealDB (Yaki Udon, ähnliches Gericht)",
+   "time": 20,
+   "kcal": 660,
+   "protein": 40,
+   "ing": [
+    {
+     "n": "Mie-Nudeln",
+     "q": 90,
+     "u": "g",
+     "k": "mie"
+    },
+    {
+     "n": "Hähnchenbrust",
+     "q": 130,
+     "u": "g",
+     "k": "haehnchen"
+    },
+    {
+     "n": "Weißkohl",
+     "q": 150,
+     "u": "g",
+     "k": "weisskohl"
+    },
+    {
+     "n": "Karotte",
+     "q": 60,
+     "u": "g",
+     "k": "karotte"
+    },
+    {
+     "n": "Ingwer",
+     "q": 0.1,
+     "u": "Stk",
+     "k": "ingwer"
+    },
+    {
+     "n": "Öl, Sojasauce, Zucker",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Nudeln kochen und abgießen.",
+    "Hähnchen in Streifen schneiden und in 1 EL Öl 5 Minuten braten.",
+    "Kohlstreifen, Karottenstifte und geriebenen Ingwer 4 Minuten mitbraten.",
+    "Nudeln, 2 EL Sojasauce und 1 TL Zucker dazu, 2 Minuten schwenken."
+   ],
+   "slot": "abend",
+   "asian": true,
+   "tip": "",
+   "id": "yaki-nudeln-mit-hahnchen-und-weikohl"
+  },
+  {
+   "title": "Egg Foo Young: chinesisches Gemüse-Omelett mit Reis",
+   "img": "https://www.themealdb.com/images/media/meals/47y6ii1765658818.jpg",
+   "time": 20,
+   "kcal": 560,
+   "protein": 24,
+   "ing": [
+    {
+     "n": "Eier",
+     "q": 3,
+     "u": "Stk",
+     "k": "eier"
+    },
+    {
+     "n": "TK-Erbsen",
+     "q": 60,
+     "u": "g",
+     "k": "erbsen"
+    },
+    {
+     "n": "Karotte",
+     "q": 60,
+     "u": "g",
+     "k": "karotte"
+    },
+    {
+     "n": "Frühlingszwiebeln",
+     "q": 2,
+     "u": "Stängel",
+     "k": "fzwiebel"
+    },
+    {
+     "n": "Reis",
+     "q": 60,
+     "u": "g",
+     "k": "reis"
+    },
+    {
+     "n": "Öl, Sojasauce, Speisestärke",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Reis kochen.",
+    "Karotte fein raspeln, Frühlingszwiebeln in Ringe schneiden, mit Erbsen und verquirlten Eiern mischen, salzen.",
+    "In 1 EL heißem Öl zwei kleine Omeletts je 3 Minuten pro Seite braten.",
+    "Für die Sauce 2 EL Sojasauce, 5 EL Wasser und 1 TL Stärke aufkochen und über die Omeletts geben."
+   ],
+   "imgNote": "Foto: TheMealDB",
+   "slot": "abend",
+   "asian": true,
+   "tip": "",
+   "id": "egg-foo-young-chinesisches-gemuse-omelet"
+  },
+  {
+   "title": "Schnelle Ramen mit Ei und Spinat",
+   "img": "https://www.themealdb.com/images/media/meals/ip5xtp1769779958.jpg",
+   "time": 15,
+   "kcal": 540,
+   "protein": 22,
+   "ing": [
+    {
+     "n": "Mie-Nudeln",
+     "q": 90,
+     "u": "g",
+     "k": "mie"
+    },
+    {
+     "n": "Eier",
+     "q": 2,
+     "u": "Stk",
+     "k": "eier"
+    },
+    {
+     "n": "TK-Spinat",
+     "q": 80,
+     "u": "g",
+     "k": "spinat"
+    },
+    {
+     "n": "Weißkohl",
+     "q": 80,
+     "u": "g",
+     "k": "weisskohl"
+    },
+    {
+     "n": "Frühlingszwiebeln",
+     "q": 2,
+     "u": "Stängel",
+     "k": "fzwiebel"
+    },
+    {
+     "n": "Ingwer",
+     "q": 0.1,
+     "u": "Stk",
+     "k": "ingwer"
+    },
+    {
+     "n": "Knoblauch",
+     "q": 1,
+     "u": "Zehe",
+     "k": "knoblauch"
+    },
+    {
+     "n": "Gemüsebrühe, Sojasauce, Sesamöl oder Öl, Chili",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Eier 7 Minuten kochen, abschrecken und schälen.",
+    "500 ml Brühe mit geriebenem Ingwer, Knoblauch und 2 EL Sojasauce aufkochen.",
+    "Kohlstreifen, Spinat und Nudeln darin 4 Minuten garen.",
+    "In eine Schüssel geben, halbierte Eier und Frühlingszwiebeln darauf, nach Geschmack Chili und ein paar Tropfen Öl."
+   ],
+   "imgNote": "Foto: TheMealDB",
+   "slot": "abend",
+   "asian": true,
+   "tip": "",
+   "id": "schnelle-ramen-mit-ei-und-spinat"
+  },
+  {
+   "title": "Tofu-Brokkoli-Pfanne mit Erdnüssen",
+   "img": "https://www.themealdb.com/images/media/meals/minfsc1763766806.jpg",
+   "imgNote": "Foto: TheMealDB (ähnliches Gericht)",
+   "time": 25,
+   "kcal": 690,
+   "protein": 32,
+   "ing": [
+    {
+     "n": "Tofu natur",
+     "q": 150,
+     "u": "g",
+     "k": "tofu"
+    },
+    {
+     "n": "TK-Brokkoli",
+     "q": 150,
+     "u": "g",
+     "k": "brokkoli"
+    },
+    {
+     "n": "Paprika",
+     "q": 0.5,
+     "u": "Stk",
+     "k": "paprika"
+    },
+    {
+     "n": "Erdnüsse",
+     "q": 20,
+     "u": "g",
+     "k": "erdnuss"
+    },
+    {
+     "n": "Reis",
+     "q": 70,
+     "u": "g",
+     "k": "reis"
+    },
+    {
+     "n": "Knoblauch",
+     "q": 1,
+     "u": "Zehe",
+     "k": "knoblauch"
+    },
+    {
+     "n": "Ingwer",
+     "q": 0.1,
+     "u": "Stk",
+     "k": "ingwer"
+    },
+    {
+     "n": "Öl, Sojasauce, Honig oder Zucker",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Reis kochen. Tofu trocken tupfen und würfeln.",
+    "Tofu in 1 EL Öl 6 bis 8 Minuten knusprig braten, herausnehmen.",
+    "Brokkoli und Paprika 5 Minuten braten, Knoblauch und Ingwer 1 Minute mitbraten.",
+    "Tofu zurück, mit 2 EL Sojasauce und 1 TL Honig glasieren, gehackte Erdnüsse darüber, mit Reis servieren."
+   ],
+   "tip": "Den Rest Tofu in Wasser im Kühlschrank lagern und in 2 bis 3 Tagen verbrauchen.",
+   "slot": "abend",
+   "asian": true,
+   "id": "tofu-brokkoli-pfanne-mit-erdnussen"
+  },
+  {
+   "title": "Süß-saures Hähnchen mit Ananas und Reis",
+   "img": "https://www.themealdb.com/images/media/meals/arzs741766434335.jpg",
+   "time": 25,
+   "kcal": 720,
+   "protein": 40,
+   "ing": [
+    {
+     "n": "Hähnchenbrust",
+     "q": 140,
+     "u": "g",
+     "k": "haehnchen"
+    },
+    {
+     "n": "Ananasstücke",
+     "q": 0.5,
+     "u": "Dose",
+     "k": "ananas"
+    },
+    {
+     "n": "Paprika",
+     "q": 1,
+     "u": "Stk",
+     "k": "paprika"
+    },
+    {
+     "n": "Zwiebel",
+     "q": 60,
+     "u": "g",
+     "k": "zwiebel"
+    },
+    {
+     "n": "Reis",
+     "q": 70,
+     "u": "g",
+     "k": "reis"
+    },
+    {
+     "n": "Öl, Ketchup, Essig, Zucker, Sojasauce, Speisestärke",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Reis kochen. Hähnchen würfeln, Paprika und Zwiebel in Stücke schneiden.",
+    "Hähnchen in 1 EL Öl 5 Minuten braten, Gemüse 3 Minuten mitbraten.",
+    "Sauce: 2 EL Ketchup, 1 EL Essig, 1 EL Zucker, 1 EL Sojasauce, 4 EL Ananassaft und 1 TL Stärke verrühren.",
+    "Ananas und Sauce dazu, 2 Minuten köcheln, bis sie andickt."
+   ],
+   "imgNote": "Foto: TheMealDB",
+   "slot": "abend",
+   "asian": true,
+   "tip": "",
+   "id": "su-saures-hahnchen-mit-ananas-und-reis"
+  },
+  {
+   "title": "Thai-Kokossuppe mit Gemüse und Nudeln",
+   "img": "https://www.themealdb.com/images/media/meals/4k8nzy1763583384.jpg",
+   "time": 20,
+   "kcal": 560,
+   "protein": 14,
+   "ing": [
+    {
+     "n": "Kokosmilch",
+     "q": 0.5,
+     "u": "Dose",
+     "k": "kokos"
+    },
+    {
+     "n": "Rote Currypaste",
+     "q": 15,
+     "u": "g",
+     "k": "currypaste"
+    },
+    {
+     "n": "Karotte",
+     "q": 80,
+     "u": "g",
+     "k": "karotte"
+    },
+    {
+     "n": "Paprika",
+     "q": 0.5,
+     "u": "Stk",
+     "k": "paprika"
+    },
+    {
+     "n": "TK-Brokkoli",
+     "q": 100,
+     "u": "g",
+     "k": "brokkoli"
+    },
+    {
+     "n": "Mie-Nudeln",
+     "q": 60,
+     "u": "g",
+     "k": "mie"
+    },
+    {
+     "n": "Frühlingszwiebeln",
+     "q": 2,
+     "u": "Stängel",
+     "k": "fzwiebel"
+    },
+    {
+     "n": "Gemüsebrühe, Sojasauce, Zitrone",
+     "q": null,
+     "u": "",
+     "k": "Vorrat"
+    }
+   ],
+   "steps": [
+    "Currypaste in einem Topf 1 Minute ohne Fett anrösten.",
+    "Kokosmilch und 300 ml Brühe dazu, aufkochen.",
+    "Karottenscheiben, Paprikastreifen und Brokkoli 5 Minuten köcheln, Nudeln 3 Minuten mitgaren.",
+    "Mit Sojasauce und Zitronensaft abschmecken, Frühlingszwiebeln darüber."
+   ],
+   "imgNote": "Foto: TheMealDB",
+   "slot": "abend",
+   "asian": true,
+   "tip": "",
+   "id": "thai-kokossuppe-mit-gemuse-und-nudeln"
   }
  ]
 }

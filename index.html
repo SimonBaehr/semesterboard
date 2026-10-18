@@ -549,7 +549,7 @@ const VIEWS=[["heute","Cockpit"],["woche","Woche"],["faecher","Fächer"]];
 const AVIEWS=[["alltag","Fitness"],["training","Training"],["analyse","Analyse"],["essen","Abendessen"]];
 const COLS=["courses","events","tasks","steps","notes","digests","literature","timelog","reviews","news"];
 // Alltag-Daten liegen in eigenen Tabellen (fit_*), getrennt von den Uni-Tabellen.
-const FCOLS=["fit_workouts","fit_meals","fit_weight","fit_goals","fit_wellness"];
+const FCOLS=["fit_workouts","fit_meals","fit_weight","fit_goals","fit_wellness","fit_recipes","recipe_requests"];
 const ALLC=[...COLS,...FCOLS];
 const SEM_START=new Date(2026,9,1), SEM_END=new Date(2027,1,15);
 const S={}; ALLC.forEach(c=>S[c]=[]);
@@ -1122,16 +1122,31 @@ let REZ=null,essDay=null,essTab="tag";
 fetch("rezepte.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).then(d=>{if(d){REZ=d;if(isAlltag(view))render()}}).catch(()=>{});
 const WDAYS=["Mo","Di","Mi","Do","Fr","Sa","So"],WDAYL=["Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag","Sonntag"];
 const wdIdx=d=>(new Date(d).getDay()+6)%7;
-const mealsOf=i=>REZ?REZ.recipes.filter(r=>r.day===i).sort((a,b)=>(a.opt||0)-(b.opt||0)):[];
+/* Rezept-Pool: Grundstock aus rezepte.json plus neue Rezepte aus der Datenbank (fit_recipes, von der Rezept-Routine angelegt).
+   Pro Tag 3 Abendessen, eins davon immer asiatisch. „Andere Vorschläge“ würfelt einen Tag neu, ohne die anderen Tage zu verändern. */
+const recipesAll=()=>{if(!REZ)return[];const seen=new Set(),out=[];REZ.recipes.concat(S.fit_recipes.map(x=>x.data&&Object.assign({id:x.id},x.data)).filter(Boolean)).forEach(r=>{if(r&&r.id&&!seen.has(r.id)&&Array.isArray(r.ing)){seen.add(r.id);out.push(r)}});return out};
+let PRC=null,PRCK="";
+const PR=()=>{const k=S.fit_recipes.length+":"+(REZ?1:0);if(PRC&&PRCK===k)return PRC;PRC=Object.assign({},...S.fit_recipes.map(x=>x.data&&x.data.prices||{}),REZ?REZ.prices:{});PRCK=k;return PRC};
+const mod=(a,n)=>((a%n)+n)%n;
+const rollOf=i=>+(ls("sb-ess-roll-"+wkKey()+"-"+i)||0);
+function mealsOf(i){
+  const all=recipesAll();if(!all.length)return[];
+  const A=all.filter(r=>r.asian),O=all.filter(r=>!r.asian);
+  const wn=Math.round((monday(new Date())-new Date(2026,0,5))/(7*DAY)),s=wn*7+i+rollOf(i)*7;
+  const a=A.length?A[mod(s,A.length)]:null,o=[];
+  for(let t=0;o.length<(a?2:3)&&t<O.length;t++){const r=O[mod(2*s+t,O.length)];if(!o.includes(r))o.push(r)}
+  const arr=o.slice();if(a)arr.splice(mod(s,3),0,a);
+  return arr.map((r,k)=>Object.assign({},r,{opt:k}));
+}
 const eur=v=>v.toLocaleString("de-DE",{style:"currency",currency:"EUR"});
 function inPack(i,p){let q=i.q;if(i.u===p[2])return q;if(i.u==="Scheibe"||i.u==="Scheiben")return q*50;if(i.u==="Zehe")return q/10;if(i.u==="Stängel")return q/8;if(i.u==="Stk"&&p[2]==="g")return q*100;return q}
 const unitP=p=>p[2]==="g"?` (${eur(p[3]/p[1]*1000)}/kg)`:p[2]==="ml"?` (${eur(p[3]/p[1]*1000)}/l)`:p[1]>1?` (${eur(p[3]/p[1])}/${p[2]})`:"";
-const costOf=r=>r.ing.reduce((s,i)=>{const p=REZ.prices[i.k];return p?s+inPack(i,p)/p[1]*p[3]:s},0);
+const costOf=r=>r.ing.reduce((s,i)=>{const p=PR()[i.k];return p?s+inPack(i,p)/p[1]*p[3]:s},0);
 const qty=i=>i.q==null?"":`${(+i.q).toLocaleString("de-DE",{maximumFractionDigits:2})}${i.u?" "+i.u:""}`;
 const ls=(k,v)=>{try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}};
 const chk=key=>ls("sb-shop-"+key)==="1";
 const wkKey=()=>iso(monday(new Date()));
-const pickOf=i=>{const v=ls("sb-ess-pick-"+wkKey()+"-"+i);return v==null||v===""?null:+v};
+const pickOf=i=>{const v=ls("sb-ess-pick-"+wkKey()+"-"+i);return v==null||v===""?null:v};
 const tagOf=r=>r.time<=20?"schnell":r.time>=40?"braucht Zeit":"";
 function essenToday(){
   if(!REZ)return `<section class="panel s12"><div class="ph"><h2>Abendessen heute</h2></div><div class="empty">Rezepte werden geladen …</div></section>`;
@@ -1139,26 +1154,26 @@ function essenToday(){
   return `<section class="panel s12" aria-labelledby="h-eat"><div class="ph"><h2 id="h-eat">Abendessen heute</h2><button class="btn small" data-essday="${i}">Rezepte und Einkaufslisten</button></div>
     <div class="meals">${ms.map(r=>mealCard(r,i)).join("")}</div></section>`;
 }
-function mealCard(r,i){const pk=pickOf(i)===r.opt,t=tagOf(r);
-  return `<button class="meal${pk?" picked":""}" data-essday="${i}" data-esso="${r.opt}"><img src="${r.img}" alt="${esc(r.title)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"><div class="mb"><div class="label">Vorschlag ${r.opt+1}${pk?" · gewählt":""}${t?" · "+t:""}</div><div class="mt">${esc(r.title)}</div><div class="mm"><span>${r.time} min</span><span>ca. ${r.kcal} kcal</span><span>ca. ${eur(costOf(r))}</span></div></div></button>`;
+function mealCard(r,i){const pk=pickOf(i)===r.id,t=tagOf(r);
+  return `<button class="meal${pk?" picked":""}" data-essday="${i}" data-esso="${r.opt}"><img src="${r.img}" alt="${esc(r.title)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.style.visibility='hidden'"><div class="mb"><div class="label">${r.asian?"Asiatisch":"Vorschlag "+(r.opt+1)}${pk?" · gewählt":""}${t?" · "+t:""}</div><div class="mt">${esc(r.title)}</div><div class="mm"><span>${r.time} min</span><span>ca. ${r.kcal} kcal</span><span>ca. ${eur(costOf(r))}</span></div></div></button>`;
 }
-function recipeBlock(r,i){const pk=pickOf(i)===r.opt;
+function recipeBlock(r,i){const pk=pickOf(i)===r.id;
   return `<section class="panel s12 recipe" id="rz-${r.opt}"><div class="rz">
     <figure><img src="${r.img}" alt="${esc(r.title)}" loading="lazy" referrerpolicy="no-referrer" onerror="this.parentNode.style.display='none';this.closest('.rz').classList.add('noimg')"><figcaption>${esc(r.imgNote)}</figcaption></figure>
-    <div class="rzb"><div class="row" style="justify-content:space-between"><div class="label">Vorschlag ${r.opt+1}</div><button class="btn small${pk?" primary":""}" data-pick="${i}:${r.opt}">${pk?"✓ Gewählt":"Das koche ich"}</button></div>
+    <div class="rzb"><div class="row" style="justify-content:space-between"><div class="label">${r.asian?"Asiatisch":"Vorschlag "+(r.opt+1)}</div><button class="btn small${pk?" primary":""}" data-pick="${i}:${esc(r.id)}">${pk?"✓ Gewählt":"Das koche ich"}</button></div>
       <h2 class="rzt">${esc(r.title)}</h2>
       <div class="mm"><span>${r.time} min</span><span>ca. ${r.kcal} kcal</span><span>ca. ${r.protein} g Eiweiß</span><span>ca. ${eur(costOf(r))} pro Portion</span></div>
-      <h3 class="rzh">Zutaten für 1 Portion</h3><ul class="ing">${r.ing.map((x,j)=>{const key=wkKey()+"-i"+i+"-"+r.opt+"-"+j,on=chk(key),p=REZ.prices[x.k];
+      <h3 class="rzh">Zutaten für 1 Portion</h3><ul class="ing">${r.ing.map((x,j)=>{const key=wkKey()+"-i"+i+"-"+r.id+"-"+j,on=chk(key),p=PR()[x.k];
         return `<li class="${on?"done":""}"><label class="ingl"><input type="checkbox" class="check" data-shop="${esc(key)}" ${on?"checked":""}><span class="q">${qty(x)}</span><span class="in">${esc(x.n)}${x.k==="Vorrat"?' <span class="faint">(Vorrat)</span>':""}</span><span class="ip">${p?`${eur(p[3])}<small>${esc(p[1]+" "+p[2])}</small>`:""}</span></label></li>`}).join("")}</ul>
       <h3 class="rzh">Zubereitung</h3><ol class="steps">${r.steps.map(s=>`<li>${esc(s)}</li>`).join("")}</ol>
       ${r.tip?`<p class="tipline">${esc(r.tip)}</p>`:""}
-      <details class="shopd"><summary>Einkaufsliste für dieses Gericht</summary>${shopList([r],wkKey()+"-r"+i+"-"+r.opt)}</details></div></div></section>`;
+      <details class="shopd"><summary>Einkaufsliste für dieses Gericht</summary>${shopList([r],wkKey()+"-r"+i+"-"+r.id)}</details></div></div></section>`;
 }
 function shopList(recipes,scope){
   const need={},vor=new Set();
-  recipes.forEach(r=>r.ing.forEach(i=>{if(i.k==="Vorrat"){i.n.split(",").forEach(x=>vor.add(x.trim()));return}const p=REZ.prices[i.k];if(!p)return;need[i.k]=(need[i.k]||0)+inPack(i,p)}));
+  recipes.forEach(r=>r.ing.forEach(i=>{if(i.k==="Vorrat"){i.n.split(",").forEach(x=>vor.add(x.trim()));return}const p=PR()[i.k];if(!p)return;need[i.k]=(need[i.k]||0)+inPack(i,p)}));
   const cats={};let tot=0,used=0;
-  Object.entries(need).forEach(([k,q])=>{const p=REZ.prices[k],packs=Math.max(1,Math.ceil(q/p[1]-1e-9));tot+=packs*p[3];used+=q/p[1]*p[3];(cats[p[4]]=cats[p[4]]||[]).push({k,q,p,packs})});
+  Object.entries(need).forEach(([k,q])=>{const p=PR()[k],packs=Math.max(1,Math.ceil(q/p[1]-1e-9));tot+=packs*p[3];used+=q/p[1]*p[3];(cats[p[4]]=cats[p[4]]||[]).push({k,q,p,packs})});
   const amt=(q,p)=>p[2]==="g"||p[2]==="ml"?`${Math.round(q)} ${p[2]}`:`${(Math.round(q*10)/10).toLocaleString("de-DE")} ${p[2]}`;
   return `<div class="shop">${Object.keys(cats).sort().map(c=>`<div class="sgrp"><div class="label">${esc(c)}</div>${cats[c].sort((a,b)=>a.p[0].localeCompare(b.p[0])).map(x=>{const key=scope+"-"+x.k,on=chk(key);
       return `<label class="sitem${on?" done":""}"><input type="checkbox" class="check" data-shop="${esc(key)}" ${on?"checked":""}><span class="sn">${esc(x.p[0])}</span><span class="sq">${amt(x.q,x.p)} gebraucht · ${x.packs} × ${x.p[1]} ${x.p[2]} à ${eur(x.p[3])}${unitP(x.p)}${x.p[5]?" · Preis "+esc(x.p[5]):""}</span><span class="sp">${eur(x.packs*x.p[3])}</span></label>`}).join("")}</div>`).join("")}
@@ -1168,13 +1183,13 @@ function shopList(recipes,scope){
 function vEssen(){
   if(!REZ)return '<div class="ph"><h1>Essen</h1></div><section class="panel"><div class="empty">Rezepte werden geladen …</div></section>';
   const ti=wdIdx(new Date());if(essDay==null)essDay=ti;const ms=mealsOf(essDay);
-  const chosen=[...Array(7)].map((_,i)=>{const o=pickOf(i);return mealsOf(i).find(r=>r.opt===o)||null});
+  const ALLR=recipesAll(),chosen=[...Array(7)].map((_,i)=>{const o=pickOf(i);return o?ALLR.find(r=>r.id===o)||null:null});
   const wk=chosen.filter(Boolean);
   return `<div class="ph"><h1>Abendessen</h1><span class="label">3 Vorschläge pro Tag · günstig, ausgewogen, Preise für REWE</span></div>
   <div class="row" style="margin-bottom:14px"><div class="seg" role="group" aria-label="Ansicht"><button data-esstab="tag" aria-pressed="${essTab==="tag"}">Tag</button><button data-esstab="woche" aria-pressed="${essTab==="woche"}">Wocheneinkauf</button></div>
   ${essTab==="tag"?`<div class="seg" role="group" aria-label="Tag">${WDAYS.map((d,i)=>`<button data-essday="${i}" aria-pressed="${essDay===i}">${d}${i===ti?" ·":""}</button>`).join("")}</div>`:""}</div>
   ${essTab==="tag"?`<div class="grid">
-    <section class="panel s12"><div class="ph"><h2>${WDAYL[essDay]}: 3 Vorschläge</h2><span class="faint" style="font-size:.78rem">Wähle eins mit „Das koche ich“, dann landet es im Wocheneinkauf.</span></div><div class="meals">${ms.map(r=>mealCard(r,essDay)).join("")}</div></section>
+    <section class="panel s12"><div class="ph"><h2>${WDAYL[essDay]}: 3 Vorschläge</h2><div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn small" data-reroll="${essDay}">↻ Andere Vorschläge</button>${reqBtn()}</div></div><div class="faint" style="font-size:.78rem;margin:-4px 0 10px">Eins ist immer asiatisch. Wähle eins mit „Das koche ich“, dann landet es im Wocheneinkauf. ${recipesAll().length} Rezepte im Pool.</div><div class="meals">${ms.map(r=>mealCard(r,essDay)).join("")}</div></section>
     ${ms.map(r=>recipeBlock(r,essDay)).join("")}
   </div>`:`<div class="grid"><section class="panel s12"><div class="ph"><h2>Wocheneinkauf</h2><span class="label">für deine gewählten Abendessen</span></div>
     <div class="wkpick">${WDAYS.map((d,i)=>`<button class="chip" data-essday="${i}">${d}: ${chosen[i]?esc(chosen[i].title):'<span class="faint">noch nichts gewählt</span>'}</button>`).join("")}</div>
@@ -1182,10 +1197,14 @@ function vEssen(){
   <p class="faint" style="font-size:.78rem;margin-top:14px">${esc(REZ.note)}</p>`;
 }
 document.addEventListener("click",e=>{
-  const pk=e.target.closest("[data-pick]");if(pk){const [i,o]=pk.dataset.pick.split(":");const cur=pickOf(+i);ls("sb-ess-pick-"+wkKey()+"-"+i,cur===+o?"":o);if(cur===+o){try{localStorage.removeItem("sb-ess-pick-"+wkKey()+"-"+i)}catch(err){}}const y=scrollY;render();scrollTo(0,y);return}
+  const pk=e.target.closest("[data-pick]");if(pk){const [i,o]=pk.dataset.pick.split(":");const cur=pickOf(+i);ls("sb-ess-pick-"+wkKey()+"-"+i,cur===o?"":o);if(cur===o){try{localStorage.removeItem("sb-ess-pick-"+wkKey()+"-"+i)}catch(err){}}const y=scrollY;render();scrollTo(0,y);return}
   const d=e.target.closest("[data-essday]");if(d){essDay=+d.dataset.essday;essTab="tag";const s=d.dataset.esso;if(view!=="essen")go("essen");else render();if(s!=null)setTimeout(()=>{const el=document.getElementById("rz-"+s);if(el)el.scrollIntoView({behavior:"smooth",block:"start"})},60);return}
   const t=e.target.closest("[data-esstab]");if(t){essTab=t.dataset.esstab;render();return}
+  const rr=e.target.closest("[data-reroll]");if(rr){const i=+rr.dataset.reroll;ls("sb-ess-roll-"+wkKey()+"-"+i,String(rollOf(i)+1));const y=scrollY;render();scrollTo(0,y);return}
+  const rq=e.target.closest("[data-reqrez]");if(rq){if(openReq())return;add("recipe_requests",{id:"req-"+Date.now(),note:"Neue Rezepte aus der App",done:false},"Angefordert: neue Rezepte kommen bis morgen früh");return}
 });
+const openReq=()=>S.recipe_requests.find(r=>!r.done);
+function reqBtn(){const o=openReq();return o?'<button class="btn small" disabled title="Die Rezept-Routine legt sie bis morgen früh an">⏳ Neue Rezepte angefordert</button>':'<button class="btn small" data-reqrez="1" title="Claude erstellt neue Rezepte (2 asiatisch, 2 andere) und legt sie in den Pool">✦ Neue Rezepte erstellen</button>'}
 document.addEventListener("change",e=>{const c=e.target.closest("[data-shop]");if(!c)return;ls("sb-shop-"+c.dataset.shop,c.checked?"1":"0");(c.closest(".sitem")||c.closest("li")).classList.toggle("done",c.checked)});
 
 /* Diagramme Alltag */
