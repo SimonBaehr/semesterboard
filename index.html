@@ -416,6 +416,28 @@ h2{font-size:.95rem;font-weight:600;text-transform:none;letter-spacing:-.005em;c
 .ingl .check{margin:0}.ingl .ip{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink2);font-size:.85rem;line-height:1.15}.ingl .ip small{display:block;font-size:.7rem;color:var(--ink3)}
 .ing li.done .in,.ing li.done .q{text-decoration:line-through;color:var(--ink3)}
 @media (max-width:560px){.ingl{grid-template-columns:auto 64px minmax(0,1fr) auto;gap:8px}}
+
+/* Analyse */
+.anamap-wrap{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px}
+.anamap{height:520px;border-radius:12px;overflow:hidden;border:1px solid var(--line);background:var(--line)}
+.ana-side{min-width:0;display:flex;flex-direction:column}
+.alist{max-height:400px;overflow-y:auto;display:flex;flex-direction:column;gap:2px}
+.arow{all:unset;box-sizing:border-box;display:flex;flex-direction:column;gap:1px;padding:7px 9px;border-radius:8px;cursor:pointer;border-left:3px solid transparent}
+.arow:hover{background:var(--line)}
+.arow.on{background:var(--line);border-left-color:var(--cc,var(--accent))}
+.arow .n{font-size:.86rem;font-weight:550;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.arow .m{font-size:.74rem;color:var(--ink3)}
+.arow .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--cc);margin-right:6px}
+.arow:focus-visible{outline:2px solid var(--accent)}
+.prow{display:flex;justify-content:space-between;gap:10px;padding:9px 0;border-top:1px solid var(--line);font-size:.9rem}
+.prow:first-child{border-top:0}
+.ctable{display:flex;flex-direction:column;font-size:.88rem;overflow-x:auto}
+.cr{display:grid;grid-template-columns:120px minmax(140px,1fr) minmax(140px,1fr) 110px;gap:10px;padding:8px 0;border-top:1px solid var(--line)}
+.cr.ch{border-top:0;font-weight:600}
+.cr.ch span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.leaflet-container{font-family:var(--f-body)}
+.kpis.kpis-s{grid-template-columns:repeat(auto-fit,minmax(130px,1fr))}
+@media (max-width:820px){.alist{max-height:280px}.anamap-wrap{grid-template-columns:1fr}.anamap{height:380px}.cr{grid-template-columns:90px 1fr 1fr 90px;font-size:.8rem}}
 </style>
 </head>
 <body>
@@ -449,11 +471,12 @@ const ICONS={
   mail:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>',
   alltag:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>',
   training:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M6 7v10M18 7v10M3 10v4M21 10v4M6 12h12"/></svg>',
+  analyse:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M9 4 3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/></svg>',
   essen:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 3v8a2 2 0 0 0 2 2v8M5 3v6M9 3v6M17 21V3c-2 1-3 4-3 8h3"/></svg>',
   gewicht:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 10a5 5 0 0 1 8 0M12 10l1.5-2"/></svg>'
 };
 const VIEWS=[["heute","Cockpit"],["woche","Woche"],["faecher","Fächer"],["aufgaben","Aufgaben"],["notizen","Notizen"]];
-const AVIEWS=[["alltag","Übersicht"],["training","Training"],["essen","Abendessen"]];
+const AVIEWS=[["alltag","Übersicht"],["training","Training"],["analyse","Analyse"],["essen","Abendessen"]];
 const COLS=["courses","events","tasks","steps","notes","digests","literature","timelog","reviews"];
 // Alltag-Daten liegen in eigenen Tabellen (fit_*), getrennt von den Uni-Tabellen.
 const FCOLS=["fit_workouts","fit_meals","fit_weight","fit_goals"];
@@ -702,7 +725,8 @@ function chartBurndown(el,cid){
 }
 function drawCharts(){
   document.querySelectorAll("[data-chart]").forEach(el=>{const k=el.dataset.chart;
-    if(k==="timeline")chartTimeline(el);else if(k==="activity")chartActivity(el);else if(k==="study")chartStudy(el);else if(k==="burndown")chartBurndown(el,el.dataset.cid);else if(k==="weight")chartWeight(el);else if(k==="kcal")chartKcal(el);else if(k==="train")chartTrain(el);else if(k==="runkm")chartRunKm(el);else if(k==="runyear")chartRunYear(el);else if(k==="mix")chartMix(el);else if(k==="pace")chartPace(el)});
+    if(k==="timeline")chartTimeline(el);else if(k==="activity")chartActivity(el);else if(k==="study")chartStudy(el);else if(k==="burndown")chartBurndown(el,el.dataset.cid);else if(k==="weight")chartWeight(el);else if(k==="kcal")chartKcal(el);else if(k==="train")chartTrain(el);else if(k==="runkm")chartRunKm(el);else if(k==="runyear")chartRunYear(el);else if(k==="mix")chartMix(el);else if(k==="pace")chartPace(el);else if(k==="pmc")chartPMC(el);else if(k==="acwr")chartACWR(el);else if(k==="heat")chartHeat(el);else if(k==="volume")chartVolume(el)});
+  const am=document.getElementById("anamap");if(am)initMap(am);
   document.querySelectorAll(".kpi .rg").forEach(c=>c.style.strokeDashoffset=c.dataset.off);
   if(!ringsDone&&S.steps.length){requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll(".rg").forEach(c=>c.style.strokeDashoffset=c.dataset.off)));ringsDone=true}
 }
@@ -1198,10 +1222,207 @@ function chartPace(el){
   el.innerHTML=`<svg width="${W}" height="${H}" role="img" aria-label="Pace der Läufe, letzte 6 Monate">${g}</svg><div class="legend"><span><i style="background:var(--accent)"></i>Schnitt der letzten 5 Läufe</span><span>Punkte: einzelne Läufe ab 3 km, größer = länger, oben = schneller</span></div>`;
 }
 
+/* ---------- Analyse: Belastung, Form, Karte und Streckenvergleich ---------- */
+const RUNS=/^(Run|TrailRun|VirtualRun)$/,RIDES=/Ride$/,HIKES=/^(Walk|Hike|Snowshoe)$/;
+const wSport=w=>w.sport||spOf(w);
+const wKm=w=>w.km!=null?+w.km:kmOfW(w);
+const wSec=w=>w.movingS||((w.durationMin||0)*60);
+const fmtPace=s=>{s=Math.round(s);return `${Math.floor(s/60)}:${String(s%60).padStart(2,"0")}`};
+const fmtDur=s=>{s=Math.round(s);const h=Math.floor(s/3600),m=Math.floor(s%3600/60),x=s%60;return h?`${h}:${String(m).padStart(2,"0")}:${String(x).padStart(2,"0")}`:`${m}:${String(x).padStart(2,"0")}`};
+const sportGroup=s=>RUNS.test(s)?"run":RIDES.test(s)?"ride":HIKES.test(s)?"hike":"other";
+let anaSport="run",anaRange="365",anaSel=[],anaView=null,LOADF=null;
+/* Belastung: Strava Relative Effort, wo vorhanden. Sonst geschätzt aus Dauer × typischer Belastung pro Minute derselben Sportart. */
+function loadFactors(){
+  const by={};S.fit_workouts.forEach(w=>{if(w.done&&w.effort>0&&wSec(w)>300){const s=wSport(w);(by[s]=by[s]||[]).push(w.effort/(wSec(w)/60))}});
+  const med=a=>{a=a.slice().sort((x,y)=>x-y);return a[Math.floor(a.length/2)]};
+  const f={};for(const s in by)if(by[s].length>=3)f[s]=med(by[s]);
+  const all=Object.values(by).flat();f._=all.length?med(all):.8;return f}
+function wLoad(w){if(!w.done||!w.date)return 0;if(w.effort>0)return w.effort;const f=LOADF||(LOADF=loadFactors()),s=wSport(w);
+  const k=f[s]??(RUNS.test(s)?f.Run:RIDES.test(s)?(f.Ride??f.GravelRide):HIKES.test(s)?(f.Hike??f.Walk):null)??f._;return k*wSec(w)/60}
+function loadSeries(){
+  const m={};let first=null;S.fit_workouts.forEach(w=>{const l=wLoad(w);if(!l)return;m[w.date]=(m[w.date]||0)+l;if(!first||w.date<first)first=w.date});
+  if(!first)return [];const out=[],kc=1-Math.exp(-1/42),ka=1-Math.exp(-1/7);let ctl=0,atl=0;
+  for(let d=fromIso(first),end=new Date();d<=end;d=addDays(d,1)){const k=iso(d),l=m[k]||0,tsb=ctl-atl;ctl+=(l-ctl)*kc;atl+=(l-atl)*ka;out.push({d:k,l,ctl,atl,tsb})}
+  return out}
+function acwrAt(ser,i){const a=ser.slice(Math.max(0,i-6),i+1).reduce((s,x)=>s+x.l,0),c=ser.slice(Math.max(0,i-27),i+1).reduce((s,x)=>s+x.l,0)/4;return c>0?a/c:null}
+function monoAt(ser,i){const w=ser.slice(Math.max(0,i-6),i+1).map(x=>x.l);if(w.length<7)return null;const mu=w.reduce((a,b)=>a+b,0)/7,sd=Math.sqrt(w.reduce((a,b)=>a+(b-mu)**2,0)/7);return {mono:sd>0?mu/sd:null,strain:sd>0?mu*7*mu/sd:0,sum:mu*7}}
+/* Polyline (Google-Format) */
+function decPoly(s){const pts=[];let i=0,lat=0,lng=0;while(i<s.length){for(let k=0;k<2;k++){let sh=0,r=0,b;do{b=s.charCodeAt(i++)-63;r|=(b&31)<<sh;sh+=5}while(b>=32);const v=(r&1)?~(r>>1):(r>>1);if(k)lng+=v;else lat+=v}pts.push([lat/1e5,lng/1e5])}return pts}
+const PCACHE={};const ptsOf=w=>PCACHE[w.id]||(PCACHE[w.id]=w.poly?decPoly(w.poly):[]);
+function mxy(p,o){return [(p[1]-o[1])*111320*Math.cos(o[0]*Math.PI/180),(p[0]-o[0])*110540]}
+function dSeg(p,a,b){const dx=b[0]-a[0],dy=b[1]-a[1],L=dx*dx+dy*dy;let t=L?((p[0]-a[0])*dx+(p[1]-a[1])*dy)/L:0;t=Math.max(0,Math.min(1,t));return Math.hypot(p[0]-a[0]-t*dx,p[1]-a[1]-t*dy)}
+/* Anteil der Strecke A, der höchstens tol Meter neben Strecke B liegt */
+function overlap(A,B,tol=80){if(A.length<2||B.length<2)return 0;const o=A[0],a=A.map(p=>mxy(p,o)),b=B.map(p=>mxy(p,o));
+  const sm=[];for(let i=1;i<a.length;i++){const n=Math.max(1,Math.ceil(Math.hypot(a[i][0]-a[i-1][0],a[i][1]-a[i-1][1])/60));for(let j=0;j<n;j++)sm.push([a[i-1][0]+(a[i][0]-a[i-1][0])*j/n,a[i-1][1]+(a[i][1]-a[i-1][1])*j/n])}
+  let hit=0;sm.forEach(p=>{for(let i=1;i<b.length;i++)if(dSeg(p,b[i-1],b[i])<=tol){hit++;break}});return hit/sm.length}
+const distM=(p,q)=>Math.hypot(...mxy(p,q));
+function sameRoute(w,x){if(w.id===x.id||sportGroup(wSport(w))!==sportGroup(wSport(x)))return false;const A=ptsOf(w),B=ptsOf(x);if(A.length<2||B.length<2)return false;
+  const k1=wKm(w),k2=wKm(x);if(!k1||Math.abs(k1-k2)/k1>.12)return false;if(distM(A[0],B[0])>500)return false;return overlap(A,B)>=.7&&overlap(B,A)>=.7}
+function anaList(){const from=anaRange==="all"?"0000":iso(addDays(new Date(),-+anaRange));
+  return S.fit_workouts.filter(w=>w.done&&w.poly&&w.date>=from&&(anaSport==="all"||sportGroup(wSport(w))===anaSport)).sort((a,b)=>(b.date+(b.time||"")).localeCompare(a.date+(a.time||"")))}
+let CLU=null,CLUKEY="";
+function clusters(list){const key=anaSport+anaRange+list.length+(list[0]||{}).id;if(CLU&&CLUKEY===key)return CLU;const cl=[];
+  list.forEach(w=>{const c=cl.find(c=>sameRoute(c.rep,w));if(c)c.items.push(w);else cl.push({rep:w,items:[w]})});
+  CLU=cl.filter(c=>c.items.length>=3).sort((a,b)=>b.items.length-a.items.length).slice(0,6);CLUKEY=key;return CLU}
+const speedTxt=w=>{const km=wKm(w),s=wSec(w);if(!km||!s)return "–";return sportGroup(wSport(w))==="ride"?`${fh(km/(s/3600))} km/h`:`${fmtPace(s/km)} /km`};
+function wById(id){return S.fit_workouts.find(w=>w.id===id)}
+function vAnalyse(){
+  LOADF=null;const ser=loadSeries(),i=ser.length-1,cur=ser[i]||{ctl:0,atl:0,tsb:0},ac=i>=0?acwrAt(ser,i):null,mo=i>=0?monoAt(ser,i):null;
+  const formTxt=cur.tsb>5?"erholt":cur.tsb<-25?"stark ermüdet":cur.tsb<-10?"im Aufbau, müde":"ausgeglichen";
+  const acTxt=ac==null?"–":ac>1.5?"Spitze, Verletzungsrisiko":ac>1.3?"erhöht":ac<.8?"unter Niveau":"im grünen Bereich";
+  const withPoly=S.fit_workouts.filter(w=>w.poly).length,doneStrava=S.fit_workouts.filter(w=>/^strava-/.test(w.id)).length;
+  const seg=(k,v,opts)=>`<div class="seg" role="group">${opts.map(([a,b])=>`<button data-ana${k}="${a}" aria-pressed="${v===a}">${b}</button>`).join("")}</div>`;
+  return `<div class="grid">
+  <section class="panel s12"><div class="kpis kpis-s">
+    <div class="kpi"><div><div class="label">Fitness (CTL)</div><div class="big">${Math.round(cur.ctl)}</div><div class="sub">Schnitt 42 Tage</div></div></div>
+    <div class="kpi"><div><div class="label">Ermüdung (ATL)</div><div class="big">${Math.round(cur.atl)}</div><div class="sub">Schnitt 7 Tage</div></div></div>
+    <div class="kpi"><div><div class="label">Form (TSB)</div><div class="big">${cur.tsb>0?"+":""}${Math.round(cur.tsb)}</div><div class="sub">${formTxt}</div></div></div>
+    <div class="kpi"><div><div class="label">ACWR</div><div class="big">${ac==null?"–":ac.toFixed(2).replace(".",",")}</div><div class="sub">${acTxt}</div></div></div>
+    <div class="kpi"><div><div class="label">Monotonie 7 Tage</div><div class="big">${mo&&mo.mono?mo.mono.toFixed(1).replace(".",","):"–"}</div><div class="sub">${mo&&mo.mono>2?"zu gleichförmig":"Belastung variiert"}</div></div></div>
+  </div></section>
+  <section class="panel s12"><div class="ph"><h2>Routen</h2><div class="row" style="gap:8px;flex-wrap:wrap">${seg("sport",anaSport,[["run","Laufen"],["ride","Rad"],["hike","Gehen & Wandern"],["all","Alle"]])}${seg("range",anaRange,[["90","90 Tage"],["365","12 Monate"],["all","Alle"]])}</div></div>
+    ${withPoly?`<div class="anamap-wrap"><div id="anamap" class="anamap" role="application" aria-label="Karte mit deinen Routen"></div><div id="ana-side" class="ana-side"></div></div>`:`<div class="empty">Die GPS-Routen werden gerade nachgeladen. Die tägliche Strava-Synchronisation holt jeden Morgen weitere Aktivitäten mit Route, neue Läufe kommen sofort mit.</div>`}
+    ${withPoly&&withPoly<doneStrava*.6?`<div class="faint" style="font-size:.76rem;margin-top:8px">${withPoly} von ${doneStrava} Strava-Aktivitäten haben schon eine Route, der Rest wird jeden Morgen nachgeladen.</div>`:""}
+  </section>
+  <div id="ana-cmp" class="s12" style="display:contents"></div>
+  <section class="panel s12"><div class="ph"><h2>Fitness, Ermüdung und Form</h2><span class="faint" style="font-size:.76rem">letzte 6 Monate</span></div><div class="chart" data-chart="pmc"></div></section>
+  <section class="panel s7"><div class="ph"><h2>Belastungsverhältnis (ACWR)</h2><span class="faint" style="font-size:.76rem">7 Tage zu 28 Tagen, letzte 26 Wochen</span></div><div class="chart" data-chart="acwr"></div></section>
+  <section class="panel s5"><div class="ph"><h2>Prognose Wettkampfzeiten</h2><span class="faint" style="font-size:.76rem">Schätzung</span></div>${racePred()}</section>
+  <section class="panel s12"><div class="ph"><h2>Trainingskalender</h2><span class="faint" style="font-size:.76rem">Belastung pro Tag, letzte 12 Monate</span></div><div class="chart" data-chart="heat"></div></section>
+  <section class="panel s12"><div class="ph"><h2>Wochenumfang und langer Lauf</h2><span class="faint" style="font-size:.76rem">letzte 26 Wochen</span></div><div class="chart" data-chart="volume"></div></section>
+  <p class="faint s12" style="font-size:.76rem;margin:0">Belastung = Strava Relative Effort, wo vorhanden; sonst geschätzt aus Dauer und deiner typischen Belastung pro Minute in der Sportart. Herzfrequenzverlauf, Laktat, HRV und Schlaf liegen nicht vor und fließen nicht ein.</p>
+  </div>`;
+}
+function racePred(){
+  const from=iso(addDays(new Date(),-120));
+  const runs=S.fit_workouts.filter(w=>w.done&&RUNS.test(wSport(w))&&w.date>=from&&wKm(w)>=3&&wSec(w)>0).filter(w=>{const p=wSec(w)/wKm(w);return p>150&&p<480});
+  if(runs.length<3)return '<div class="empty">Zu wenige Läufe in den letzten 4 Monaten.</div>';
+  const T=[["5 km",5,3],["10 km",10,5],["Halbmarathon",21.0975,10],["Marathon",42.195,16]];
+  return `<div>${T.map(([n,D,min])=>{const c=runs.filter(w=>wKm(w)>=min);if(!c.length)return `<div class="prow"><span>${n}</span><span class="faint">zu wenig lange Läufe</span></div>`;
+    let best=null;c.forEach(w=>{const t=wSec(w)*Math.pow(D/wKm(w),1.06);if(!best||t<best.t)best={t,w}});
+    return `<div class="prow" ${tipAttr(`<b>${n}</b><br>aus „${esc(best.w.title)}“<br>${fDate(fromIso(best.w.date))} · ${fh(wKm(best.w))} km in ${fmtDur(wSec(best.w))}`)}><span>${n}</span><span><b class="num">${fmtDur(best.t)}</b> <span class="faint">${fmtPace(best.t/D)} /km</span></span></div>`}).join("")}</div>
+    <div class="faint" style="font-size:.76rem;margin-top:8px">Riegel-Formel aus deinem stärksten Lauf der letzten 4 Monate. Trainingsläufe sind keine Bestzeiten, die Werte sind eher vorsichtig.</div>`}
+/* ---------- Karte ---------- */
+let LMAP=null,LGROUP=null,leafP=null;
+function leaflet(){if(window.L)return Promise.resolve();return leafP||(leafP=new Promise((res,rej)=>{const c=document.createElement("link");c.rel="stylesheet";c.href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css";document.head.appendChild(c);const s=document.createElement("script");s.src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";s.onload=()=>res();s.onerror=()=>{leafP=null;rej()};document.head.appendChild(s)}))}
+const cssv=n=>getComputedStyle(document.body).getPropertyValue(n).trim();
+const CMPCOL=["#e8590c","#1c7ed6"];
+function initMap(el){
+  sidePanel(anaList());cmpPanel();
+  leaflet().then(()=>{if(!document.body.contains(el))return;if(LMAP){LMAP.remove();LMAP=null}
+    const dark=matchMedia("(prefers-color-scheme: dark)").matches;
+    LMAP=L.map(el,{preferCanvas:true,zoomControl:true,attributionControl:true});
+    L.tileLayer(`https://{s}.basemaps.cartocdn.com/${dark?"dark_all":"light_all"}/{z}/{x}/{y}{r}.png`,{maxZoom:19,subdomains:"abcd",attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'}).addTo(LMAP);
+    LGROUP=L.layerGroup().addTo(LMAP);LMAP.on("moveend",()=>{anaView={c:LMAP.getCenter(),z:LMAP.getZoom(),k:anaSport+anaRange}});
+    drawRoutes(true)}).catch(()=>{el.innerHTML='<div class="empty">Die Karte konnte nicht geladen werden (keine Verbindung?).</div>'});
+}
+function drawRoutes(fit){
+  const list=anaList();if(LMAP&&LGROUP){LGROUP.clearLayers();const acc=cssv("--accent")||"#4f46e5",r=L.canvas({tolerance:6});
+    const bounds=[];list.forEach(w=>{const p=ptsOf(w);if(p.length<2)return;if(!anaSel.includes(w.id)){const pl=L.polyline(p,{color:acc,weight:2,opacity:anaSel.length?.18:.4,renderer:r}).addTo(LGROUP);pl.on("click",()=>anaPick(w.id));pl.bindTooltip(`${esc(w.title)} · ${fDate(fromIso(w.date))}`,{sticky:true})}p.forEach(x=>bounds.push(x))});
+    anaSel.forEach((id,i)=>{const w=wById(id);if(!w)return;const p=ptsOf(w);if(p.length<2)return;L.polyline(p,{color:CMPCOL[i],weight:4.5,opacity:.95}).addTo(LGROUP).bindTooltip(`${esc(w.title)} · ${fDate(fromIso(w.date))}`,{sticky:true});L.circleMarker(p[0],{radius:5,color:CMPCOL[i],fillOpacity:1}).addTo(LGROUP)});
+    if(fit){if(anaView&&anaView.k===anaSport+anaRange)LMAP.setView(anaView.c,anaView.z);else if(anaSel.length){const b=[];anaSel.forEach(id=>{const w=wById(id);if(w)ptsOf(w).forEach(x=>b.push(x))});if(b.length)LMAP.fitBounds(b,{padding:[24,24]})}else if(bounds.length)LMAP.fitBounds(focusBounds(list),{padding:[20,20]});else LMAP.setView([48.137,11.575],11)}}
+  sidePanel(list);cmpPanel();
+}
+/* Auf die Gegend zoomen, in der die meisten Routen starten (statt ganz Europa) */
+function focusBounds(list){const st=list.map(w=>ptsOf(w)[0]).filter(Boolean);const cnt=st.map(p=>st.filter(q=>distM(p,q)<15000).length);const c=st[cnt.indexOf(Math.max(...cnt))];
+  const b=[];list.forEach(w=>{const p=ptsOf(w);if(p[0]&&distM(p[0],c)<15000)p.forEach(x=>b.push(x))});return b.length?b:st}
+function anaPick(id){const i=anaSel.indexOf(id);if(i>=0)anaSel.splice(i,1);else{anaSel.push(id);if(anaSel.length>2)anaSel.shift()}anaView=null;drawRoutes(true)}
+function sidePanel(list){const el=$("#ana-side");if(!el)return;const cl=anaSport==="all"?[]:clusters(list);
+  el.innerHTML=`${cl.length?`<div class="label" style="margin-bottom:6px">Häufigste Strecken</div>${cl.map(c=>{const best=c.items.reduce((a,b)=>wSec(b)<wSec(a)?b:a);return `<button class="arow" data-acl="${esc(c.rep.id)}"><span class="n">${fh(wKm(c.rep))} km ab ${esc((c.rep.loc||"").split(",")[0]||"Start")}</span><span class="m">${c.items.length}× · beste ${fmtDur(wSec(best))}</span></button>`}).join("")}<div class="label" style="margin:12px 0 6px">Aktivitäten</div>`:'<div class="label" style="margin-bottom:6px">Aktivitäten</div>'}
+  <div class="alist">${list.map(w=>{const i=anaSel.indexOf(w.id);return `<button class="arow${i>=0?" on":""}" data-apick="${esc(w.id)}" style="${i>=0?`--cc:${CMPCOL[i]}`:""}"><span class="n">${i>=0?`<i class="dot"></i>`:""}${esc(w.title)}</span><span class="m">${fDate(fromIso(w.date),{day:"2-digit",month:"2-digit",year:"2-digit"})} · ${fh(wKm(w))} km · ${speedTxt(w)}</span></button>`}).join("")||'<div class="empty">Keine Routen in diesem Zeitraum.</div>'}</div>
+  <div class="faint" style="font-size:.74rem;margin-top:8px">Tippe auf eine Route, um sie hervorzuheben. Wähle zwei für den Vergleich.</div>`}
+function cmpPanel(){const el=$("#ana-cmp");if(!el)return;if(!anaSel.length){el.innerHTML="";return}
+  const A=wById(anaSel[0]),B=anaSel[1]&&wById(anaSel[1]);if(!A){el.innerHTML="";return}
+  let html="";
+  if(B){const ov=Math.round(100*Math.min(overlap(ptsOf(A),ptsOf(B)),overlap(ptsOf(B),ptsOf(A))));
+    const ride=sportGroup(wSport(A))==="ride";
+    const rows=[["Datum",w=>fDate(fromIso(w.date),{weekday:"short",day:"2-digit",month:"2-digit",year:"numeric"}),null],["Distanz",w=>fh(wKm(w))+" km",w=>wKm(w),v=>(v>0?"+":"")+fh(v)+" km"],["Bewegungszeit",w=>fmtDur(wSec(w)),w=>wSec(w),v=>(v>0?"+":"−")+fmtDur(Math.abs(v))],
+      [ride?"Tempo":"Pace",speedTxt,w=>wKm(w)&&wSec(w)?(ride?wKm(w)/(wSec(w)/3600):wSec(w)/wKm(w)):null,v=>ride?(v>0?"+":"")+fh(v)+" km/h":(v>0?"+":"−")+fmtPace(Math.abs(v))+" /km"],
+      ["Höhenmeter",w=>(w.hm||0)+" m",w=>w.hm||0,v=>(v>0?"+":"")+v+" m"],["Belastung",w=>Math.round(wLoad(w))+(w.effort>0?"":" (geschätzt)"),w=>wLoad(w),v=>(v>0?"+":"")+Math.round(v)]];
+    html+=`<section class="panel s12"><div class="ph"><h2>Routenvergleich</h2><span class="faint" style="font-size:.76rem">${ov} % gemeinsame Strecke</span></div>
+      <div class="ctable"><div class="cr ch"><span></span><span style="color:${CMPCOL[0]}">● ${esc(A.title)}</span><span style="color:${CMPCOL[1]}">● ${esc(B.title)}</span><span>Unterschied</span></div>
+      ${rows.map(([n,f,v,d])=>{let diff="";if(v){const a=v(A),b=v(B);if(a!=null&&b!=null)diff=d(b-a)}return `<div class="cr"><span class="faint">${n}</span><span>${f(A)}</span><span>${f(B)}</span><span class="num">${diff}</span></div>`}).join("")}</div>
+      <div class="row" style="margin-top:10px;gap:8px"><button class="btn small" data-aclear="1">Auswahl aufheben</button></div></section>`}
+  const same=S.fit_workouts.filter(x=>x.done&&x.poly&&sameRoute(A,x)).concat([A]).sort((a,b)=>a.date.localeCompare(b.date));
+  if(same.length>=2){const best=same.reduce((a,b)=>wSec(b)<wSec(a)?b:a);
+    html+=`<section class="panel s12"><div class="ph"><h2>Gleiche Strecke: ${fh(wKm(A))} km</h2><span class="faint" style="font-size:.76rem">${same.length}× gelaufen · beste Zeit ${fmtDur(wSec(best))} am ${fDate(fromIso(best.date))}</span></div>
+      <div class="chart" data-chart="same"></div>
+      <div class="alist" style="max-height:220px;margin-top:8px">${same.slice().reverse().map(w=>`<button class="arow${anaSel.includes(w.id)?" on":""}" data-acmp="${esc(w.id)}" style="${anaSel.includes(w.id)?`--cc:${CMPCOL[anaSel.indexOf(w.id)]}`:""}"><span class="n">${w.id===best.id?"🏆 ":""}${fDate(fromIso(w.date),{day:"2-digit",month:"2-digit",year:"numeric"})} · ${esc(w.title)}</span><span class="m">${fmtDur(wSec(w))} · ${speedTxt(w)}${w.id===A.id?" · ausgewählt":" · vergleichen"}</span></button>`).join("")}</div></section>`}
+  else if(!B)html+=`<section class="panel s12"><div class="ph"><h2>${esc(A.title)}</h2><span class="faint" style="font-size:.76rem">${fDate(fromIso(A.date))} · ${fh(wKm(A))} km · ${fmtDur(wSec(A))} · ${speedTxt(A)}</span></div><div class="empty">Diese Strecke bist du bisher nur einmal gelaufen. Wähle eine zweite Route auf der Karte für den Vergleich.</div></section>`;
+  el.innerHTML=html;const c=el.querySelector('[data-chart="same"]');if(c)chartSame(c,same)}
+document.addEventListener("click",e=>{
+  let t=e.target.closest("[data-anasport]");if(t){anaSport=t.dataset.anasport;anaSel=[];anaView=null;render();return}
+  t=e.target.closest("[data-anarange]");if(t){anaRange=t.dataset.anarange;anaSel=[];anaView=null;render();return}
+  t=e.target.closest("[data-apick]");if(t){anaPick(t.dataset.apick);return}
+  t=e.target.closest("[data-acl]");if(t){anaSel=[t.dataset.acl];anaView=null;drawRoutes(true);return}
+  t=e.target.closest("[data-acmp]");if(t){const id=t.dataset.acmp;if(id!==anaSel[0]){anaSel=[anaSel[0],id];anaView=null;drawRoutes(true)}return}
+  t=e.target.closest("[data-aclear]");if(t){anaSel=[];anaView=null;drawRoutes(true);return}
+});
+/* ---------- Diagramme der Analyse ---------- */
+function chartSame(el,same){
+  const W=el.clientWidth,H=170,L=46,B=22,T=10,R=10,ride=sportGroup(wSport(same[0]))==="ride";
+  const v=w=>wSec(w);const ys=same.map(v),lo=Math.min(...ys),hi=Math.max(...ys),pad=Math.max(30,(hi-lo)*.12),a=lo-pad,b=hi+pad;
+  const t0=fromIso(same[0].date).getTime(),t1=Math.max(t0+DAY,fromIso(same[same.length-1].date).getTime());
+  const X=d=>L+(W-L-R)*(fromIso(d).getTime()-t0)/(t1-t0),Y=s=>T+(H-T-B)*(s-a)/(b-a);
+  let g='<g class="grid">';for(let i=0;i<=3;i++){const s=a+(b-a)*i/3;g+=`<line x1="${L}" x2="${W-R}" y1="${Y(s)}" y2="${Y(s)}"/>`}g+='</g>';
+  for(let i=0;i<=3;i++){const s=a+(b-a)*i/3;g+=`<text x="${L-6}" y="${Y(s)}" text-anchor="end" dominant-baseline="central">${fmtDur(s)}</text>`}
+  const yrs=[...new Set(same.map(w=>w.date.slice(0,7)))];const lab=same.length>1?[same[0],same[Math.floor(same.length/2)],same[same.length-1]]:same;lab.forEach(w=>g+=`<text x="${X(w.date)}" y="${H-6}" text-anchor="middle">${fDate(fromIso(w.date),{month:"short",year:"2-digit"})}</text>`);
+  g+=`<polyline fill="none" stroke="var(--accent)" stroke-width="1.6" opacity=".5" points="${same.map(w=>`${X(w.date).toFixed(1)},${Y(v(w)).toFixed(1)}`).join(" ")}"/>`;
+  same.forEach(w=>{const i=anaSel.indexOf(w.id);g+=`<circle class="hit" cx="${X(w.date).toFixed(1)}" cy="${Y(v(w)).toFixed(1)}" r="${i>=0?6:4}" fill="${i>=0?CMPCOL[i]:"var(--accent)"}" data-tip="${esc(`<b>${esc(w.title)}</b><br>${fDate(fromIso(w.date))} · ${fmtDur(v(w))} · ${speedTxt(w)}`)}"/>`});
+  el.innerHTML=`<svg width="${W}" height="${H}" role="img" aria-label="Zeiten auf derselben Strecke über die Zeit">${g}</svg><div class="legend"><span>Bewegungszeit je Durchgang, oben = schneller</span></div>`}
+function chartPMC(el){
+  const W=el.clientWidth,H=250,L=36,B=22,T=10,R=10,ser=loadSeries().slice(-182);if(ser.length<14){el.innerHTML='<div class="empty">Zu wenige Daten.</div>';return}
+  const top=170,mx=Math.max(...ser.map(x=>Math.max(x.ctl,x.atl)))*1.1||1,tmx=Math.max(10,...ser.map(x=>Math.abs(x.tsb)));
+  const X=i=>L+(W-L-R)*i/(ser.length-1),Y=v=>T+(top-T)*(1-v/mx),YT=v=>top+18+(H-B-top-18)*(.5-v/(2*tmx));
+  const step=niceStep(mx);let g='<g class="grid">';for(let v=0;v<=mx;v+=step)g+=`<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}"/>`;g+=`<line x1="${L}" x2="${W-R}" y1="${YT(0)}" y2="${YT(0)}"/></g>`;
+  for(let v=0;v<=mx;v+=step)g+=`<text x="${L-6}" y="${Y(v)}" text-anchor="end" dominant-baseline="central">${Math.round(v)}</text>`;
+  g+=`<text x="${L-6}" y="${YT(0)}" text-anchor="end" dominant-baseline="central">0</text><text x="${W-R}" y="${top+12}" text-anchor="end" style="font-size:10px">Form (TSB)</text>`;
+  const bw=(W-L-R)/ser.length;ser.forEach((x,i)=>{const y0=YT(0),y1=YT(x.tsb);g+=`<rect x="${X(i)-bw/2}" y="${Math.min(y0,y1)}" width="${Math.max(1,bw*.9)}" height="${Math.max(.5,Math.abs(y1-y0))}" fill="${x.tsb>=0?"var(--accent)":"#e8590c"}" opacity=".55"/>`});
+  const line=(k,c,wd,da)=>`<polyline fill="none" stroke="${c}" stroke-width="${wd}" ${da?`stroke-dasharray="${da}"`:""} points="${ser.map((x,i)=>`${X(i).toFixed(1)},${Y(x[k]).toFixed(1)}`).join(" ")}"/>`;
+  g+=line("atl","var(--ink3)",1.4,"4 3")+line("ctl","var(--accent)",2.4);
+  ser.forEach((x,i)=>{if(x.d.slice(8)==="01")g+=`<text x="${X(i)}" y="${H-6}" text-anchor="middle">${fDate(fromIso(x.d),{month:"short"})}</text>`});
+  for(let i=0;i<ser.length;i+=7){const w=ser.slice(i,i+7),x=w[w.length-1];g+=`<rect class="hit" x="${X(i)-bw/2}" y="${T}" width="${bw*w.length}" height="${H-T-B}" fill="transparent" data-tip="${esc(`<b>bis ${fDate(fromIso(x.d),{day:"2-digit",month:"2-digit"})}</b><br>Fitness ${Math.round(x.ctl)} · Ermüdung ${Math.round(x.atl)}<br>Form ${x.tsb>0?"+":""}${Math.round(x.tsb)} · Woche ${Math.round(w.reduce((a,b)=>a+b.l,0))}`)}"/>`}
+  el.innerHTML=`<svg width="${W}" height="${H}" role="img" aria-label="Fitness, Ermüdung und Form, letzte 6 Monate">${g}</svg><div class="legend"><span><i style="background:var(--accent)"></i>Fitness (42 Tage)</span><span><i style="background:var(--ink3)"></i>Ermüdung (7 Tage)</span><span><i style="background:#e8590c"></i>Form negativ = müde</span></div>`}
+function chartACWR(el){
+  const W=el.clientWidth,H=210,L=34,B=22,T=10,R=10,ser=loadSeries();if(ser.length<35){el.innerHTML='<div class="empty">Zu wenige Daten.</div>';return}
+  const n=26,pts=[];for(let k=n-1;k>=0;k--){const i=ser.length-1-7*k;if(i<27)continue;const m=monoAt(ser,i);pts.push({d:ser[i].d,r:acwrAt(ser,i),m,runs:S.fit_workouts.filter(w=>w.done&&RUNS.test(wSport(w))&&w.date>iso(addDays(fromIso(ser[i].d),-7))&&w.date<=ser[i].d).length})}
+  const mx=Math.max(2,...pts.map(p=>p.r||0)),X=i=>L+(W-L-R)*(i+.5)/pts.length,Y=v=>T+(H-T-B)*(1-v/mx);
+  let g=`<rect x="${L}" y="${Y(1.3)}" width="${W-L-R}" height="${Y(.8)-Y(1.3)}" fill="var(--accent)" opacity=".08"/><rect x="${L}" y="${Y(mx)}" width="${W-L-R}" height="${Y(1.5)-Y(mx)}" fill="#e8590c" opacity=".07"/><g class="grid">`;
+  [0,.5,1,1.5,2].filter(v=>v<=mx).forEach(v=>g+=`<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}"/>`);g+='</g>';
+  [0,.5,1,1.5,2].filter(v=>v<=mx).forEach(v=>g+=`<text x="${L-6}" y="${Y(v)}" text-anchor="end" dominant-baseline="central">${String(v).replace(".",",")}</text>`);
+  const bw=(W-L-R)/pts.length;pts.forEach((p,i)=>{if(!p.runs)g+=`<rect x="${X(i)-bw/2}" y="${T}" width="${bw}" height="${H-T-B}" fill="var(--ink3)" opacity=".08"/>`});
+  g+=`<polyline fill="none" stroke="var(--accent)" stroke-width="2.2" points="${pts.map((p,i)=>p.r==null?"":`${X(i).toFixed(1)},${Y(p.r).toFixed(1)}`).join(" ")}"/>`;
+  pts.forEach((p,i)=>{if(p.r==null)return;const sp=p.r>1.5;g+=`<circle cx="${X(i)}" cy="${Y(p.r)}" r="${sp?5:3}" fill="${sp?"#e8590c":"var(--accent)"}"/>`;
+    if(i%4===(pts.length-1)%4)g+=`<text x="${X(i)}" y="${H-6}" text-anchor="middle">KW${kw(fromIso(p.d))}</text>`;
+    g+=`<rect class="hit" x="${X(i)-bw/2}" y="${T}" width="${bw}" height="${H-T-B}" fill="transparent" data-tip="${esc(`<b>Woche bis ${fDate(fromIso(p.d),{day:"2-digit",month:"2-digit"})}</b><br>ACWR ${p.r.toFixed(2).replace(".",",")}${sp?" · Spitze":""}<br>${p.runs} ${p.runs===1?"Lauf":"Läufe"}${p.m&&p.m.mono?`<br>Monotonie ${p.m.mono.toFixed(1).replace(".",",")} · Strain ${Math.round(p.m.strain)}`:""}`)}"/>`});
+  el.innerHTML=`<svg width="${W}" height="${H}" role="img" aria-label="Akut-chronisches Belastungsverhältnis, letzte 26 Wochen">${g}</svg><div class="legend"><span><i style="background:var(--accent);opacity:.3"></i>0,8–1,3 sinnvoller Bereich</span><span><i style="background:#e8590c"></i>über 1,5 Belastungsspitze</span><span><i style="background:var(--ink3);opacity:.3"></i>Woche ohne Lauf</span></div>`}
+function chartHeat(el){
+  const ser=loadSeries(),by={};ser.forEach(x=>by[x.d]=x.l);const acts={};S.fit_workouts.forEach(w=>{if(w.done&&w.date)(acts[w.date]=acts[w.date]||[]).push(w)});
+  const W=el.clientWidth,end=new Date(),start=addDays(monday(end),-7*52),cols=53,L=26,T=16,cell=Math.max(6,Math.min(15,Math.floor((W-L)/cols)-2)),gap=2,H=T+7*(cell+gap)+4;
+  const vals=Object.values(by).filter(v=>v>0).sort((a,b)=>a-b),q=p=>vals[Math.floor(p*(vals.length-1))]||1,q1=q(.25),q2=q(.5),q3=q(.8);
+  let g="";["Mo","Mi","Fr"].forEach((d,i)=>g+=`<text x="0" y="${T+(i*2)*(cell+gap)+cell/2}" dominant-baseline="central" style="font-size:9px">${d}</text>`);
+  let lastM=-1;for(let c=0;c<cols;c++)for(let r=0;r<7;r++){const d=addDays(start,c*7+r);if(d>end)continue;const k=iso(d),v=by[k]||0;
+    if(r===0&&d.getMonth()!==lastM){lastM=d.getMonth();g+=`<text x="${L+c*(cell+gap)}" y="10" style="font-size:9px">${fDate(d,{month:"short"})}</text>`}
+    const o=v<=0?0:v<q1?.25:v<q2?.45:v<q3?.7:1;const xs=acts[k]||[];
+    g+=`<rect class="hit" x="${L+c*(cell+gap)}" y="${T+r*(cell+gap)}" width="${cell}" height="${cell}" rx="2" fill="${o?"var(--accent)":"var(--line2)"}" opacity="${o||.6}" data-tip="${esc(`<b>${fDate(d,{weekday:"short",day:"2-digit",month:"2-digit",year:"numeric"})}</b>${xs.length?xs.map(w=>`<br>${esc(w.title)}${wKm(w)?` · ${fh(wKm(w))} km`:""}`).join(""):"<br>Ruhetag"}${v?`<br>Belastung ${Math.round(v)}`:""}`)}"/>`}
+  const days=ser.slice(-365),act=days.filter(x=>x.l>0).length;
+  el.innerHTML=`<div style="overflow-x:auto"><svg width="${L+cols*(cell+gap)}" height="${H}" role="img" aria-label="Trainingskalender, letzte 12 Monate">${g}</svg></div><div class="legend"><span>${act} Trainingstage in 12 Monaten</span><span>heller = leichter, kräftiger = härter</span></div>`}
+function chartVolume(el){
+  const W=el.clientWidth,H=210,L=34,B=22,T=10,R=34,n=26,m0=monday(new Date());
+  const wks=[...Array(n)].map((_,i)=>addDays(m0,7*(i-n+1)));
+  const data=wks.map(w=>{const a=iso(w),b=iso(addDays(w,6)),rs=S.fit_workouts.filter(x=>x.done&&RUNS.test(wSport(x))&&x.date>=a&&x.date<=b);const km=rs.reduce((s,x)=>s+wKm(x),0),lg=rs.reduce((m,x)=>Math.max(m,wKm(x)),0);return {w,km,lg,n:rs.length}});
+  const mxv=Math.max(10,...data.map(d=>d.km)),step=niceStep(mxv),max=Math.ceil(mxv*1.08/step)*step,bw=(W-L-R)/n;let {g,Y}=axisY(W-R,L,T,H,B,max,step);
+  data.forEach((d,i)=>{const x=L+i*bw+bw*.16,bwid=bw*.68;if(d.km)g+=`<rect x="${x}" y="${Y(d.km)}" width="${bwid}" height="${Math.max(1,Y(0)-Y(d.km))}" rx="2" fill="var(--accent)" opacity=".7"/>`;
+    if(d.lg)g+=`<line x1="${x}" x2="${x+bwid}" y1="${Y(d.lg)}" y2="${Y(d.lg)}" stroke="var(--ink)" stroke-width="2.2"/>`;
+    if(i%4===(n-1)%4)g+=`<text x="${x+bwid/2}" y="${H-6}" text-anchor="middle">KW${kw(d.w)}</text>`;
+    g+=`<rect class="hit" x="${L+i*bw}" y="${T}" width="${bw}" height="${H-T-B}" fill="transparent" data-tip="${esc(`<b>KW ${kw(d.w)}</b><br>${fh(d.km)} km in ${d.n} ${d.n===1?"Lauf":"Läufen"}${d.lg?`<br>längster Lauf ${fh(d.lg)} km (${Math.round(100*d.lg/d.km)} %)`:""}`)}"/>`});
+  const avg4=data.slice(-5,-1).reduce((a,d)=>a+d.km,0)/4;if(avg4)g+=`<line x1="${L}" x2="${W-R}" y1="${Y(avg4)}" y2="${Y(avg4)}" stroke="var(--ink3)" stroke-dasharray="4 4"/><text x="${W-R+4}" y="${Y(avg4)}" dominant-baseline="central">Ø4</text>`;
+  el.innerHTML=`<svg width="${W}" height="${H}" role="img" aria-label="Laufumfang pro Woche und längster Lauf, letzte 26 Wochen">${g}</svg><div class="legend"><span><i style="background:var(--accent)"></i>Wochenkilometer</span><span><i style="background:var(--ink)"></i>längster Lauf der Woche</span><span>gestrichelt: Schnitt der letzten 4 Wochen</span></div>`}
+
 /* ---------- Render ---------- */
 function render(){
   renderNav();hideTip();
-  const body={heute:vHeute,woche:vWoche,faecher:vFaecher,aufgaben:vAufgaben,notizen:vNotizen,mail:vMail,alltag:vAlltag,training:vTraining,essen:vEssen,gewicht:vGewicht}[view]();
+  const body={heute:vHeute,woche:vWoche,faecher:vFaecher,aufgaben:vAufgaben,notizen:vNotizen,mail:vMail,alltag:vAlltag,training:vTraining,analyse:vAnalyse,essen:vEssen,gewicht:vGewicht}[view]();
   const h=new Date().getHours(),al=isAlltag(view),home=view==="heute"||view==="alltag";
   const modeSeg=`<div class="seg mode" role="group" aria-label="Bereich"><button data-mode="uni" aria-pressed="${!al}">Uni</button><button data-mode="alltag" aria-pressed="${al}">Fitness</button></div>`;
   $("#main").innerHTML=`<div class="top"><div><div class="label">${al?"Fitness · Training, Laufen und Essen":"Semesterboard · M.Sc. Applied Business Innovation"}</div>${view==="heute"?`<h1>Guten ${h<11?"Morgen":h<18?"Tag":"Abend"}, Simon</h1>`:""}${view==="alltag"?"<h1>Fitness</h1>":""}${view==="heute"?'<button class="btn" data-brief="open" style="margin-top:8px">☀ Tages-Briefing</button>':""}</div><div class="topr">${modeSeg}${home?'<button class="refresh" id="refresh" data-refresh="1" aria-label="Aktualisieren" title="Aktualisieren"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button>':""}</div></div>
