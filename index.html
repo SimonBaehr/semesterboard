@@ -454,13 +454,25 @@ h2{font-size:.95rem;font-weight:600;text-transform:none;letter-spacing:-.005em;c
 .wx-day .tr span{color:var(--ink3)}
 .wx-day .tr i{display:block;width:70%;height:4px;border-radius:2px;background:linear-gradient(90deg,transparent var(--a),var(--accent) var(--a),var(--accent) var(--b),transparent var(--b)),var(--line2)}
 @media (max-width:520px){.wx-m{margin-left:0;width:100%}.wx-days{gap:2px}.wx-day{font-size:.74rem}}
+
+/* Navigation: alle Reiter untereinander */
+.sidenav{gap:2px;align-items:center;flex:1;min-height:0;overflow-y:auto;scrollbar-width:none;padding:2px 10px;margin:0 -10px}
+.sidenav::-webkit-scrollbar{display:none}
+.nav-grp{font-size:.58rem;font-weight:650;letter-spacing:.08em;text-transform:uppercase;color:var(--ink3);margin:6px 0 2px}
+.nav-sep{width:36px;height:1px;background:var(--line);margin:8px 0 2px}
+@media (max-width:760px){
+  .tabbar{display:flex!important;overflow-x:auto;scrollbar-width:none;gap:2px;scroll-snap-type:x proximity}
+  .tabbar::-webkit-scrollbar{display:none}
+  .tabbar .nav-btn{flex:0 0 auto;min-width:68px;scroll-snap-align:center}
+  .tab-sep{flex:0 0 1px;align-self:stretch;margin:8px 4px;background:var(--line)}
+}
 </style>
 </head>
 <body>
 
 <div class="app">
   <aside class="side" aria-label="Navigation">
-        <nav id="sidenav" class="stack" style="gap:4px;align-items:center"></nav>
+        <nav id="sidenav" class="stack sidenav"></nav>
     <div class="sync"><span class="dot" id="syncdot"></span><span id="synctext">Verbinde</span><button class="logout" id="logout" hidden>Abmelden</button></div>
   </aside>
   <main id="main"></main>
@@ -492,7 +504,7 @@ const ICONS={
   gewicht:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 10a5 5 0 0 1 8 0M12 10l1.5-2"/></svg>'
 };
 const VIEWS=[["heute","Cockpit"],["woche","Woche"],["faecher","Fächer"],["aufgaben","Aufgaben"],["notizen","Notizen"]];
-const AVIEWS=[["alltag","Übersicht"],["training","Training"],["analyse","Analyse"],["essen","Abendessen"]];
+const AVIEWS=[["alltag","Fitness"],["training","Training"],["analyse","Analyse"],["essen","Abendessen"]];
 const COLS=["courses","events","tasks","steps","notes","digests","literature","timelog","reviews"];
 // Alltag-Daten liegen in eigenen Tabellen (fit_*), getrennt von den Uni-Tabellen.
 const FCOLS=["fit_workouts","fit_meals","fit_weight","fit_goals"];
@@ -626,10 +638,11 @@ const del=(c,id,msg)=>write(()=>sb.from(c).delete().eq("id",id),msg,c);
 /* ---------- Navigation ---------- */
 function go(v,cid){if(v==="woche"&&view!=="woche")wkOff=0;view=v;courseId=cid||null;lastOf[isAlltag(v)?"alltag":"uni"]=v;render();window.scrollTo(0,0)}
 function renderNav(){
-  const vs=isAlltag(view)?AVIEWS:VIEWS;document.body.classList.toggle("alltag",isAlltag(view));
-  $("#tabbar").style.gridTemplateColumns=`repeat(${vs.length},1fr)`;
-  const html=vs.map(([k,l])=>`<button class="nav-btn" data-go="${k}"${view===k?' aria-current="page"':""} aria-label="${l}">${ICONS[k]}<span>${l}</span></button>`).join("");
-  $("#sidenav").innerHTML=html;$("#tabbar").innerHTML=html;
+  document.body.classList.toggle("alltag",isAlltag(view));
+  const btn=([k,l])=>`<button class="nav-btn" data-go="${k}"${view===k?' aria-current="page"':""} aria-label="${l}">${ICONS[k]}<span>${l}</span></button>`;
+  $("#sidenav").innerHTML=`<div class="nav-grp">Uni</div>${VIEWS.map(btn).join("")}<div class="nav-sep" role="separator"></div><div class="nav-grp">Fitness</div>${AVIEWS.map(btn).join("")}`;
+  $("#tabbar").innerHTML=VIEWS.map(btn).join("")+'<span class="tab-sep" aria-hidden="true"></span>'+AVIEWS.map(btn).join("");
+  const cur=$("#tabbar [aria-current]");if(cur&&$("#tabbar").scrollWidth>$("#tabbar").clientWidth)cur.scrollIntoView({block:"nearest",inline:"center"});
 }
 
 /* ---------- Bausteine ---------- */
@@ -1485,9 +1498,8 @@ function chartVolume(el){
 function render(){
   renderNav();hideTip();
   const body={heute:vHeute,woche:vWoche,faecher:vFaecher,aufgaben:vAufgaben,notizen:vNotizen,mail:vMail,alltag:vAlltag,training:vTraining,analyse:vAnalyse,essen:vEssen,gewicht:vGewicht}[view]();
-  const h=new Date().getHours(),al=isAlltag(view),home=view==="heute"||view==="alltag";
-  const modeSeg=`<div class="seg mode" role="group" aria-label="Bereich"><button data-mode="uni" aria-pressed="${!al}">Uni</button><button data-mode="alltag" aria-pressed="${al}">Fitness</button></div>`;
-  $("#main").innerHTML=`<div class="top"><div><div class="label">${al?"Fitness · Training, Laufen und Essen":"Semesterboard · M.Sc. Applied Business Innovation"}</div>${view==="heute"?`<h1>Guten ${h<11?"Morgen":h<18?"Tag":"Abend"}, Simon</h1>`:""}${view==="alltag"?"<h1>Fitness</h1>":""}${view==="heute"?'<button class="btn" data-brief="open" style="margin-top:8px">☀ Tages-Briefing</button>':""}</div><div class="topr">${modeSeg}${home?'<button class="refresh" id="refresh" data-refresh="1" aria-label="Aktualisieren" title="Aktualisieren"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button>':""}</div></div>
+  const h=new Date().getHours(),al=isAlltag(view);
+  $("#main").innerHTML=`<div class="top"><div><div class="label">${al?"Fitness · Training, Laufen und Essen":"Semesterboard · M.Sc. Applied Business Innovation"}</div>${view==="heute"?`<h1>Guten ${h<11?"Morgen":h<18?"Tag":"Abend"}, Simon</h1>`:""}${view==="alltag"?"<h1>Fitness</h1>":""}${view==="heute"?'<button class="btn" data-brief="open" style="margin-top:8px">☀ Tages-Briefing</button>':""}</div><div class="topr"><button class="refresh" id="refresh" data-refresh="1" aria-label="Aktualisieren" title="Aktualisieren"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button></div></div>
     ${!navigator.onLine?'<div class="notice">Offline: Du siehst den letzten Stand. Änderungen gehen erst wieder mit Verbindung.</div>':""}${body}`;
   drawCharts();
   const b=$("#brief");if(b&&!b.hidden){const sc=b.firstElementChild?b.firstElementChild.scrollTop:0;b.innerHTML=briefingHTML();b.firstElementChild.scrollTop=sc}
