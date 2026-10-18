@@ -1,38 +1,6 @@
 {
- "note": "Preise für REWE, vor allem die Eigenmarke ja!. „gemeldet“ = zuletzt auf supermarktcheck.de von Nutzern gemeldeter REWE-Preis (ohne Datum, kann veraltet sein); „geschätzt“ = eigene Schätzung (Stand Oktober 2026). Frische Ware schwankt je nach Woche und Filiale. Nährwerte pro Portion sind grobe Schätzungen.",
+ "note": "Preise für REWE, vor allem die Eigenmarke ja!. „gemeldet“ = zuletzt auf supermarktcheck.de von Nutzern gemeldeter REWE-Preis (ohne Datum, kann veraltet sein); „geschätzt“ = eigene Schätzung (Stand Oktober 2026). Frische Ware schwankt je nach Woche und Filiale. Nährwerte pro Portion sind grobe Schätzungen. Ohne Aubergine, Zucchini und Pilze.",
  "prices": {
-  "hafer": [
-   "ja! Zarte Haferflocken",
-   500,
-   "g",
-   0.69,
-   "Trocken",
-   "gemeldet"
-  ],
-  "banane": [
-   "Bananen",
-   6,
-   "Stk",
-   1.79,
-   "Obst & Gemüse",
-   "geschätzt"
-  ],
-  "apfel": [
-   "ja! Äpfel (ca. 1 kg)",
-   6,
-   "Stk",
-   2.49,
-   "Obst & Gemüse",
-   "geschätzt"
-  ],
-  "milch": [
-   "ja! Milch oder Haferdrink",
-   1000,
-   "ml",
-   1.09,
-   "Kühlregal",
-   "geschätzt"
-  ],
   "joghurt": [
    "ja! Naturjoghurt 3,5 %",
    500,
@@ -63,22 +31,6 @@
    "g",
    2.19,
    "Kühlregal",
-   "gemeldet"
-  ],
-  "beeren": [
-   "ja! TK-Beerenmischung",
-   750,
-   "g",
-   2.99,
-   "Tiefkühl",
-   "geschätzt"
-  ],
-  "erdnuss": [
-   "ja! Erdnussbutter",
-   350,
-   "g",
-   1.75,
-   "Trocken",
    "gemeldet"
   ],
   "tomate": [
@@ -134,22 +86,6 @@
    1,
    "Knolle",
    0.59,
-   "Obst & Gemüse",
-   "geschätzt"
-  ],
-  "zucchini": [
-   "Zucchini",
-   2,
-   "Stk",
-   1.79,
-   "Obst & Gemüse",
-   "geschätzt"
-  ],
-  "aubergine": [
-   "Aubergine",
-   1,
-   "Stk",
-   1.29,
    "Obst & Gemüse",
    "geschätzt"
   ],
@@ -814,16 +750,16 @@
      "k": "weisse"
     },
     {
-     "n": "Karotte",
-     "q": 100,
+     "n": "Karotten",
+     "q": 150,
      "u": "g",
      "k": "karotte"
     },
     {
-     "n": "Zucchini",
+     "n": "Paprika",
      "q": 0.5,
      "u": "Stk",
-     "k": "zucchini"
+     "k": "paprika"
     },
     {
      "n": "Zwiebel",
@@ -863,7 +799,7 @@
     }
    ],
    "steps": [
-    "Zwiebel, Knoblauch, Karotte und Zucchini würfeln und in 2 EL Olivenöl 5 Minuten andünsten.",
+    "Zwiebel, Knoblauch, Karotten und Paprika würfeln und in 2 EL Olivenöl 5 Minuten andünsten.",
     "Tomaten, Bohnen mit Flüssigkeit und 300 ml Brühe dazugeben, mit Oregano 15 Minuten köcheln.",
     "Spinat und das in Stücke gezupfte Brot unterrühren und 5 Minuten weiterköcheln, bis das Brot zerfällt und der Eintopf dick wird.",
     "Salzen und mit einem Schuss Olivenöl servieren."
@@ -1408,24 +1344,24 @@
   {
    "day": 6,
    "slot": "abend",
-   "title": "Gemüsepfanne mit Ei (Pisto)",
+   "title": "Paprika-Tomaten-Pfanne mit Ei",
    "img": "https://www.themealdb.com/images/media/meals/0nswfe1763279040.jpg",
-   "imgNote": "Foto: TheMealDB",
+   "imgNote": "Foto: TheMealDB (ähnliches Gericht)",
    "time": 25,
    "kcal": 450,
    "protein": 18,
    "ing": [
     {
-     "n": "Zucchini",
-     "q": 1,
-     "u": "Stk",
-     "k": "zucchini"
-    },
-    {
      "n": "Paprika",
-     "q": 1,
+     "q": 1.5,
      "u": "Stk",
      "k": "paprika"
+    },
+    {
+     "n": "Karotte",
+     "q": 80,
+     "u": "g",
+     "k": "karotte"
     },
     {
      "n": "Zwiebel",
@@ -1452,48 +1388,48 @@
      "k": "brot"
     },
     {
-     "n": "Olivenöl, Salz, Pfeffer",
+     "n": "Olivenöl, Paprikapulver, Salz, Pfeffer",
      "q": null,
      "u": "",
      "k": "Vorrat"
     }
    ],
    "steps": [
-    "Zwiebel, Paprika und Zucchini klein würfeln.",
-    "In 2 EL Olivenöl 10 Minuten weich braten, Tomaten dazugeben und 8 Minuten einköcheln, salzen.",
+    "Zwiebel und Paprika in Streifen schneiden, Karotte fein würfeln.",
+    "In 2 EL Olivenöl 10 Minuten weich braten, mit Paprikapulver würzen, Tomaten dazugeben und 8 Minuten einköcheln, salzen.",
     "Eine Mulde machen, das Ei hineinschlagen und zugedeckt 5 Minuten stocken lassen.",
     "Mit Brot servieren."
    ],
-   "tip": "Spanische Resteküche: Jedes Gemüse aus dem Kühlschrank passt hinein.",
+   "tip": "Spanische Resteküche: Fast jedes Gemüse aus dem Kühlschrank passt hinein.",
    "opt": 0
   },
   {
    "day": 6,
    "slot": "abend",
-   "title": "Ratatouille mit Reis",
-   "img": "https://www.themealdb.com/images/media/meals/wrpwuu1511786491.jpg",
+   "title": "Ofen-Bohnen in Tomatensauce mit Feta",
+   "img": "https://www.themealdb.com/images/media/meals/b79r6f1585566277.jpg",
    "imgNote": "Foto: TheMealDB",
    "time": 40,
-   "kcal": 520,
-   "protein": 12,
+   "kcal": 560,
+   "protein": 26,
    "ing": [
     {
-     "n": "Zucchini",
+     "n": "Weiße Bohnen (Dose)",
      "q": 1,
-     "u": "Stk",
-     "k": "zucchini"
+     "u": "Dose",
+     "k": "weisse"
     },
     {
-     "n": "Aubergine",
-     "q": 0.5,
-     "u": "Stk",
-     "k": "aubergine"
+     "n": "Gehackte Tomaten (Dose)",
+     "q": 1,
+     "u": "Dose",
+     "k": "dosentom"
     },
     {
-     "n": "Paprika",
-     "q": 0.5,
-     "u": "Stk",
-     "k": "paprika"
+     "n": "Karotte",
+     "q": 80,
+     "u": "g",
+     "k": "karotte"
     },
     {
      "n": "Zwiebel",
@@ -1508,37 +1444,31 @@
      "k": "knoblauch"
     },
     {
-     "n": "Gehackte Tomaten (Dose)",
-     "q": 0.5,
-     "u": "Dose",
-     "k": "dosentom"
-    },
-    {
-     "n": "Reis",
-     "q": 70,
-     "u": "g",
-     "k": "reis"
-    },
-    {
      "n": "Feta",
      "q": 30,
      "u": "g",
      "k": "feta"
     },
     {
-     "n": "Olivenöl, Oregano, Salz, Pfeffer",
+     "n": "Vollkornbrot",
+     "q": 1,
+     "u": "Scheibe",
+     "k": "brot"
+    },
+    {
+     "n": "Olivenöl, Oregano, Paprikapulver, Salz, Pfeffer",
      "q": null,
      "u": "",
      "k": "Vorrat"
     }
    ],
    "steps": [
-    "Reis nach Packung kochen.",
-    "Gemüse in 2 cm Würfel schneiden. Zwiebel und Knoblauch in 2 EL Olivenöl andünsten.",
-    "Aubergine und Paprika 5 Minuten braten, Zucchini und Tomaten dazugeben, mit Oregano, Salz und Pfeffer würzen.",
-    "Zugedeckt 15 Minuten köcheln, mit Feta und Reis servieren."
+    "Ofen auf 200 °C vorheizen. Zwiebel, Knoblauch und Karotte fein würfeln und in 2 EL Olivenöl 5 Minuten andünsten.",
+    "Tomaten, Oregano und Paprikapulver dazugeben, salzen und 5 Minuten köcheln.",
+    "Abgetropfte Bohnen unterheben, alles in eine Auflaufform geben, Feta darüberbröseln und 20 Minuten im Ofen backen.",
+    "Mit Brot servieren."
    ],
-   "tip": "Die doppelte Menge reicht noch für den nächsten Tag.",
+   "tip": "Griechischer Klassiker (Gigantes plaki), in der doppelten Menge auch gut für den nächsten Tag.",
    "opt": 1
   },
   {
@@ -1564,10 +1494,10 @@
      "k": "karotte"
     },
     {
-     "n": "Zucchini",
-     "q": 0.5,
-     "u": "Stk",
-     "k": "zucchini"
+     "n": "TK-Erbsen",
+     "q": 75,
+     "u": "g",
+     "k": "erbsen"
     },
     {
      "n": "Rote Linsen",
@@ -1595,9 +1525,9 @@
     }
    ],
    "steps": [
-    "Gemüse und Kartoffeln in mundgerechte Stücke schneiden.",
+    "Kartoffeln und Karotten in mundgerechte Stücke schneiden, Zwiebel würfeln.",
     "Zwiebel in 1 EL Öl andünsten, Karotten und Kartoffeln 3 Minuten mitbraten, mit Paprikapulver würzen.",
-    "Tomaten, Linsen und 400 ml Brühe dazugeben und 20 Minuten köcheln, Zucchini nach 10 Minuten dazu.",
+    "Tomaten, Linsen und 400 ml Brühe dazugeben und 20 Minuten köcheln, die Erbsen in den letzten 5 Minuten dazu.",
     "Mit Salz und Pfeffer abschmecken."
    ],
    "tip": "Doppelte Menge kochen und einfrieren.",
