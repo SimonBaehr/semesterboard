@@ -1588,8 +1588,8 @@ function lzCtx(){
   const raceT=(D,V)=>{let lo=D/8,hi=D/1.5;for(let i=0;i<60;i++){const m=(lo+hi)/2;if(vdotOf(D,m)>V)lo=m;else hi=m}return (lo+hi)/2};
   const own={};acts.forEach(a=>{if(a.sport==="run"&&a.best)for(const D in a.best){const t=+a.best[D];if(!own[D]||t<own[D].t)own[D]={t,date:a.date,name:a.name,id:a.id}}});
   const cut18=iso(addDays(new Date(),-548)),cands=[];
-  Object.entries(own).forEach(([D,o])=>{if(+D>=1609)cands.push({D:+D,t:o.t,date:o.date,src:"eigene Punktreihe",name:o.name})});
-  Object.entries(prof.records||{}).forEach(([D,o])=>{if(+D>=1609&&o.s&&o.date)cands.push({D:+D,t:+o.s,date:o.date,src:"Garmin-Rekord",name:o.name})});
+  Object.entries(own).forEach(([D,o])=>{if(+D>=5000)cands.push({D:+D,t:o.t,date:o.date,src:"eigene Punktreihe",name:o.name})});
+  Object.entries(prof.records||{}).forEach(([D,o])=>{if(+D>=5000&&o.s&&o.date)cands.push({D:+D,t:+o.s,date:o.date,src:"Garmin-Rekord",name:o.name})});
   let base=null;cands.forEach(c=>{c.v=vdotOf(c.D,c.t);c.recent=c.date>=cut18});
   const rec=cands.filter(c=>c.recent);(rec.length?rec:cands).forEach(c=>{const v=c.recent?c.v:c.v*.95;if(!base||v>base.vEff)base=Object.assign({},c,{vEff:v})});
   const VD=base?base.vEff:null;
