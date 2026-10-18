@@ -9,6 +9,9 @@ on:
       days:
         description: "Wie viele Tage holen (z. B. 90 für den ersten Import)"
         default: "3"
+      mode:
+        description: "leer = normal, inspect = nur Datenstruktur ins Log"
+        default: ""
 permissions:
   contents: read
 jobs:
@@ -26,4 +29,6 @@ jobs:
           GARMIN_TOKEN_B64: ${{ secrets.GARMIN_TOKEN_B64 }}
           GARMIN_INGEST_SECRET: ${{ secrets.GARMIN_INGEST_SECRET }}
           DAYS: ${{ github.event.inputs.days || '3' }}
-        run: python garmin/sync_garmin.py --days "$DAYS"
+          MODE: ${{ github.event.inputs.mode || '' }}
+        run: |
+          if [ "$MODE" = "inspect" ]; then python garmin/sync_garmin.py --inspect; else python garmin/sync_garmin.py --days "$DAYS"; fi
