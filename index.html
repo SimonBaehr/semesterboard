@@ -92,6 +92,12 @@ main{padding-inline:clamp(16px,3.4vw,36px);padding-block:22px 110px;min-width:0;
 .ntime{font-family:var(--f-mono);font-size:2.3rem;font-weight:600;color:var(--accent);text-shadow:0 0 18px rgba(111,227,245,.35)}
 .ntime .nend{font-size:1.1rem;color:var(--ink3);text-shadow:none;font-weight:500}
 .where{font-size:.88rem;color:var(--ink2);overflow-wrap:anywhere}
+.commute-mini{display:flex;align-items:center;gap:8px;margin-top:6px;padding:6px 10px;border:1px solid var(--line2);border-radius:10px;background:var(--accent-soft);color:var(--accent);font-size:.84rem;width:fit-content;max-width:100%}
+.commute-mini span{color:var(--ink)}
+.cm-main{display:flex;gap:12px;align-items:center;margin-bottom:10px;color:var(--accent)}
+.cm-dep{font-size:1.05rem;color:var(--ink)}.cm-dep b{font-family:var(--f-mono);font-size:1.35rem;color:var(--accent)}
+.cm-line{display:inline-block;background:#00975f;color:#fff;font-weight:700;border-radius:999px;padding:1px 8px;font-size:.8rem;margin-right:4px}
+.commute .meta{font-size:.82rem;color:var(--ink2)}
 
 .chip{display:inline-flex;align-items:center;gap:6px;font-size:.72rem;font-weight:600;padding:2px 9px;border-radius:999px;background:var(--panel2);border:1px solid var(--line);color:var(--ink2);white-space:nowrap}
 .chip .sw{width:8px;height:8px;border-radius:2px}
@@ -322,7 +328,7 @@ const ICONS={
   essen:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M7 3v8a2 2 0 0 0 2 2v8M5 3v6M9 3v6M17 21V3c-2 1-3 4-3 8h3"/></svg>',
   gewicht:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><rect x="3" y="4" width="18" height="17" rx="3"/><path d="M8 10a5 5 0 0 1 8 0M12 10l1.5-2"/></svg>'
 };
-const VIEWS=[["heute","Cockpit"],["woche","Woche"],["faecher","Fächer"],["aufgaben","Aufgaben"],["notizen","Notizen"],["mail","Mail"]];
+const VIEWS=[["heute","Cockpit"],["woche","Woche"],["faecher","Fächer"],["aufgaben","Aufgaben"],["notizen","Notizen"]];
 const AVIEWS=[["alltag","Übersicht"],["training","Training"],["essen","Ernährung"],["gewicht","Gewicht"]];
 const COLS=["courses","events","tasks","steps","notes","digests","literature","timelog","reviews"];
 // Alltag-Daten liegen in eigenen Tabellen (fit_*), getrennt von den Uni-Tabellen.
@@ -360,6 +366,65 @@ const short=t=>t.replace(/^M 1\.\d+\s*/,"").replace(/^(ZWISCHENABGABE|ZWISCHENPR
 function toast(t){const el=$("#toast");el.textContent=t;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,2200)}
 const upcomingEvents=()=>S.events.filter(e=>new Date(e.end||e.start)>=new Date()).sort((a,b)=>new Date(a.start)-new Date(b.start));
 const isTimed=e=>!e.allDay&&["lecture","other","private","own"].includes(e.kind);
+/* ---------- Anfahrt: S8 Johanneskirchen → Pasing, mindestens 20 min vor Beginn am Campus ---------- */
+// Fahrplan-Muster (Stand Okt. 2026, MVG): S8 ab Johanneskirchen xx:05/xx:25/xx:45, 28 min bis Pasing.
+// Fußweg Bahnhof Pasing → Campus (Am Stadtpark 20) ca. 15 min. Live-Daten von der MVG, sonst das Muster.
+const COMMUTE={from:"de:09162:720",to:"de:09162:10",ride:28,walk:15,buffer:20,mins:[5,25,45]};
+const onCampus=e=>e&&!e.allDay&&["lecture","exam","other"].includes(e.kind)&&!/zoom|online/i.test(e.location||"")&&/(^|\s)(L[UOE]\s?\d|Kapelle|Pasing|Campus)/i.test(e.location||"");
+function nextCampusEvent(){
+  const now=new Date();
+  const evs=S.events.filter(onCampus).sort((a,b)=>new Date(a.start)-new Date(b.start));
+  for(const e of evs){const s=new Date(e.start);if(s<=now)continue;
+    // Nur den ersten Campus-Termin eines Tages: wer schon da ist, braucht keine Bahn mehr.
+    const first=evs.find(x=>iso(new Date(x.start))===iso(s));if(first!==e)continue;return e}
+  return null;
+}
+function commutePlan(e){
+  const start=new Date(e.start),arriveBy=new Date(start-(COMMUTE.buffer+COMMUTE.walk)*6e4);
+  const live=CM.live[e.id];
+  if(live&&live.length){const ok=live.filter(c=>c.arr<=arriveBy&&!c.cancelled).sort((a,b)=>b.dep-a.dep);
+    if(ok.length)return {dep:ok[0].dep,arr:ok[0].arr,line:ok[0].line,live:true,alt:ok[1]||null,start,arriveBy}}
+  const lim=new Date(arriveBy-COMMUTE.ride*6e4);let dep=null;
+  for(let t=new Date(lim);t>lim-90*6e4;t=new Date(t-6e4)){if(COMMUTE.mins.includes(t.getMinutes())){dep=new Date(t);dep.setSeconds(0,0);break}}
+  if(!dep)return null;
+  return {dep,arr:new Date(+dep+COMMUTE.ride*6e4),line:"S8",live:false,alt:{dep:new Date(dep-20*6e4),arr:new Date(dep-20*6e4+COMMUTE.ride*6e4)},start,arriveBy};
+}
+const CM={live:{},asked:{}};
+async function loadCommute(e){
+  if(!e||CM.asked[e.id]&&Date.now()-CM.asked[e.id]<5*6e4)return;CM.asked[e.id]=Date.now();
+  const arriveBy=new Date(new Date(e.start)-(COMMUTE.buffer+COMMUTE.walk)*6e4);
+  if(arriveBy-new Date()>36*36e5)return; // MVG-Daten erst ab etwa 1,5 Tagen vorher abfragen
+  try{
+    const u=`https://www.mvg.de/api/bgw-pt/v3/routes?originStationGlobalId=${COMMUTE.from}&destinationStationGlobalId=${COMMUTE.to}&routingDateTime=${arriveBy.toISOString()}&routingDateTimeIsArrival=true&transportTypes=SBAHN`;
+    const r=await fetch(u);if(!r.ok)return;const js=await r.json();
+    const list=(js||[]).filter(c=>c.parts&&c.parts.length===1).map(c=>{const p=c.parts[0];
+      const dep=new Date(p.from.plannedDeparture),arr=new Date(p.to.plannedDeparture);
+      const dd=+(p.from.departureDelayInMinutes||0),ad=+(p.to.arrivalDelayInMinutes||p.to.departureDelayInMinutes||0);
+      return {dep:new Date(+dep+dd*6e4),arr:new Date(+arr+ad*6e4),line:(p.line&&p.line.label)||"S",cancelled:!!p.isCancelled,delay:dd}});
+    if(list.length){CM.live[e.id]=list;if(view==="heute")render()}
+  }catch(err){/* ohne Live-Daten: Taktfahrplan */}
+}
+const TRAIN_SVG='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="3" width="14" height="13" rx="3"/><path d="M5 10h14M9 20l-2 2M15 20l2 2M8.5 16v.01M15.5 16v.01"/></svg>';
+function commuteMini(){
+  const e=nextCampusEvent();if(!e)return"";loadCommute(e);const p=commutePlan(e);if(!p)return"";
+  return `<div class="commute-mini" ${tipAttr(`<b>${esc(p.line)} ab Johanneskirchen ${fTime(p.dep)}</b><br>an Pasing ${fTime(p.arr)}, dann ca. ${COMMUTE.walk} min zu Fuß<br>am Campus ca. ${fTime(new Date(+p.arr+COMMUTE.walk*6e4))}, Beginn ${fTime(p.start)}`)}>${TRAIN_SVG}<span><b>${esc(p.line)} ${fTime(p.dep)}</b> ab Johanneskirchen${daysUntil(p.dep)===0?"":daysUntil(p.dep)===1?" · morgen":" · "+fDate(p.dep,{weekday:"short"})}</span></div>`;
+}
+function commutePanel(){
+  const e=nextCampusEvent();
+  if(!e)return `<section class="panel s12" aria-labelledby="h-cm"><div class="ph"><h2 id="h-cm">Anfahrt zum Campus Pasing</h2></div><div class="empty">Kein Präsenztermin am Campus geplant.</div></section>`;
+  loadCommute(e);const p=commutePlan(e);
+  const atCampus=p?new Date(+p.arr+COMMUTE.walk*6e4):null;
+  const day=daysUntil(e.start)===0?"Heute":daysUntil(e.start)===1?"Morgen":fDate(e.start,{weekday:"long",day:"2-digit",month:"2-digit"});
+  const gm=`https://www.google.com/maps/dir/?api=1&origin=${encodeURIComponent("S-Bahnhof Johanneskirchen, München")}&destination=${encodeURIComponent("Hochschule München Campus Pasing, Am Stadtpark 20, 81243 München")}&travelmode=transit`;
+  return `<section class="panel s12 commute" aria-labelledby="h-cm"><div class="ph"><h2 id="h-cm">Anfahrt zum Campus Pasing</h2><span class="label">${p&&p.live?"live · MVG":"Taktfahrplan"}</span></div>
+    ${p?`<div class="cm-main">${TRAIN_SVG}<div><div class="cm-dep"><span class="cm-line">${esc(p.line)}</span> ab Johanneskirchen <b>${fTime(p.dep)}</b></div>
+      <div class="meta">${day} · an Pasing ${fTime(p.arr)} · ca. ${COMMUTE.walk} min zu Fuß · am Campus ca. ${fTime(atCampus)}</div></div></div>
+      <div class="item"><span class="tm">${fTime(p.start)}</span><div class="body"><div class="title">${esc(short(e.title))}</div><div class="meta">${cChip(e.course)}<span>${esc(roomOf(e.location))}</span><span>${Math.round((p.start-atCampus)/6e4)} min Puffer</span></div></div></div>
+      ${p.alt?`<div class="faint" style="font-size:.8rem;margin-top:6px">Sicherer: ${fTime(p.alt.dep)} ab Johanneskirchen, an Pasing ${fTime(p.alt.arr)}.</div>`:""}
+      ${p.live?"":`<div class="faint" style="font-size:.76rem;margin-top:6px">Aus dem 20-Minuten-Takt berechnet. Bei Bauarbeiten oder nach dem Fahrplanwechsel kurz prüfen.</div>`}`
+    :'<div class="empty">Keine passende Verbindung berechnet.</div>'}
+    <div class="row" style="margin-top:10px"><a class="btn small" href="${gm}" target="_blank" rel="noopener">Route in Google Maps ↗</a><a class="btn small" href="https://www.mvg.de/verbindungen.html" target="_blank" rel="noopener">MVG-Auskunft ↗</a></div></section>`;
+}
 const nextLecture=cid=>upcomingEvents().find(e=>e.kind==="lecture"&&(!cid||e.course===cid));
 const DUE_KINDS=["deadline","exam","interim"],isDue=e=>DUE_KINDS.includes(e.kind);
 const kindLabel=k=>k==="exam"?"Prüfung":k==="interim"?"Zwischentermin":"Abgabe";
@@ -547,8 +612,9 @@ function vHeute(){
           <div class="track" ${tipAttr(`<b>Wintersemester 2026/27</b><br>01.10.2026 bis 15.02.2027<br>${Math.max(0,Math.round((SEM_END-now)/DAY))} Tage verbleibend`)}><div class="fill" style="width:${semP}%"></div></div>
           <div class="ticks"><span>Okt</span><span>Nov</span><span>Dez</span><span>Jan</span><span>Feb</span></div></div></div>
       <div class="next">${next?`<div class="label">Als Nächstes${next.kind==="private"?" · privat":""}</div><div class="nwhen"><span class="nday">${daysUntil(next.start)===0?"Heute":daysUntil(next.start)===1?"Morgen":fDate(next.start,{weekday:"long"})}, ${fDate(next.start,{day:"2-digit",month:"2-digit"})}</span><span class="ntime">${fTime(next.start)}<span class="nend">–${fTime(next.end)}</span></span></div><div class="cdn" id="nextcd" data-at="${new Date(next.start).getTime()}">${countdownText(new Date(next.start))}</div>
-        <h3>${esc(next.title)}</h3><div class="where">${esc(next.location||"Kein Ort")} ${mapLink(next.location)}</div><div>${cChip(next.course)}</div>`:'<div class="empty">Keine weiteren Termine.</div>'}</div>
+        <h3>${esc(next.title)}</h3><div class="where">${esc(next.location||"Kein Ort")} ${mapLink(next.location)}</div><div>${cChip(next.course)}</div>${commuteMini()}`:'<div class="empty">Keine weiteren Termine.</div>'}</div>
     </div></section>
+    ${commutePanel()}
 
     <section class="panel s12" aria-labelledby="h-tl"><div class="ph"><h2 id="h-tl">${tlRange==="wk"?"Zeitleiste · KW "+kw(new Date(sod(new Date()).getTime()+(((new Date().getDay()+6)%7)>=5?2:0)*DAY)):"Semester-Zeitleiste"}</h2><div class="row"><div class="legend" style="margin:0"><span><svg width="10" height="10"><circle cx="5" cy="5" r="4" fill="var(--ink2)"/></svg>Vorlesung</span><span><svg width="12" height="12"><path d="M6 1L11 6L6 11L1 6Z" fill="var(--ink2)"/></svg>Abgabe</span><span><svg width="12" height="12"><path d="M6 1L11 6L6 11L1 6Z" fill="none" stroke="var(--ink2)" stroke-width="2"/></svg>Prüfung</span></div>
       <div class="seg" role="group" aria-label="Zeitraum"><button data-tl="sem" aria-pressed="${tlRange==="sem"}">Semester</button><button data-tl="wk" aria-pressed="${tlRange==="wk"}">Woche</button></div></div></div>
@@ -565,9 +631,7 @@ function vHeute(){
     <section class="panel s7" aria-labelledby="h-act"><div class="ph"><h2 id="h-act">Aktivität · 14 Tage</h2><span class="faint" style="font-size:.76rem">erledigte Aufgaben und Schritte</span></div><div class="chart" data-chart="activity"></div></section>
     ${focusPanel()}
 
-    <section class="panel s7 digest" aria-labelledby="h-mail"><div class="ph"><h2 id="h-mail">Mail-Briefing</h2>${dig?`<span class="label">${fDate(fromIso(dig.date),{weekday:"long",day:"2-digit",month:"2-digit"})}</span>`:""}</div>
-      ${dig?digestBody(dig,4):'<div class="empty">Noch kein Briefing. Die Morgen-Routine legt es jeden Tag um 6 Uhr hier ab.</div>'}</section>
-    <section class="panel s5" aria-labelledby="h-study"><div class="ph"><h2 id="h-study">Lernzeit je Fach</h2></div><div class="chart" data-chart="study"></div></section>
+    <section class="panel s12" aria-labelledby="h-study"><div class="ph"><h2 id="h-study">Lernzeit je Fach</h2></div><div class="chart" data-chart="study"></div></section>
     ${rev?`<section class="panel s12" aria-labelledby="h-rev"><div class="ph"><h2 id="h-rev">Wochenrückblick</h2><span class="label">${esc(rev.week)}</span></div><div style="white-space:pre-wrap;max-width:80ch;color:var(--ink2)">${esc(rev.text)}</div></section>`:""}
   </div>`;
 }
@@ -589,7 +653,7 @@ function briefingHTML(){
   const soon=deadlines().filter(e=>{const n=daysUntil(e.start);return n>=0&&n<=14});
   const dig=S.digests.find(d=>d.date===today);const last=dig||S.digests.slice().sort((a,b)=>(b.date||"").localeCompare(a.date||""))[0];
   const nTasks=tasks.length+steps.length;
-  const lead=[lect.length?`${lect.length} ${lect.length===1?"Vorlesung":"Vorlesungen"}`:"keine Vorlesung",nTasks?`${nTasks} fällige ${nTasks===1?"Aufgabe":"Aufgaben"}`:"nichts fällig",dig?`${(dig.items||[]).length} ${(dig.items||[]).length===1?"Studien-Mail":"Studien-Mails"}`:null].filter(Boolean).join(" · ");
+  const lead=[lect.length?`${lect.length} ${lect.length===1?"Vorlesung":"Vorlesungen"}`:"keine Vorlesung",nTasks?`${nTasks} fällige ${nTasks===1?"Aufgabe":"Aufgaben"}`:"nichts fällig"].filter(Boolean).join(" · ");
   const evRow=e=>`<div class="item"><span class="tm">${e.allDay?"ganztägig":fTime(e.start)+"–"+fTime(e.end)}</span><div class="body"><div class="title">${esc(e.kind==="lecture"?short(e.title):e.title)}</div><div class="meta">${cChip(e.course)}${e.kind==="private"?'<span class="chip">privat</span>':""}${e.location?`<span>${esc(roomOf(e.location))}</span>${mapLink(e.location)}`:""}</div></div></div>`;
   const sec=(title,right,body)=>`<div class="sec"><div class="label"><span>${title}</span><span>${right||""}</span></div>${body}</div>`;
   return `<div class="panel hud"><div class="bh"><div><div class="label">Tages-Briefing · ${fDate(now,{weekday:"long",day:"2-digit",month:"long"})}</div><h2 id="b-title">Guten ${h<11?"Morgen":h<18?"Tag":"Abend"}, Simon</h2><p class="lead">Heute: ${lead}.</p></div><button class="xbtn" data-brief="close" aria-label="Schließen">✕</button></div>
@@ -597,7 +661,7 @@ function briefingHTML(){
   ${sec("Aufgaben",nTasks||"",(tasks.length||steps.length)?tasks.map(taskItem).join("")+steps.map(s=>`<div class="item"><input type="checkbox" class="check" data-toggle="steps/${s.id}" aria-label="Erledigt"><div class="body"><div class="title">${esc(s.title)}</div><div class="meta">${cChip(s.course)}<span>Plan-Schritt</span>${relDue(s.due)}</div></div></div>`).join(""):'<div class="empty">Nichts fällig oder überfällig.</div>')}
   ${prio.length?sec("Wichtig, ohne Frist heute","",prio.map(taskItem).join("")):""}
   ${soon.length?sec("Abgaben und Prüfungen in 14 Tagen","",soon.map(e=>{const n=daysUntil(e.start);return `<div class="item"><span class="tm">${n===0?"heute":n===1?"morgen":"in "+n+" T"}</span><div class="body"><div class="title">${esc(short(e.title))}</div><div class="meta">${cChip(e.course)}<span>${fDate(e.start)}</span></div></div></div>`}).join("")):""}
-  ${sec("Mails zum Studium",dig?"":"",last?`${dig?"":`<div class="notice" style="margin:4px 0 8px">Das Briefing von heute ist noch nicht da. Letzter Stand: ${fDate(fromIso(last.date),{weekday:"long",day:"2-digit",month:"2-digit"})}.</div>`}<div class="digest">${digestBody(last,5)}</div>`:'<div class="empty">Noch kein Mail-Briefing vorhanden.</div>')}
+  ${(()=>{const e=nextCampusEvent();if(!e||daysUntil(e.start)!==0)return"";const p=commutePlan(e);return p?sec("Anfahrt","",`<div class="item"><span class="tm">${fTime(p.dep)}</span><div class="body"><div class="title">${esc(p.line)} ab Johanneskirchen</div><div class="meta"><span>an Pasing ${fTime(p.arr)}</span><span>Beginn ${fTime(p.start)}</span></div></div></div>`):""})()}
   <div class="foot"><button class="btn primary" data-brief="close">Los geht’s</button></div></div>`;
 }
 function openBrief(){const b=$("#brief");b.innerHTML=briefingHTML();b.hidden=false;try{localStorage.setItem("sb-brief-seen",iso(new Date()))}catch(e){}const c=b.querySelector(".foot .btn");if(c)c.focus({preventScroll:true})}
@@ -812,6 +876,8 @@ function vAlltag(){
   const kp=g.kcalTarget?Math.round(100*kin/g.kcalTarget):null;
   return `<div class="grid">
   <blockquote class="quote s12">IF YOU DON’T CHANGE IT, YOU CHOOSE IT.</blockquote>
+  ${(()=>{const s=S.fit_workouts.filter(w=>w.date===today&&/^Laufvorschlag/i.test(w.title||""))[0];
+    return `<section class="panel hud s12" aria-labelledby="h-run"><div class="ph"><h2 id="h-run">Laufvorschlag heute</h2><span class="label">aus deinen Strava-Daten</span></div>${s?`<div class="item${s.done?" done":""}" style="align-items:flex-start"><input type="checkbox" class="check" data-toggle="fit_workouts/${s.id}" ${s.done?"checked":""} aria-label="Erledigt"><div class="body"><div class="title" style="font-size:1.05rem">${esc(s.title.replace(/^Laufvorschlag:\s*/i,""))}</div><div class="meta">${s.durationMin?`<span>${s.durationMin} min</span>`:""}</div>${s.details?`<div style="white-space:pre-wrap;color:var(--ink2);margin-top:6px;font-size:.9rem">${esc(s.details)}</div>`:""}</div></div>`:'<div class="empty">Der Vorschlag für heute kommt jeden Morgen gegen 6 Uhr.</div>'}</section>`})()}
   <section class="panel hud s12"><div class="kpis">
     <div class="kpi">${ringSVG(kp==null?null:Math.min(100,kp),kp>100?"var(--serious)":"var(--accent)",72,7,kp==null?"–":kp+"%")}<div><div class="label">Heute gegessen</div><div class="big">${num(kin)}<small>kcal</small></div><div class="sub">${g.kcalTarget?"Ziel "+num(g.kcalTarget)+" kcal":"Ziel unten festlegen"}</div></div></div>
     <div class="kpi"><div><div class="label">Bilanz heute</div><div class="big ${out==null?"":kin-out>0?"up":"down"}">${out==null?"–":(kin-out>0?"+":"−")+num(Math.abs(kin-out))}<small>kcal</small></div><div class="sub">${out==null?"Grundverbrauch unten eintragen":"Verbrauch "+num(out)+" kcal"}</div></div></div>
