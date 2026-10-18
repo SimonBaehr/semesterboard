@@ -3,15 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0A0E18">
+<meta name="theme-color" content="#F5F6F8" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0E0F13" media="(prefers-color-scheme: dark)">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/icon-192.png">
 <title>Semesterboard ABI</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Manrope:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
 <style>
 :root{padding-top:env(safe-area-inset-top,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}
 /* Layout: Leitstand. Bewusst nur dunkles Thema. Rasterhintergrund, Glas-Paneele, Daten in Kursfarben, UI in Eis-Cyan. */
@@ -292,6 +293,95 @@ body.alltag{--accent:#B6F36A;--accent2:#7CCB3E;--accent-soft:rgba(182,243,106,.1
 .goals{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;align-items:end}
 .goals label{display:flex;flex-direction:column;gap:4px;font-size:.76rem;color:var(--ink3)}
 .goals input{padding:7px 10px;border:1px solid var(--line2);border-radius:10px;background:var(--bg2)}
+
+/* ===== Neues Design: ruhig, modern, hell und dunkel nach Systemeinstellung ===== */
+:root{
+  color-scheme:light dark;
+  --bg:#F5F6F8; --bg2:#EEF0F3; --panel:#FFFFFF; --panel2:#F3F4F6; --line:#E6E8EC; --line2:#D5D9E0;
+  --ink:#15171C; --ink2:#4A5160; --ink3:#7A8291;
+  --accent:#4F46E5; --accent2:#6366F1; --accent-soft:rgba(79,70,229,.09); --on-accent:#FFFFFF;
+  --good:#16A34A; --warn:#D97706; --serious:#EA580C; --crit:#DC2626;
+  --c-m11:#2563EB; --c-m13:#EA580C; --c-m14:#059669; --c-m15:#CA8A04; --c-m16:#DB2777; --c-m19:#16A34A; --c-none:#8A93A3;
+  --f-display:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-body:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"Inter",ui-sans-serif,system-ui,sans-serif;
+  --r:16px; --shadow:0 1px 2px rgba(16,24,40,.04),0 1px 3px rgba(16,24,40,.06);
+  --glass:rgba(255,255,255,.86); --crit-ink:#B91C1C; --good-ink:#15803D;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0E0F13; --bg2:#15171C; --panel:#17191F; --panel2:#1F2229; --line:#262A33; --line2:#343944;
+  --ink:#ECEEF2; --ink2:#AEB4C0; --ink3:#7E8594;
+  --accent:#8B85FF; --accent2:#A5A0FF; --accent-soft:rgba(139,133,255,.13); --on-accent:#0E0F13;
+  --c-m11:#60A5FA; --c-m13:#FB923C; --c-m14:#34D399; --c-m15:#FACC15; --c-m16:#F472B6; --c-m19:#4ADE80;
+  --shadow:none; --glass:rgba(23,25,31,.86); --crit-ink:#F87171; --good-ink:#4ADE80;
+}}
+body.alltag{--accent:#16A34A;--accent2:#22C55E;--accent-soft:rgba(22,163,74,.10);--on-accent:#FFFFFF}
+@media (prefers-color-scheme:dark){body.alltag{--accent:#4ADE80;--accent2:#86EFAC;--accent-soft:rgba(74,222,128,.12);--on-accent:#0E0F13}}
+body{background:var(--bg);background-image:none;font-size:15px;-webkit-font-smoothing:antialiased;font-feature-settings:"cv11","ss01"}
+.num,.mono,.clock,.ntime,.cd .days,.kpi .big,.trow .due,.kc,.wke .t,.wkd .dd,.ev .tm,.brief .tm,.focus .dial .t,.pct,.chart text{font-variant-numeric:tabular-nums}
+h1,h2,h3{letter-spacing:-.01em}
+h1{font-size:1.75rem;font-weight:700;letter-spacing:-.02em}
+h2{font-size:.95rem;font-weight:600;text-transform:none;letter-spacing:-.005em;color:var(--ink)}
+.label{font-size:.72rem;text-transform:none;letter-spacing:0;font-weight:500;color:var(--ink3)}
+.side{background:var(--glass);backdrop-filter:blur(12px);border-right:1px solid var(--line)}
+.nav-btn{font-size:.66rem;font-weight:500;letter-spacing:0}
+.nav-btn[aria-current="page"]::before{box-shadow:none}
+.panel,.panel.hud{background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);backdrop-filter:none}
+.panel.hud::before,.panel.hud::after{display:none}
+.clock{font-weight:600;letter-spacing:-.03em}
+.clock .sec{color:var(--ink3)}
+.semprog .track{height:8px;background:var(--bg2);border:0}
+.semprog .fill{background:var(--accent);box-shadow:none}
+.semprog .ticks{font-size:.7rem}
+.nday{font-size:1.35rem;font-weight:600;letter-spacing:-.01em}
+.ntime{font-size:2.2rem;font-weight:700;letter-spacing:-.03em;color:var(--ink);text-shadow:none}
+.ntime .nend{color:var(--ink3)}
+.next .cdn{font-size:.85rem;color:var(--accent);opacity:1;font-weight:500}
+.refresh{background:var(--panel);border:1px solid var(--line);color:var(--ink2);box-shadow:var(--shadow)}
+.refresh:hover{border-color:var(--line2);color:var(--accent);box-shadow:var(--shadow)}
+.btn{background:var(--panel);border:1px solid var(--line2);font-weight:500;box-shadow:var(--shadow)}
+.btn:hover{border-color:var(--accent);color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.primary:hover{box-shadow:none;filter:brightness(1.06);color:var(--on-accent)}
+.seg{background:var(--bg2);border:0;border-radius:10px;padding:2px}
+.seg button{border-radius:8px;color:var(--ink2);font-weight:500}
+.seg button[aria-pressed="true"]{background:var(--panel);color:var(--ink);box-shadow:var(--shadow)}
+.chip{background:var(--bg2);border:0;font-weight:500;color:var(--ink2)}
+.chip.crit{background:rgba(220,38,38,.1);color:var(--crit-ink)}.chip.warn{background:rgba(217,119,6,.12);color:var(--warn)}
+.cd{background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow)}
+.cd .days{font-weight:700;letter-spacing:-.03em}
+.cd.crit .st,.pkind.exam,.trow .due.crit{color:var(--crit-ink)}
+.check{background:var(--panel);border-color:var(--line2)}
+.check:checked{box-shadow:none}
+.plus{background:var(--accent);color:var(--on-accent);border:0}
+.plus:hover,.plus[aria-expanded="true"]{box-shadow:none;filter:brightness(1.08)}
+.minus,.x{background:var(--panel)}
+.gbtn{background:var(--accent-soft);border:0}
+.gdone,.status.s2,.down{color:var(--good-ink)}
+.up{color:var(--crit-ink)}
+.course:hover{border-color:var(--cc);box-shadow:var(--shadow)}
+.code i{box-shadow:none}
+.wkd .dn{text-transform:none;letter-spacing:0;font-size:.9rem}
+.day h3{text-transform:none;letter-spacing:0}
+.day.is-today{box-shadow:0 0 0 1px var(--accent)}
+.ev{background:none}
+.ring:hover{background:var(--bg2);border-color:transparent}
+.tip{background:var(--panel);color:var(--ink);border:1px solid var(--line);box-shadow:0 10px 30px rgba(16,24,40,.14)}
+.toast{background:var(--ink);color:var(--bg);border:0;box-shadow:0 10px 30px rgba(16,24,40,.2)}
+.brief{background:rgba(15,17,22,.45)}
+.brief .bh h2{font-size:1.45rem;font-weight:700;letter-spacing:-.02em}
+.brief .tm{color:var(--ink2)}
+.brief .xbtn{background:var(--panel)}
+.auth{background:var(--bg)}
+.auth input,form.inline input,form.inline select,form.inline textarea,select.sel,.goals input,.daynav input{background:var(--panel);border:1px solid var(--line2)}
+.auth .err{color:var(--crit-ink)}
+.quote{font-size:clamp(1rem,2.2vw,1.2rem);font-weight:600;letter-spacing:-.01em;text-shadow:none;color:var(--ink2)}
+.commute-mini{background:var(--accent-soft);border:0;color:var(--accent)}
+.cm-main{color:var(--accent)}
+.cm-dep b{font-size:1.4rem;font-weight:700;color:var(--ink);letter-spacing:-.02em}
+.cm-line{background:#00975F}
+.notice{background:rgba(217,119,6,.08)}
+@media (max-width:760px){.tabbar{background:var(--glass);backdrop-filter:blur(14px)}.tabbar .nav-btn[aria-current="page"]::before{display:none}}
 </style>
 </head>
 <body>
@@ -443,7 +533,7 @@ const DATECOLS=new Set(["due","date"]);
 const camel=k=>k.replace(/_([a-z])/g,(_,c)=>c.toUpperCase()), snake=k=>k.replace(/[A-Z]/g,c=>"_"+c.toLowerCase());
 function fromRow(t,r){const o={};for(const k in r){if(k==="owner")continue;o[(RENAME[t]&&RENAME[t][k])||camel(k)]=r[k]}return o}
 function toRow(t,o){const inv={};for(const k in (RENAME[t]||{}))inv[RENAME[t][k]]=k;const r={};for(const k in o){if(k==="id"&&o[k]==null)continue;const col=inv[k]||snake(k);r[col]=(DATECOLS.has(col)&&o[k]==="")?null:o[k]}return r}
-async function load(t){const {data,error}=await sb.from(t).select("*").limit(2000);if(error)throw error;S[t]=data.map(r=>fromRow(t,r));try{localStorage.setItem("sb-cache-"+t,JSON.stringify(S[t]))}catch(e){}schedule()}
+async function load(t){let data=[];for(let i=0;;i+=1000){const r=await sb.from(t).select("*").order("id").range(i,i+999);if(r.error)throw r.error;data=data.concat(r.data);if(r.data.length<1000)break}S[t]=data.map(r=>fromRow(t,r));try{localStorage.setItem("sb-cache-"+t,JSON.stringify(S[t]))}catch(e){}schedule()}
 async function write(fn,ok,t){
   try{const {error}=await fn();if(error)throw error;if(ok)toast(ok);if(t)await load(t)}catch(e){toast(navigator.onLine?"Speichern hat nicht geklappt. Bitte erneut versuchen.":"Du bist offline. Bitte später erneut versuchen.")}
 }
@@ -783,7 +873,7 @@ function vMail(){
 }
 
 /* ---------- Alltag: Training, Ernährung, Gewicht ---------- */
-const WT={kraft:["Kraft","#a58bff"],ausdauer:["Ausdauer","#4cc9f0"],sport:["Sport","#f7b538"],mobility:["Mobility","#5fd35f"],sonstiges:["Sonstiges","#8b97ad"]};
+const WT={kraft:["Kraft","#7c5cfc"],ausdauer:["Ausdauer","#0ea5e9"],sport:["Sport","#f59e0b"],mobility:["Mobility","#22a55e"],sonstiges:["Sonstiges","#7a8597"]};
 const MEALS={fruehstueck:"Frühstück",mittag:"Mittagessen",abend:"Abendessen",snack:"Snacks"};
 let foodDay=iso(new Date()),wRange=90;const openW=new Set();addOpen.workout=false;addOpen.meal=false;
 const goals=()=>S.fit_goals[0]||{};
@@ -798,7 +888,7 @@ const protIn=d=>mealsOn(d).reduce((a,m)=>a+Number(m.protein||0),0);
 const kcalOut=d=>goals().baseBurn?goals().baseBurn+S.fit_workouts.filter(w=>w.done&&w.date===d).reduce((a,w)=>a+(w.kcal||0),0):null;
 const weights=()=>S.fit_weight.slice().sort((a,b)=>a.date.localeCompare(b.date));
 const byWhen=(a,b)=>a.date.localeCompare(b.date)||(a.time||"99").localeCompare(b.time||"99");
-const plannedW=()=>S.fit_workouts.filter(w=>!w.done).sort(byWhen);
+const plannedW=()=>{const t=iso(new Date());return S.fit_workouts.filter(w=>!w.done&&!(String(w.id).startsWith("run-")&&w.date<t)).sort(byWhen)};
 const tCol=t=>(WT[t]||WT.sonstiges)[1];
 const tChip=t=>`<span class="tchip" style="--tc:${tCol(t)}">${(WT[t]||WT.sonstiges)[0]}</span>`;
 const statRow=(l,v)=>`<div class="row" style="justify-content:space-between;flex-wrap:nowrap"><span class="muted">${l}</span><span class="num" style="text-align:right">${v}</span></div>`;
