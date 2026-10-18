@@ -762,7 +762,7 @@ async function loadCar(){if(Date.now()-CAR.t<4*6e4)return;CAR.t=Date.now();
   if(view==="heute")render()}
 setInterval(()=>{if(view==="heute"&&document.visibilityState==="visible"){CAR.t=0;loadCar()}},5*6e4);
 function carPanel(){loadCar();
-  const gm="https://www.google.com/maps/dir/?api=1&origin="+encodeURIComponent("Johanneskirchen, München")+"&destination="+encodeURIComponent("Hochschule München Campus Pasing, Am Stadtpark 20, 81243 München")+"&travelmode=driving";
+  const gm="https://www.google.com/maps/dir/?api=1&origin="+encodeURIComponent("Johanneskirchner Straße 89, 81929 München")+"&destination="+encodeURIComponent("Hochschule München Campus Pasing, Am Stadtpark 20, 81243 München")+"&travelmode=driving";
   const head=`<div class="ph"><h2 id="h-car">Mit dem Auto zur Hochschule</h2><a class="btn small" href="${gm}" target="_blank" rel="noopener">Route ↗</a></div>`;
   if(!CAR.data)return `<section class="panel s12" aria-labelledby="h-car">${head}<div class="empty">${CAR.err==="nokey"?"Für die Live-Verkehrslage fehlt noch der TomTom-Schlüssel in Supabase.":CAR.err?"Verkehrslage gerade nicht abrufbar.":"Verkehrslage wird geladen …"}</div></section>`;
   const d=CAR.data,min=Math.round(d.travel_s/60),free=Math.round((d.free_s||d.travel_s)/60),del=Math.max(0,Math.round((d.delay_s||0)/60));
@@ -773,7 +773,7 @@ function carPanel(){loadCar();
     <div class="car-row"><div><div class="car-t">${min}<small> min</small></div><div class="lz-lab">jetzt losfahren · an ca. ${arr}</div></div>
       <div class="car-d" style="color:${col}"><b>${del?"+"+del+" min":"±0 min"}</b><span>${lvl}</span></div></div>
     <div class="car-bar" aria-hidden="true"><i style="width:${Math.min(100,100*free/Math.max(min,1)).toFixed(0)}%"></i><i style="width:${Math.min(100,100*(min-free)/Math.max(min,1)).toFixed(0)}%;background:${col}"></i></div>
-    <div class="faint" style="font-size:.78rem;margin-top:8px">Ohne Verkehr ${free} min · ${(d.length_m/1000).toLocaleString("de-DE",{maximumFractionDigits:1})} km ab Johanneskirchen${jams?` · ${jams} ${jams===1?"Staustelle":"Staustellen"} auf der Strecke`:""} · Stand ${fTime(new Date(d.at))} · Verkehrsdaten TomTom</div>
+    <div class="faint" style="font-size:.78rem;margin-top:8px">Ohne Verkehr ${free} min · ${(d.length_m/1000).toLocaleString("de-DE",{maximumFractionDigits:1})} km ab Johanneskirchner Straße 89${jams?` · ${jams} ${jams===1?"Staustelle":"Staustellen"} auf der Strecke`:""} · Stand ${fTime(new Date(d.at))} · Verkehrsdaten TomTom</div>
   </section>`}
 async function loadMensa(){
   if(Date.now()-MENSA.asked<30*6e4)return;MENSA.asked=Date.now();
