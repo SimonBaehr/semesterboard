@@ -498,6 +498,16 @@ h2{font-size:.95rem;font-weight:600;text-transform:none;letter-spacing:-.005em;c
 .leaflet-control-attribution a{color:#0078a8}
 .leaflet-tooltip{position:absolute;padding:5px 8px;background:#fff;border-radius:6px;color:#222;white-space:nowrap;pointer-events:none;box-shadow:0 1px 4px rgba(0,0,0,.3);font-size:12px}
 .leaflet-tooltip-top:before,.leaflet-tooltip-bottom:before,.leaflet-tooltip-left:before,.leaflet-tooltip-right:before{display:none}
+
+/* Nachrichten */
+.nlist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.nlist li{display:grid;grid-template-columns:22px minmax(0,1fr);gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.nlist li:first-child{border-top:0;padding-top:2px}
+.nlist .nr{font-weight:700;color:var(--accent);font-variant-numeric:tabular-nums;line-height:1.35}
+.nlist .nt{color:var(--ink);font-weight:600;text-decoration:none;line-height:1.35}
+.nlist .nt:hover{text-decoration:underline}
+.nlist .ns{color:var(--ink2);font-size:.84rem;margin-top:3px;line-height:1.4}
+.nlist .nm{color:var(--ink3);font-size:.74rem;margin-top:4px}
 </style>
 </head>
 <body>
@@ -537,7 +547,7 @@ const ICONS={
 };
 const VIEWS=[["heute","Cockpit"],["woche","Woche"],["faecher","Fächer"],["aufgaben","Aufgaben"],["notizen","Notizen"]];
 const AVIEWS=[["alltag","Fitness"],["training","Training"],["analyse","Analyse"],["essen","Abendessen"]];
-const COLS=["courses","events","tasks","steps","notes","digests","literature","timelog","reviews"];
+const COLS=["courses","events","tasks","steps","notes","digests","literature","timelog","reviews","news"];
 // Alltag-Daten liegen in eigenen Tabellen (fit_*), getrennt von den Uni-Tabellen.
 const FCOLS=["fit_workouts","fit_meals","fit_weight","fit_goals"];
 const ALLC=[...COLS,...FCOLS];
@@ -834,7 +844,8 @@ function vHeute(){
         <h3>${esc(next.title)}</h3><div class="where">${esc(next.location||"Kein Ort")} ${mapLink(next.location)}</div><div>${cChip(next.course)}</div>${commuteMini()}`:'<div class="empty">Keine weiteren Termine.</div>'}</div>
     </div></section>
     ${commutePanel()}
-    ${wxPanel()}
+    ${wxPanel("s7")}
+    ${newsPanel("s5")}
 
     <section class="panel s12" aria-labelledby="h-tl"><div class="ph"><h2 id="h-tl">${tlRange==="wk"?"Zeitleiste · KW "+kw(new Date(sod(new Date()).getTime()+(((new Date().getDay()+6)%7)>=5?2:0)*DAY)):"Semester-Zeitleiste"}</h2><div class="row"><div class="legend" style="margin:0"><span><svg width="10" height="10"><circle cx="5" cy="5" r="4" fill="var(--ink2)"/></svg>Vorlesung</span><span><svg width="12" height="12"><path d="M6 1L11 6L6 11L1 6Z" fill="var(--ink2)"/></svg>Abgabe</span><span><svg width="12" height="12"><path d="M6 1L11 6L6 11L1 6Z" fill="none" stroke="var(--ink2)" stroke-width="2"/></svg>Prüfung</span></div>
       <div class="seg" role="group" aria-label="Zeitraum"><button data-tl="sem" aria-pressed="${tlRange==="sem"}">Semester</button><button data-tl="wk" aria-pressed="${tlRange==="wk"}">Woche</button></div></div></div>
@@ -1285,6 +1296,17 @@ function chartPace(el){
   el.innerHTML=`<svg width="${W}" height="${H}" role="img" aria-label="Pace der Läufe, letzte 6 Monate">${g}</svg><div class="legend"><span><i style="background:var(--accent)"></i>Schnitt der letzten 5 Läufe</span><span>Punkte: einzelne Läufe ab 3 km, größer = länger, oben = schneller</span></div>`;
 }
 
+
+/* ---------- Nachrichten (Top 5, morgens und nachmittags von der Routine aktualisiert) ---------- */
+function newsPanel(cls="s12"){
+  const all=S.news.slice().sort((a,b)=>b.date.localeCompare(a.date)||a.rank-b.rank);
+  const day=all.length?all[0].date:null,items=all.filter(n=>n.date===day).slice(0,5);
+  const upd=items.reduce((m,n)=>n.createdAt&&n.createdAt>m?n.createdAt:m,"");
+  const when=day?(day===iso(new Date())?"heute":fDate(fromIso(day),{weekday:"short",day:"2-digit",month:"2-digit"}))+(upd?", "+fTime(new Date(upd)):""):"";
+  const safe=u=>/^https:\/\//.test(u||"")?u:"#";
+  return `<section class="panel ${cls} news" aria-labelledby="h-news"><div class="ph"><h2 id="h-news">Nachrichten</h2><span class="label">${when?"Stand "+when:""}</span></div>
+    ${items.length?`<ol class="nlist">${items.map((n,i)=>`<li><span class="nr">${i+1}</span><div><a href="${esc(safe(n.url))}" target="_blank" rel="noopener noreferrer" class="nt">${esc(n.title)}</a>${n.summary?`<div class="ns">${esc(n.summary)}</div>`:""}<div class="nm">${esc(n.source||"")}${n.topic?" · "+esc(n.topic):""}</div></div></li>`).join("")}</ol>`:'<div class="empty">Die Top-Meldungen kommen jeden Morgen gegen 7 Uhr.</div>'}
+  </section>`}
 /* ---------- Wetter (Open-Meteo, ohne Schlüssel) ---------- */
 const WX_LOC={name:"Johanneskirchen",lat:48.169,lon:11.648};
 let WX=null,wxAsked=0;
