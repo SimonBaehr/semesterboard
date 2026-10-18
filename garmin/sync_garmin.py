@@ -44,6 +44,9 @@ def need_lib():
         sys.exit("Bitte zuerst installieren:  pip install -r requirements.txt")
 
 
+TOKEN_FILE = "garmin_tokens.json"  # ab garminconnect 0.3: Tokens liegen in <ordner>/garmin_tokens.json
+
+
 def login_interactive():
     need_lib()
     from garminconnect import Garmin
@@ -51,33 +54,32 @@ def login_interactive():
         sys.exit("Bitte in einem echten Terminal ausführen, damit das Passwort verdeckt eingegeben werden kann.")
     email = input("Garmin-E-Mail: ").strip()
     pw = getpass.getpass("Garmin-Passwort (unsichtbar): ")
+    TOKEN_DIR.mkdir(mode=0o700, exist_ok=True)
     g = Garmin(email=email, password=pw, prompt_mfa=lambda: input("2FA-Code von Garmin: ").strip())
     try:
-        g.login()
+        g.login(str(TOKEN_DIR))  # speichert die Tokens automatisch in TOKEN_DIR
     finally:
         pw = None  # noqa: F841
-    TOKEN_DIR.mkdir(mode=0o700, exist_ok=True)
-    g.garth.dump(str(TOKEN_DIR))
-    for f in TOKEN_DIR.iterdir():
-        try:
-            f.chmod(stat.S_IRUSR | stat.S_IWUSR)
-        except OSError:
-            pass
-    print("Login ok. Token gespeichert (privat, ca. 1 Jahr gültig).")
+    if not (TOKEN_DIR / TOKEN_FILE).exists():
+        sys.exit("Login lief durch, aber es wurde keine Token-Datei gespeichert. Bitte Screenshot an Claude schicken.")
+    print("Login ok. Token gespeichert (privat).")
 
 
 def client():
     need_lib()
     from garminconnect import Garmin
-    g = Garmin()
     b64 = os.environ.get("GARMIN_TOKEN_B64", "").strip()
+    store = TOKEN_DIR
+    if b64:  # GitHub Actions: Token-Datei aus dem Secret in einen privaten Temp-Ordner schreiben
+        import base64
+        import tempfile
+        store = Path(tempfile.mkdtemp(prefix="garmin-"))
+        (store / TOKEN_FILE).write_bytes(base64.b64decode(b64))
+    elif not (TOKEN_DIR / TOKEN_FILE).exists():
+        sys.exit("Kein Token gefunden. Erst einmal:  python sync_garmin.py --login")
+    g = Garmin()
     try:
-        if b64:
-            g.login(b64)               # garminconnect lädt ein base64-Token-Bündel direkt
-        elif TOKEN_DIR.exists():
-            g.login(str(TOKEN_DIR))
-        else:
-            sys.exit("Kein Token gefunden. Erst einmal:  python sync_garmin.py --login")
+        g.login(str(store))
     except Exception as e:  # Token abgelaufen oder Garmin hat den Login geändert
         sys.exit(f"Garmin-Login mit Token fehlgeschlagen ({type(e).__name__}). "
                  "Lösung: pip install -U garminconnect, dann --login und --export-ci-token neu ausführen.")
@@ -85,14 +87,17 @@ def client():
 
 
 def export_ci_token():
-    g = client()
+    import base64
+    f = TOKEN_DIR / TOKEN_FILE
+    if not f.exists():
+        sys.exit("Kein Token gefunden. Erst einmal:  python sync_garmin.py --login")
     out = Path("garmin-ci-token.txt")
-    out.write_text(g.garth.dumps())
+    out.write_text(base64.b64encode(f.read_bytes()).decode())
     try:
         out.chmod(stat.S_IRUSR | stat.S_IWUSR)
     except OSError:
         pass
-    print(f"Token-Bündel in {out} geschrieben. Inhalt als GitHub-Secret GARMIN_TOKEN_B64 eintragen, danach die Datei löschen.")
+    print(f"Token in {out.resolve()} geschrieben. Inhalt als GitHub-Secret GARMIN_TOKEN_B64 eintragen, danach die Datei löschen.")
 
 
 def safe(fn, *a):
