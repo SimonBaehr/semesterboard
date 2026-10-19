@@ -607,7 +607,7 @@ h2{font-size:.9rem;font-weight:600;color:var(--ink)}
 .car-d{text-align:right;display:flex;flex-direction:column}.car-d b{font-size:1.3rem}.car-d span{font-size:.8rem}
 .car-bar{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--panel2);margin-top:12px}.car-bar i{display:block;height:100%;background:var(--ink3)}
 
-.sb-cols{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.sb-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px}
 @media (max-width:760px){.sb-cols{grid-template-columns:1fr}.sb-row{grid-template-columns:32px auto minmax(0,1fr) 44px 54px;gap:6px;font-size:.82rem}.sb-dest small{display:none}}
 .sb-row{display:grid;grid-template-columns:36px auto minmax(0,1fr) 50px 62px;gap:8px;align-items:center;padding:7px 0;border-top:1px solid var(--line);font-size:.86rem}
 .sb-row:first-of-type{border-top:0}
@@ -765,10 +765,10 @@ function commutePanel(){
 /* ---------- Mensa Pasing: Speiseplan über die Supabase-Funktion mensa (Quelle: Studierendenwerk München Oberbayern) ---------- */
 const MENSA={data:null,asked:0,err:false,url:"https://www.studierendenwerk-muenchen-oberbayern.de/gastronomie/speiseplan/speiseplan_432_-de.html"};
 try{const c=JSON.parse(localStorage.getItem("sb-mensa")||"null");if(c&&c.days)MENSA.data=c}catch(e){}
-/* ---------- S-Bahn live: Pasing Richtung Innenstadt und S8 nach Johanneskirchen (Supabase-Funktion mvg, Daten MVG) ---------- */
-const SB={pasing:null,home:null,t:0,err:{}};
+/* ---------- S-Bahn live: Johanneskirchen und Pasing Richtung Innenstadt und S8 nach Johanneskirchen (Supabase-Funktion mvg, Daten MVG) ---------- */
+const SB={jok:null,pasing:null,home:null,t:0,err:{}};
 async function loadSB(force){if(!force&&Date.now()-SB.t<50000)return;SB.t=Date.now();
-  await Promise.all(["pasing","home"].map(async m=>{try{const r=await fetch(window.SB_URL+"/functions/v1/mvg?m="+m,{headers:{apikey:window.SB_KEY}});const js=await r.json();if(!r.ok||!Array.isArray(js.deps))throw 0;SB[m]=js;SB.err[m]=false}catch(e){SB.err[m]=true}}));
+  await Promise.all(["jok","pasing","home"].map(async m=>{try{const r=await fetch(window.SB_URL+"/functions/v1/mvg?m="+m,{headers:{apikey:window.SB_KEY}});const js=await r.json();if(!r.ok||!Array.isArray(js.deps))throw 0;SB[m]=js;SB.err[m]=false}catch(e){SB.err[m]=true}}));
   if(view==="heute"){const y=scrollY;render();scrollTo(0,y)}}
 setInterval(()=>{if(view==="heute"&&document.visibilityState==="visible")loadSB(true)},60000);
 function sbRow(d,home){const t=new Date(d.real),mins=Math.round((d.real-Date.now())/6e4),late=d.delay>0;
@@ -778,9 +778,9 @@ function sbRow(d,home){const t=new Date(d.real),mins=Math.round((d.real-Date.now
   return `<div class="sb-row${d.cancelled?" cx":""}"><span class="sb-line">${esc(d.line||"S")}</span>${tm}${mid}<span class="sb-in">${mins<=0?"jetzt":mins+" min"}</span>${st}</div>`}
 function sbPanel(){loadSB();
   const col=(m,title,home)=>{const d=SB[m];return `<div class="sb-col"><div class="label" style="margin-bottom:6px">${title}</div>${d?(d.deps.length?d.deps.map(x=>sbRow(x,home)).join(""):'<div class="empty">Gerade keine Abfahrten.</div>'):`<div class="empty">${SB.err[m]?"Live-Daten gerade nicht abrufbar.":"Wird geladen …"}</div>`}</div>`};
-  const at=(SB.pasing||SB.home);
+  const at=(SB.jok||SB.pasing||SB.home);
   return `<section class="panel s12" aria-labelledby="h-sb"><div class="ph"><h2 id="h-sb">S-Bahn live</h2><span class="label">${at?"Stand "+fTime(new Date(at.at))+" · MVG":"MVG"}</span></div>
-    <div class="sb-cols">${col("pasing","Ab Pasing Richtung Innenstadt",false)}${col("home","S8 Pasing → Johanneskirchen",true)}</div></section>`}
+    <div class="sb-cols">${col("jok","Ab Johanneskirchen Richtung Innenstadt",false)}${col("pasing","Ab Pasing Richtung Innenstadt",false)}${col("home","S8 Pasing → Johanneskirchen",true)}</div></section>`}
 /* ---------- Auto: aktuelle Fahrzeit zur Hochschule mit Verkehr (Supabase-Funktion traffic, Daten TomTom) ---------- */
 const CAR={data:null,t:0,err:null};
 async function loadCar(){if(Date.now()-CAR.t<4*6e4)return;CAR.t=Date.now();
