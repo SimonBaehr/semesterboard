@@ -443,6 +443,16 @@ h2{font-size:.95rem;font-weight:600;text-transform:none;letter-spacing:-.005em;c
 .wx-t{font-size:2.4rem;font-weight:650;line-height:1;font-variant-numeric:tabular-nums}
 .wx-d{color:var(--ink2);font-size:.9rem;margin-top:4px}
 .wx-m{display:flex;flex-wrap:wrap;gap:4px 14px;margin-left:auto;color:var(--ink2);font-size:.82rem}
+.wx-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(170px,240px);gap:14px;align-items:center}
+.wx-fit{padding:10px 12px;border-radius:10px;border:1px solid var(--line2);display:flex;flex-direction:column;gap:3px}
+.wx-fit-k{font-weight:650;font-size:1.02rem}
+.wx-fit-s{color:var(--ink2);font-size:.78rem}
+.wx-hrs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;margin-top:12px}
+.wx-hr{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 2px;border-radius:10px;font-size:.8rem;text-align:center}
+.wx-hr.now{background:var(--line)}
+.wx-hr .dn{color:var(--ink2);font-weight:550}
+.wx-hr .pp{color:#339af0;font-size:.72rem;min-height:1em}
+.wx-hr .ww,.wx-hr .of{color:var(--ink2);font-size:.72rem}
 .wx-run{margin-top:12px;padding:8px 12px;border-radius:10px;background:var(--line);font-size:.86rem}
 .wx-days{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px;margin-top:14px}
 .wx-day{display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 2px;border-radius:10px;font-size:.8rem}
@@ -452,6 +462,7 @@ h2{font-size:.95rem;font-weight:600;text-transform:none;letter-spacing:-.005em;c
 .wx-day .tr{display:flex;flex-direction:column;align-items:center;gap:3px;width:100%}
 .wx-day .tr span{color:var(--ink3)}
 .wx-day .tr i{display:block;width:70%;height:4px;border-radius:2px;background:linear-gradient(90deg,transparent var(--a),var(--accent) var(--a),var(--accent) var(--b),transparent var(--b)),var(--line2)}
+@media (max-width:620px){.wx-top{grid-template-columns:1fr}}
 @media (max-width:520px){.wx-m{margin-left:0;width:100%}.wx-days{gap:2px}.wx-day{font-size:.74rem}}
 
 /* Navigation: alle Reiter untereinander */
@@ -1504,11 +1515,11 @@ function newsPanel(cls="s12"){
 /* ---------- Wetter (Open-Meteo, ohne Schlüssel) ---------- */
 const WX_LOC={name:"Johanneskirchen",lat:48.169,lon:11.648};
 let WX=null,wxAsked=0;
-try{const c=JSON.parse(localStorage.getItem("sb-wx")||"null");if(c&&Date.now()-c.t<6*36e5)WX=c}catch(e){}
+try{const c=JSON.parse(localStorage.getItem("sb-wx2")||"null");if(c&&Date.now()-c.t<6*36e5)WX=c}catch(e){}
 async function loadWx(){
   if(Date.now()-wxAsked<10*6e4||(WX&&Date.now()-WX.t<30*6e4))return;wxAsked=Date.now();
-  try{const u=`https://api.open-meteo.com/v1/forecast?latitude=${WX_LOC.lat}&longitude=${WX_LOC.lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,precipitation,relative_humidity_2m,is_day&hourly=temperature_2m,precipitation_probability,weather_code&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum,wind_speed_10m_max,sunrise,sunset&timezone=Europe%2FBerlin&forecast_days=7`;
-    const r=await fetch(u);if(!r.ok)return;const d=await r.json();WX={t:Date.now(),d};try{localStorage.setItem("sb-wx",JSON.stringify(WX))}catch(e){}
+  try{const u=`https://api.open-meteo.com/v1/forecast?latitude=${WX_LOC.lat}&longitude=${WX_LOC.lon}&current=temperature_2m,apparent_temperature,weather_code,wind_speed_10m,precipitation,relative_humidity_2m,is_day&hourly=temperature_2m,precipitation_probability,weather_code,wind_speed_10m,is_day&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,precipitation_sum,wind_speed_10m_max,sunrise,sunset&timezone=Europe%2FBerlin&forecast_days=7`;
+    const r=await fetch(u);if(!r.ok)return;const d=await r.json();WX={t:Date.now(),d};try{localStorage.setItem("sb-wx2",JSON.stringify(WX))}catch(e){}
     if(view==="heute"||view==="alltag")render()}catch(e){}
 }
 function wxKind(c){return c===0?"sun":c<=2?"part":c===3?"cloud":c<=48?"fog":c<=57?"drizzle":c<=67?"rain":c<=77?"snow":c<=82?"rain":c<=86?"snow":"storm"}
@@ -1527,18 +1538,30 @@ function wxIcon(c,size=28,night=false){const k=wxKind(c),s=`<svg viewBox="0 0 32
 function wxRunSlot(d){const h=d.hourly;if(!h)return null;const now=new Date(),today=iso(now);let best=null;
   h.time.forEach((t,i)=>{if(t.slice(0,10)!==today)return;const hr=+t.slice(11,13);if(hr<6||hr>21||hr<now.getHours()+1)return;
     const p=h.precipitation_probability[i]??0,tc=h.temperature_2m[i],score=p+Math.abs(tc-12)*1.5;if(!best||score<best.score)best={hr,p,tc,score,c:h.weather_code[i]}});return best}
+/* Laufoutfit: Temperatur minus Windabschlag (1° je 5 km/h über 10 km/h, höchstens 6°).
+   ab 15° T-Shirt, 10 bis 15° Langarm, unter 10° Langarm plus T-Shirt drunter, bei Wind ab 15 km/h stattdessen Windjacke */
+function runOutfit(t,w){if(t==null)return null;w=w||0;const pen=Math.round(Math.min(6,Math.max(0,(w-10)/5))),e=t-pen;
+  if(e>=15)return {e,pen,w,k:"T-Shirt",s:"T-Shirt"};
+  if(e>=10)return {e,pen,w,k:"Langarmshirt",s:"Langarm"};
+  return w>=15?{e,pen,w,k:"Langarmshirt + Windjacke",s:"Langarm + Windjacke"}:{e,pen,w,k:"Langarmshirt + T-Shirt drunter",s:"Langarm + Shirt"}}
+/* Jetzt und die nächsten 3 Stunden aus den Stundenwerten */
+function wxHours(d){const h=d.hourly;if(!h||!h.time)return [];const now=new Date(),key=iso(now)+"T"+String(now.getHours()).padStart(2,"0")+":00",i=h.time.indexOf(key);if(i<0)return [];
+  return [1,2,3].filter(k=>h.time[i+k]).map(k=>({hr:+h.time[i+k].slice(11,13),t:h.temperature_2m[i+k],p:h.precipitation_probability?.[i+k]??0,c:h.weather_code[i+k],w:h.wind_speed_10m?.[i+k],night:h.is_day?.[i+k]===0}))}
 function wxPanel(cls="s12"){
   loadWx();
   const head=`<div class="ph"><h2 id="h-wx">Wetter · ${WX_LOC.name}</h2><span class="label">Open-Meteo</span></div>`;
   if(!WX)return `<section class="panel ${cls}" aria-labelledby="h-wx">${head}<div class="empty">Wetter wird geladen …</div></section>`;
   const d=WX.d,c=d.current||{},dl=d.daily,night=c.is_day===0;
-  const slot=wxRunSlot(d);
+  const slot=wxRunSlot(d),of=runOutfit(c.temperature_2m,c.wind_speed_10m),hrs=wxHours(d);
   const days=dl.time.map((t,i)=>({t,c:dl.weather_code[i],hi:dl.temperature_2m_max[i],lo:dl.temperature_2m_min[i],p:dl.precipitation_probability_max[i],mm:dl.precipitation_sum[i],w:dl.wind_speed_10m_max[i]}));
   const lo=Math.min(...days.map(x=>x.lo)),hi=Math.max(...days.map(x=>x.hi)),rng=Math.max(1,hi-lo);
   const r0=n=>Math.round(n);
   return `<section class="panel ${cls} wx" aria-labelledby="h-wx">${head}
-    <div class="wx-now">${wxIcon(c.weather_code,56,night)}<div><div class="wx-t">${r0(c.temperature_2m)}°</div><div class="wx-d">${WX_TXT[c.weather_code]||""}</div></div>
-      <div class="wx-m"><span>gefühlt ${r0(c.apparent_temperature)}°</span><span>Wind ${r0(c.wind_speed_10m)} km/h</span><span>Luftfeuchte ${r0(c.relative_humidity_2m)} %</span>${dl.sunset?`<span>Sonne ${dl.sunrise[0].slice(11)}–${dl.sunset[0].slice(11)}</span>`:""}</div></div>
+    <div class="wx-top"><div class="wx-now">${wxIcon(c.weather_code,56,night)}<div><div class="wx-t">${r0(c.temperature_2m)}°</div><div class="wx-d">${WX_TXT[c.weather_code]||""}</div></div>
+      <div class="wx-m"><span>gefühlt ${r0(c.apparent_temperature)}°</span><span><b>Wind ${r0(c.wind_speed_10m)} km/h</b></span><span>Luftfeuchte ${r0(c.relative_humidity_2m)} %</span>${dl.sunset?`<span>Sonne ${dl.sunrise[0].slice(11)}–${dl.sunset[0].slice(11)}</span>`:""}</div></div>
+      ${of?`<div class="wx-fit"><div class="label">Laufoutfit jetzt</div><div class="wx-fit-k">${of.k}</div><div class="wx-fit-s">Lauftemperatur ${r0(of.e)}°${of.pen>0?` (${r0(c.temperature_2m)}° − ${r0(of.pen)}° Wind bei ${r0(of.w)} km/h)`:` (Wind ${r0(of.w)} km/h, kein Abzug)`}</div></div>`:""}</div>
+    ${hrs.length?`<div class="wx-hrs"><div class="wx-hr now"><span class="dn">Jetzt</span>${wxIcon(c.weather_code,26,night)}<b>${r0(c.temperature_2m)}°</b><span class="pp">${c.precipitation>0?String(c.precipitation).replace(".",",")+" mm":"&nbsp;"}</span><span class="ww">${r0(c.wind_speed_10m)} km/h</span><span class="of">${of?of.s:""}</span></div>
+      ${hrs.map(x=>{const o=runOutfit(x.t,x.w);return `<div class="wx-hr"><span class="dn">${x.hr} Uhr</span>${wxIcon(x.c,26,x.night)}<b>${r0(x.t)}°</b><span class="pp">${x.p>=10?x.p+" %":"&nbsp;"}</span><span class="ww">${x.w!=null?r0(x.w)+" km/h":"–"}</span><span class="of">${o?o.s:""}</span></div>`}).join("")}</div>`:""}
     ${slot?`<div class="wx-run">Laufen heute am besten gegen <b>${slot.hr} Uhr</b>: ${r0(slot.tc)}°, Regenrisiko ${slot.p} %</div>`:""}
     <div class="wx-days">${days.map((x,i)=>`<div class="wx-day" ${tipAttr(`<b>${fDate(fromIso(x.t),{weekday:"long",day:"2-digit",month:"2-digit"})}</b><br>${WX_TXT[x.c]||""}<br>${r0(x.lo)}° bis ${r0(x.hi)}°<br>Regen ${x.p??0} %${x.mm?` · ${String(Math.round(x.mm*10)/10).replace(".",",")} mm`:""}<br>Wind bis ${r0(x.w)} km/h`)}>
       <span class="dn">${i===0?"Heute":fDate(fromIso(x.t),{weekday:"short"})}</span>${wxIcon(x.c,30)}<span class="pp">${x.p>=20?x.p+" %":"&nbsp;"}</span>
