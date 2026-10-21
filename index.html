@@ -618,6 +618,10 @@ h2{font-size:.9rem;font-weight:600;color:var(--ink)}
 .car-d{text-align:right;display:flex;flex-direction:column}.car-d b{font-size:1.3rem}.car-d span{font-size:.8rem}
 .car-bar{display:flex;height:8px;border-radius:4px;overflow:hidden;background:var(--panel2);margin-top:12px}.car-bar i{display:block;height:100%;background:var(--ink3)}
 
+.sb-map{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}.sb-map summary{cursor:pointer;font-weight:600;color:var(--ink2)}
+#sbmap-slot{height:620px;border-radius:12px;margin:10px 0 6px;background:var(--panel2)}
+.sb-frame{position:absolute;z-index:1;border:0;border-radius:12px;background:#fff}
+@media (max-width:760px){#sbmap-slot{height:520px}}
 .sb-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px}
 @media (max-width:760px){.sb-cols{grid-template-columns:1fr}.sb-row{grid-template-columns:32px auto minmax(0,1fr) 44px 54px;gap:6px;font-size:.82rem}.sb-dest small{display:none}}
 .sb-row{display:grid;grid-template-columns:36px auto minmax(0,1fr) 50px 62px;gap:8px;align-items:center;padding:7px 0;border-top:1px solid var(--line);font-size:.86rem}
@@ -782,6 +786,16 @@ async function loadSB(force){if(!force&&Date.now()-SB.t<50000)return;SB.t=Date.n
   await Promise.all(["jok","pasing","home"].map(async m=>{try{const r=await fetch(window.SB_URL+"/functions/v1/mvg?m="+m,{headers:{apikey:window.SB_KEY}});const js=await r.json();if(!r.ok||!Array.isArray(js.deps))throw 0;SB[m]=js;SB.err[m]=false}catch(e){SB.err[m]=true}}));
   if(view==="heute"){const y=scrollY;render();scrollTo(0,y)}}
 setInterval(()=>{if(view==="heute"&&document.visibilityState==="visible")loadSB(true)},60000);
+/* Live-Karte bleibt als festes Element erhalten, damit sie beim minütlichen Neuaufbau nicht neu lädt */
+let SBFRAME=null;
+function mountSBMap(){const slot=document.getElementById("sbmap-slot");
+  if(!slot||!SB.mapOpen||!slot.offsetParent){if(SBFRAME)SBFRAME.style.display="none";return}
+  if(!SBFRAME){SBFRAME=document.createElement("iframe");SBFRAME.className="sb-frame";SBFRAME.src="https://s-bahn-muenchen-live.de/?mode=schematic&x=2414000&y=1733000&z=4.9";SBFRAME.title="S-Bahn München Live-Karte";SBFRAME.referrerPolicy="no-referrer";document.body.appendChild(SBFRAME);
+    addEventListener("resize",mountSBMap);if(window.ResizeObserver)new ResizeObserver(mountSBMap).observe(document.getElementById("main"))}
+  const r=slot.getBoundingClientRect();Object.assign(SBFRAME.style,{display:"block",left:(r.left+scrollX)+"px",top:(r.top+scrollY)+"px",width:r.width+"px",height:r.height+"px"})}
+document.addEventListener("toggle",e=>{const d=e.target;if(!(d instanceof HTMLDetailsElement)||!d.classList.contains("sb-map"))return;
+  SB.mapOpen=d.open;try{localStorage.setItem("sb-map",d.open?"1":"0")}catch(x){}if(d.open)mountSBMap()},true);
+try{SB.mapOpen=localStorage.getItem("sb-map")==="1"}catch(e){}
 function sbRow(d,home){const t=new Date(d.real),mins=Math.round((d.real-Date.now())/6e4),late=d.delay>0;
   const st=d.cancelled?'<span class="sb-st x">fällt aus</span>':late?`<span class="sb-st late">+${d.delay}</span>`:d.live===false?'<span class="sb-st">Plan</span>':'<span class="sb-st ok">pünktlich</span>';
   const tm=`<span class="sb-time"><b>${fTime(t)}</b>${late&&!d.cancelled?`<s>${fTime(new Date(d.planned))}</s>`:""}</span>`;
@@ -791,7 +805,10 @@ function sbPanel(){loadSB();
   const col=(m,title,home)=>{const d=SB[m];return `<div class="sb-col"><div class="label" style="margin-bottom:6px">${title}</div>${d?(d.deps.length?d.deps.map(x=>sbRow(x,home)).join(""):'<div class="empty">Gerade keine Abfahrten.</div>'):`<div class="empty">${SB.err[m]?"Live-Daten gerade nicht abrufbar.":"Wird geladen …"}</div>`}</div>`};
   const at=(SB.jok||SB.pasing||SB.home);
   return `<section class="panel s12" aria-labelledby="h-sb"><div class="ph"><h2 id="h-sb">S-Bahn live</h2><span class="label">${at?"Stand "+fTime(new Date(at.at))+" · MVG":"MVG"}</span></div>
-    <div class="sb-cols">${col("jok","Ab Johanneskirchen Richtung Innenstadt",false)}${col("pasing","Ab Pasing Richtung Innenstadt",false)}${col("home","S8 Pasing → Johanneskirchen",true)}</div></section>`}
+    <div class="sb-cols">${col("jok","Ab Johanneskirchen Richtung Innenstadt",false)}${col("pasing","Ab Pasing Richtung Innenstadt",false)}${col("home","S8 Pasing → Johanneskirchen",true)}</div>
+    <details class="sb-map" ${SB.mapOpen?"open":""}><summary>Live-Karte aller S-Bahnen</summary>
+      <div id="sbmap-slot"></div>
+      <div class="lz-lab">Karte: S-Bahn München / geOps · <a href="https://s-bahn-muenchen-live.de/" target="_blank" rel="noopener">im neuen Tab öffnen ↗</a></div></details></section>`}
 /* ---------- Auto: aktuelle Fahrzeit zur Hochschule mit Verkehr (Supabase-Funktion traffic, Daten TomTom) ---------- */
 const CAR={data:null,t:0,err:null};
 async function loadCar(){if(Date.now()-CAR.t<4*6e4)return;CAR.t=Date.now();
@@ -979,6 +996,7 @@ function chartBurndown(el,cid){
 function drawCharts(){
   document.querySelectorAll("[data-chart]").forEach(el=>{const k=el.dataset.chart;
     if(k==="timeline")chartTimeline(el);else if(k==="activity")chartActivity(el);else if(k==="study")chartStudy(el);else if(k==="burndown")chartBurndown(el,el.dataset.cid);else if(k==="weight")chartWeight(el);else if(k==="kcal")chartKcal(el);else if(k==="train")chartTrain(el);else if(k==="runkm")chartRunKm(el);else if(k==="runyear")chartRunYear(el);else if(k==="mix")chartMix(el);else if(k==="pace")chartPace(el);else if(k==="pmc")chartPMC(el);else if(k==="acwr")chartACWR(el);else if(k==="heat")chartHeat(el);else if(k==="volume")chartVolume(el);else if(k==="hrv")chartHRV(el);else if(k==="sleep")chartSleep(el);else if(k==="wkg")chartWKg(el)});
+  mountSBMap();
   const am=document.getElementById("anamap-slot");if(am)mountMap(am);else if(LMAP&&MAPEL&&document.body.contains(MAPEL))LMAP.invalidateSize();
   document.querySelectorAll(".kpi .rg").forEach(c=>c.style.strokeDashoffset=c.dataset.off);
   if(!ringsDone&&S.steps.length){requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll(".rg").forEach(c=>c.style.strokeDashoffset=c.dataset.off)));ringsDone=true}
