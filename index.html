@@ -781,7 +781,7 @@ function commutePanel(){
 const MENSA={data:null,asked:0,err:false,url:"https://www.studierendenwerk-muenchen-oberbayern.de/gastronomie/speiseplan/speiseplan_432_-de.html"};
 try{const c=JSON.parse(localStorage.getItem("sb-mensa")||"null");if(c&&c.days)MENSA.data=c}catch(e){}
 /* ---------- S-Bahn live: Johanneskirchen und Pasing Richtung Innenstadt und S8 nach Johanneskirchen (Supabase-Funktion mvg, Daten MVG) ---------- */
-const SB={jok:null,pasing:null,home:null,t:0,err:{}};
+const SB={jok:null,pasing:null,home:null,t:0,err:{},mapOpen:true};
 async function loadSB(force){if(!force&&Date.now()-SB.t<50000)return;SB.t=Date.now();
   await Promise.all(["jok","pasing","home"].map(async m=>{try{const r=await fetch(window.SB_URL+"/functions/v1/mvg?m="+m,{headers:{apikey:window.SB_KEY}});const js=await r.json();if(!r.ok||!Array.isArray(js.deps))throw 0;SB[m]=js;SB.err[m]=false}catch(e){SB.err[m]=true}}));
   if(view==="heute"){const y=scrollY;render();scrollTo(0,y)}}
@@ -795,7 +795,7 @@ function mountSBMap(){const slot=document.getElementById("sbmap-slot");
   const r=slot.getBoundingClientRect();Object.assign(SBFRAME.style,{display:"block",left:(r.left+scrollX)+"px",top:(r.top+scrollY)+"px",width:r.width+"px",height:r.height+"px"})}
 document.addEventListener("toggle",e=>{const d=e.target;if(!(d instanceof HTMLDetailsElement)||!d.classList.contains("sb-map"))return;
   SB.mapOpen=d.open;try{localStorage.setItem("sb-map",d.open?"1":"0")}catch(x){}if(d.open)mountSBMap()},true);
-try{SB.mapOpen=localStorage.getItem("sb-map")==="1"}catch(e){}
+try{SB.mapOpen=localStorage.getItem("sb-map")!=="0"}catch(e){}
 function sbRow(d,home){const t=new Date(d.real),mins=Math.round((d.real-Date.now())/6e4),late=d.delay>0;
   const st=d.cancelled?'<span class="sb-st x">fällt aus</span>':late?`<span class="sb-st late">+${d.delay}</span>`:d.live===false?'<span class="sb-st">Plan</span>':'<span class="sb-st ok">pünktlich</span>';
   const tm=`<span class="sb-time"><b>${fTime(t)}</b>${late&&!d.cancelled?`<s>${fTime(new Date(d.planned))}</s>`:""}</span>`;
