@@ -1,9 +1,10 @@
 name: Garmin-Sync
-# Holt jeden Morgen Schlaf, HRV, Ruhepuls, Body Battery, Stress und Readiness der letzten 3 Tage
+# Holt jeden Morgen (zweimal) Schlaf, HRV, Ruhepuls, Body Battery, Stress und Readiness der letzten 3 Tage
 # und schreibt sie über die Supabase-Funktion garmin-ingest ins Semesterboard.
 on:
   schedule:
     - cron: "17 4 * * *"   # 05:17 bzw. 06:17 deutscher Zeit (GitHub rechnet in UTC)
+    - cron: "47 5 * * *"   # zweiter Lauf 06:47 bzw. 07:47, falls die Uhr erst später synchronisiert hat
   workflow_dispatch:
     inputs:
       days:
