@@ -723,10 +723,27 @@ a{color:var(--accent2)}
   .tabbar .nav-btn{border-radius:20px}
   .panel,.lz-sec{--r:22px}
 }
+
+/* Tageshintergrund: jeden Tag ein anderer Berg, scharf; die Glasfelder davor verschwimmen ihn */
+#bgimg{position:fixed;inset:0;z-index:-1;background-size:cover;background-position:center;opacity:0;transition:opacity .9s ease;pointer-events:none}
+#bgimg.on{opacity:1}
+body::after{background:linear-gradient(180deg,rgba(0,0,0,.38) 0,rgba(0,0,0,.12) 240px,rgba(0,0,0,.06) 60%,rgba(0,0,0,.18) 100%)!important}
+:root{--panel:rgba(255,255,255,.66);--panel2:rgba(255,255,255,.5);--line:rgba(255,255,255,.7);--gl-blur:blur(28px) saturate(170%)}
+.side{background:rgba(255,255,255,.55)!important}
+.top .label,.top h1,.top .meta,.top>div>.faint,.quote,.lz-head,.lz-meta,main>.label{color:#fff!important;text-shadow:0 1px 14px rgba(0,0,0,.45),0 0 2px rgba(0,0,0,.25)!important}
+.quote{border-left-color:#fff!important}
+.day.past{opacity:1!important}.day.past>*{opacity:.55}
+.ph>h1,.ph>h1~.label{color:#fff!important;text-shadow:0 1px 14px rgba(0,0,0,.45),0 0 2px rgba(0,0,0,.25)!important}
+.day{background:rgba(255,255,255,.64)!important;border:1px solid var(--line)!important;border-radius:16px!important;-webkit-backdrop-filter:var(--gl-blur);backdrop-filter:var(--gl-blur);box-shadow:var(--gl-shadow)}
+.lz-logo{color:#fff!important}
+.bg-credit{position:fixed;right:12px;bottom:8px;z-index:2;font-size:.68rem;color:rgba(255,255,255,.85);text-shadow:0 1px 6px rgba(0,0,0,.6);text-decoration:none}
+@media (max-width:760px){.bg-credit{display:none}}
 </style>
 </head>
 <body>
 
+<div id="bgimg" aria-hidden="true"></div>
+<a class="bg-credit" href="https://unsplash.com/s/photos/mountain" target="_blank" rel="noopener">Foto: Unsplash</a>
 <div class="app">
   <aside class="side" aria-label="Navigation">
         <nav id="sidenav" class="stack sidenav"></nav>
@@ -776,6 +793,16 @@ const isAlltag=v=>AVIEWS.some(x=>x[0]===v);
 const lastOf={uni:"heute",alltag:"alltag"};
 try{const r=localStorage.getItem("sb-tl"); if(r==="sem"||r==="wk") tlRange=r; if(localStorage.getItem("sb-ftab")==="pruef") fTab="pruef";}catch(e){}
 
+
+/* ---------- Tageshintergrund: ein Berg pro Tag (Unsplash, freie Lizenz), passend zur Bildschirmgröße geladen ---------- */
+const BERGE=["1426604966848-d7adac402bff","1434394354979-a235cd36269d","1454496522488-7a8e488e8606","1458668383970-8ddd3927deed","1464822759023-fed622ff2c3b","1465056836041-7f43ac27dcb5","1470770903676-69b98201ea1c","1472791108553-c9405341e398","1477346611705-65d1883cee1e","1483728642387-6c3bdd6c93e5","1486870591958-9b9d0d1dda99","1491555103944-7c647fd857e6","1491904768633-2b7e3e7fede5","1501785888041-af3ef285b470","1506905925346-21bda4d32df4","1518892096458-a169843d7f7f","1519681393784-d120267933ba","1519931760384-a96fedd8dfa9","1520208422220-d12a3c588e6c","1533130061792-64b345e4a833","1544198365-f5d60b6d8190","1556186368-e32d7659883c","1604160970151-e766f3060d3c","1679597454618-d1ae16573606","1696332331308-8a064129a487","1760301269447-fbc82b5a8d14","1768928969838-c29382c18f4e","1777661097541-e9ebeffe6aa2"];
+function setBg(){const d=new Date(),doy=Math.floor((d-new Date(d.getFullYear(),0,0))/864e5),id=BERGE[(doy+d.getFullYear()*7)%BERGE.length];
+  const dpr=Math.min(2,window.devicePixelRatio||1),w=Math.round(innerWidth/100)*100||1200,h=Math.round(innerHeight/100)*100||800;
+  const url=`https://images.unsplash.com/photo-${id}?auto=format&fit=crop&crop=entropy&w=${w}&h=${h}&dpr=${dpr}&q=72`;
+  const el=document.getElementById("bgimg");if(!el||el.dataset.id===id+w+h)return;el.dataset.id=id+w+h;
+  const im=new Image();im.onload=()=>{el.style.backgroundImage=`url("${url}")`;el.classList.add("on")};im.src=url}
+setBg();let bgT=0;addEventListener("resize",()=>{clearTimeout(bgT);bgT=setTimeout(setBg,800)});
+setInterval(setBg,30*6e4);
 /* ---------- Hilfen ---------- */
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
