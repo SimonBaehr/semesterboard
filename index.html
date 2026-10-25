@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#1E1711">
+<meta name="theme-color" content="#E9DFD2">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black">
 <link rel="manifest" href="manifest.webmanifest">
@@ -633,92 +633,95 @@ h2{font-size:.9rem;font-weight:600;color:var(--ink)}
 .sb-st{font-size:.72rem;text-align:right;color:var(--ink3)}.sb-st.ok{color:var(--accent)}.sb-st.late{color:var(--serious);font-weight:600}.sb-st.x{color:var(--serious);font-weight:700}
 .sb-row.cx .sb-dest,.sb-row.cx .sb-time b{text-decoration:line-through;color:var(--ink3)}
 
-/* ===== Design: Glas (ersetzt das schlichte dunkle Design) =====
-   Warmer, weich verschwommener Hintergrund, darüber milchige Glaskarten mit feinem Rand und Licht oben.
-   Statusfarben weiterhin blau/orange statt grün/rot (Rot-Grün-Schwäche). */
+/* ===== Design: helles Glas (ersetzt das schlichte dunkle Design) =====
+   Heller, warm verschwommener Raum als Hintergrund, darüber weiß-milchige Glaskarten mit feinem Rand und
+   Licht oben, dunkle Schrift. Akzente Blau und Orange (bei Rot-Grün-Schwäche gut unterscheidbar). */
 :root{
-  color-scheme:dark;
-  --bg:#1E1711; --bg2:rgba(0,0,0,.22); --panel:rgba(255,255,255,.085); --panel2:rgba(255,255,255,.07);
-  --line:rgba(255,255,255,.13); --line2:rgba(255,255,255,.24);
-  --ink:#F7F3EE; --ink2:rgba(247,243,238,.74); --ink3:rgba(247,243,238,.52);
-  --accent:#8DC3FF; --accent2:#B5D8FF; --accent-soft:rgba(141,195,255,.16); --on-accent:#14110D;
-  --good:#8DC3FF; --good-ink:#B5D8FF; --warn:#F2C060; --serious:#F5A05A; --crit:#F5A05A; --crit-ink:#FFC08A;
-  --r:22px; --glass:rgba(40,31,23,.55);
-  --gl-blur:blur(22px) saturate(150%);
-  --gl-shadow:0 10px 36px rgba(0,0,0,.28),inset 0 1px 0 rgba(255,255,255,.20),inset 0 0 0 1px rgba(255,255,255,.04);
+  color-scheme:light;
+  --bg:#E9DFD2; --bg2:rgba(255,255,255,.35); --panel:rgba(255,255,255,.42); --panel2:rgba(255,255,255,.45);
+  --line:rgba(255,255,255,.65); --line2:rgba(60,45,30,.16);
+  --ink:#1F1B17; --ink2:rgba(31,27,23,.72); --ink3:rgba(31,27,23,.52);
+  --accent:#2F6BD8; --accent2:#1F57BD; --accent-soft:rgba(47,107,216,.12); --on-accent:#fff;
+  --good:#2F6BD8; --good-ink:#1F57BD; --warn:#B7791F; --serious:#D2691E; --crit:#D2691E; --crit-ink:#B4560F;
+  --r:24px; --glass:rgba(255,255,255,.6);
+  --gl-blur:blur(26px) saturate(160%);
+  --gl-shadow:0 12px 40px rgba(80,55,30,.16),inset 0 1px 0 rgba(255,255,255,.9),inset 0 0 0 1px rgba(255,255,255,.25);
 }
-body.alltag{--accent:#8DC3FF;--accent2:#B5D8FF;--accent-soft:rgba(141,195,255,.16);--on-accent:#14110D}
-html{background:#1E1711}
-body{background:transparent!important;background-image:none!important}
+body.alltag{--accent:#2F6BD8;--accent2:#1F57BD;--accent-soft:rgba(47,107,216,.12);--on-accent:#fff}
+html{background:#E9DFD2}
+body{background:transparent!important;background-image:none!important;color:var(--ink)}
 body::before{content:"";position:fixed;inset:-10%;z-index:-1;pointer-events:none;
   background:
-    radial-gradient(40% 32% at 18% 10%,rgba(226,184,130,.70),transparent 70%),
-    radial-gradient(30% 26% at 82% 8%,rgba(120,92,66,.65),transparent 70%),
-    radial-gradient(48% 42% at 70% 58%,rgba(196,150,104,.58),transparent 72%),
-    radial-gradient(40% 36% at 12% 78%,rgba(92,70,52,.75),transparent 70%),
-    radial-gradient(32% 26% at 48% 34%,rgba(240,222,196,.32),transparent 70%),
-    radial-gradient(34% 30% at 92% 92%,rgba(70,82,96,.55),transparent 70%),
-    linear-gradient(160deg,#3A2C20 0%,#2A2018 45%,#1C1611 100%)}
-body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.05),rgba(0,0,0,.28))}
+    radial-gradient(30% 22% at 22% 4%,rgba(150,112,76,.55),transparent 70%),
+    radial-gradient(26% 20% at 70% 2%,rgba(120,88,60,.45),transparent 70%),
+    radial-gradient(40% 34% at 14% 70%,rgba(176,140,104,.45),transparent 70%),
+    radial-gradient(44% 38% at 82% 62%,rgba(200,170,136,.5),transparent 72%),
+    radial-gradient(36% 30% at 50% 36%,rgba(255,250,242,.85),transparent 70%),
+    radial-gradient(28% 22% at 94% 94%,rgba(140,150,160,.35),transparent 70%),
+    linear-gradient(170deg,#D8C7B3 0%,#EDE3D6 40%,#E4D7C6 70%,#CDB89F 100%)}
+body::after{content:"";position:fixed;inset:0;z-index:-1;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,0) 40%,rgba(90,65,40,.08))}
 
 /* Glaskarten */
 .panel,.panel.hud,.lz-sec,.brief>*,.auth form{background:var(--panel)!important;border:1px solid var(--line)!important;border-radius:var(--r)!important;
   -webkit-backdrop-filter:var(--gl-blur);backdrop-filter:var(--gl-blur);box-shadow:var(--gl-shadow)!important}
 @media (hover:hover){
-  .panel{transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s,border-color .25s}
-  .panel:hover{transform:translateY(-4px);border-color:var(--line2)!important;box-shadow:0 18px 44px rgba(0,0,0,.34),inset 0 1px 0 rgba(255,255,255,.26)!important}
+  .panel{transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s}
+  .panel:hover{transform:translateY(-4px);box-shadow:0 20px 48px rgba(80,55,30,.22),inset 0 1px 0 #fff!important}
   .panel:has(#sbmap-slot):hover,.panel:has(.anamap):hover,.panel:has(form):hover{transform:none}
 }
 @media (prefers-reduced-motion:reduce){.panel,.panel:hover{transition:none;transform:none}}
-.lz-tile,.lz-load,.lz-ki,.lz-zb,.car-bar,#sbmap-slot,.wx-day{background:rgba(255,255,255,.06)!important;border-radius:16px}
-h1{font-size:1.75rem;font-weight:600;letter-spacing:-.02em}
-h2{font-size:.92rem;font-weight:600;color:var(--ink)}
-.label{color:var(--ink3)}
+.lz-tile,.lz-load,.lz-ki,.car-bar,#sbmap-slot,.wx-day{background:rgba(255,255,255,.5)!important;border-radius:16px}
+.lz-zb,.semprog .track{background:rgba(60,45,30,.10)!important}
+.lz-f{background:rgba(255,255,255,.55)}
+h1{font-size:1.8rem;font-weight:600;letter-spacing:-.02em;color:var(--ink)}
+h2{font-size:.95rem;font-weight:600;color:var(--ink)}
 
 /* Seitenleiste als schwebende Glasleiste */
 .app{grid-template-columns:100px minmax(0,1fr)}
 .side{top:14px;height:calc(100vh - 28px);margin:14px 0 14px 14px;border:1px solid var(--line)!important;border-radius:28px;
-  background:rgba(255,255,255,.08)!important;-webkit-backdrop-filter:var(--gl-blur);backdrop-filter:var(--gl-blur);box-shadow:var(--gl-shadow)}
-.nav-btn{border-radius:16px;color:var(--ink3)}
-.nav-btn:hover{color:var(--ink);background:rgba(255,255,255,.08)}
-.nav-btn[aria-current="page"]{color:#14110D!important;background:rgba(255,255,255,.88)!important;box-shadow:0 4px 14px rgba(0,0,0,.2)}
+  background:rgba(255,255,255,.4)!important;-webkit-backdrop-filter:var(--gl-blur);backdrop-filter:var(--gl-blur);box-shadow:var(--gl-shadow)}
+.nav-btn{border-radius:16px;color:var(--ink2)}
+.nav-btn:hover{color:var(--ink);background:rgba(255,255,255,.5)}
+.nav-btn[aria-current="page"]{color:#fff!important;background:#1F1B17!important;box-shadow:0 6px 16px rgba(31,27,23,.25)}
 .nav-btn[aria-current="page"]::before{display:none!important}
-.logo{background:rgba(255,255,255,.14)!important;border:1px solid var(--line2)!important;border-radius:14px}
+.logo{background:rgba(255,255,255,.6)!important;border:1px solid var(--line)!important;border-radius:14px;color:var(--ink)!important}
 
 /* Buttons, Chips, Eingaben als Pillen */
-.btn{background:rgba(255,255,255,.10)!important;border:1px solid var(--line2)!important;border-radius:999px!important;color:var(--ink)!important;
-  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-.btn:hover{background:rgba(255,255,255,.18)!important;color:var(--ink)!important}
-.btn.primary{background:rgba(255,255,255,.92)!important;color:#14110D!important;border-color:transparent!important}
-.btn.primary:hover{background:#fff!important}
-.refresh{background:rgba(255,255,255,.10)!important;border:1px solid var(--line2)!important;border-radius:999px!important;color:var(--ink)!important;
-  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
-.refresh:hover{background:rgba(255,255,255,.18)!important}
-.chip{background:rgba(255,255,255,.10);border-color:var(--line)}
-.seg{border-radius:999px;border-color:var(--line2);background:rgba(255,255,255,.06)}
-.seg button[aria-pressed="true"],.seg .on{background:rgba(255,255,255,.88)!important;color:#14110D!important}
-input,select,textarea{background:rgba(255,255,255,.08)!important;border:1px solid var(--line2)!important;border-radius:14px!important;color:var(--ink)!important}
+.btn{background:rgba(255,255,255,.6)!important;border:1px solid rgba(255,255,255,.8)!important;border-radius:999px!important;color:var(--ink)!important;
+  box-shadow:0 2px 8px rgba(80,55,30,.08)!important}
+.btn:hover{background:rgba(255,255,255,.85)!important}
+.btn.primary{background:#1F1B17!important;color:#fff!important;border-color:transparent!important}
+.btn.primary:hover{background:#000!important}
+.refresh{background:rgba(255,255,255,.6)!important;border:1px solid rgba(255,255,255,.8)!important;border-radius:999px!important;color:var(--ink)!important;
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);box-shadow:0 4px 14px rgba(80,55,30,.12)!important}
+.refresh:hover{background:#fff!important}
+.chip{background:rgba(255,255,255,.55);border-color:rgba(255,255,255,.8);color:var(--ink2)}
+.seg{border-radius:999px;border-color:rgba(255,255,255,.8);background:rgba(255,255,255,.4)}
+.seg button[aria-pressed="true"],.seg .on{background:#1F1B17!important;color:#fff!important;border-radius:999px}
+input,select,textarea{background:rgba(255,255,255,.6)!important;border:1px solid rgba(255,255,255,.85)!important;border-radius:14px!important;color:var(--ink)!important}
 input::placeholder,textarea::placeholder{color:var(--ink3)}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px}
-select option{background:#2A2018;color:var(--ink)}
+a{color:var(--accent2)}
 
 /* Overlays */
-.toast{background:rgba(40,31,23,.72)!important;-webkit-backdrop-filter:var(--gl-blur);backdrop-filter:var(--gl-blur);border:1px solid var(--line2)!important;border-radius:999px!important;box-shadow:var(--gl-shadow)!important}
-.tip{background:rgba(40,31,23,.82)!important;-webkit-backdrop-filter:var(--gl-blur);backdrop-filter:var(--gl-blur);border-radius:14px;border-color:var(--line2)}
-.brief{background:rgba(20,15,10,.45)!important;-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+.toast{background:rgba(31,27,23,.88)!important;color:#fff!important;-webkit-backdrop-filter:var(--gl-blur);backdrop-filter:var(--gl-blur);border:0!important;border-radius:999px!important;box-shadow:0 10px 30px rgba(0,0,0,.2)!important}
+.tip{background:rgba(255,255,255,.85)!important;color:var(--ink)!important;-webkit-backdrop-filter:var(--gl-blur);backdrop-filter:var(--gl-blur);border-radius:14px;border-color:rgba(255,255,255,.9)!important;box-shadow:0 10px 30px rgba(80,55,30,.18)!important}
+.brief{background:rgba(233,223,210,.5)!important;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
 .auth{background:transparent}
 .leaflet-container{border-radius:18px}
-.leaflet-control-attribution{background:rgba(30,23,17,.7)!important}
+.leaflet-control-attribution{background:rgba(255,255,255,.75)!important;color:var(--ink3)!important}
 .sb-frame{border-radius:16px}
-.sb-line,.lz-b.run{color:#14110D}
+.sb-line,.lz-b.run,.cm-line{color:#fff!important;background:var(--accent)!important}
+.lz-b{background:rgba(60,45,30,.14);color:var(--ink)}
+.dot.live{background:var(--accent)}
 
 /* Handy: Tab-Leiste als schwebende Glaspille unten */
 @media (max-width:760px){
   .app{grid-template-columns:minmax(0,1fr)}
   .tabbar{left:10px!important;right:10px!important;bottom:calc(10px + env(safe-area-inset-bottom,0px))!important;padding:6px!important;border-radius:26px;
-    border:1px solid var(--line2)!important;background:rgba(36,28,21,.9)!important;-webkit-backdrop-filter:var(--gl-blur);backdrop-filter:var(--gl-blur);box-shadow:0 10px 30px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.2)}
+    border:1px solid rgba(255,255,255,.85)!important;background:rgba(246,240,232,.88)!important;-webkit-backdrop-filter:var(--gl-blur);backdrop-filter:var(--gl-blur);box-shadow:0 12px 30px rgba(80,55,30,.22),inset 0 1px 0 #fff}
   .tabbar .nav-btn{border-radius:20px}
-  .panel,.lz-sec{--r:20px}
+  .panel,.lz-sec{--r:22px}
 }
 </style>
 </head>
