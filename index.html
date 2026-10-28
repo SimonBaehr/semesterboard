@@ -738,11 +738,75 @@ body::after{background:linear-gradient(180deg,rgba(0,0,0,.38) 0,rgba(0,0,0,.12) 
 .lz-logo{color:#fff!important}
 .bg-credit{position:fixed;right:12px;bottom:8px;z-index:2;font-size:.68rem;color:rgba(255,255,255,.85);text-shadow:0 1px 6px rgba(0,0,0,.6);text-decoration:none}
 @media (max-width:760px){.bg-credit{display:none}}
+
+/* Semesterroute: Bergpfad mit Etappen, der Bergsteiger läuft bis heute (Animation beim Öffnen) */
+.route-wrap{overflow-x:auto;scrollbar-width:none;margin:4px -6px 0;padding:0 6px}.route-wrap::-webkit-scrollbar{display:none}
+.route{display:block;width:100%;min-width:760px;height:auto;overflow:visible}
+.route .rt-base{fill:none;stroke:rgba(60,45,30,.22);stroke-width:3;stroke-dasharray:2 7;stroke-linecap:round}
+.route .rt-done{fill:none;stroke:var(--accent);stroke-width:4;stroke-linecap:round}
+.route .rt-st circle{fill:rgba(255,255,255,.85);stroke:rgba(60,45,30,.28);stroke-width:2}
+.route .rt-st.done circle{fill:var(--accent);stroke:var(--accent)}
+.route .rt-st.done path{stroke:#fff;stroke-width:2.2;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.route .rt-st.next circle{stroke:var(--serious);stroke-width:2.5}
+.route text{font-family:var(--f-body);font-size:12px;fill:var(--ink2);text-anchor:middle}
+.route text.k{font-weight:600;fill:var(--ink)}.route text.d{font-size:11px;fill:var(--ink3)}
+.route .rt-st.next text.k{fill:var(--serious)}
+.route .rt-me rect{fill:#1F1B17}.route .rt-me path{stroke:#fff;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.route .rt-pulse{fill:var(--accent);opacity:.25;transform-box:fill-box;transform-origin:center;animation:rtpulse 2s ease-out infinite}
+@keyframes rtpulse{from{transform:scale(.6);opacity:.35}to{transform:scale(1.8);opacity:0}}
+.rt-sum{display:flex;gap:18px;flex-wrap:wrap;color:var(--ink2);font-size:.85rem;margin-top:6px}.rt-sum b{color:var(--ink)}
+
+/* Seitenwechsel: Welle läuft über den Bildschirm, Felder gleiten nacheinander herein */
+#wave{position:fixed;inset:0;z-index:1050;pointer-events:none;overflow:hidden;display:none}
+#wave.go{display:block}
+#wave svg{position:absolute;top:0;left:0;height:100%;width:160%;transform:translateX(-100%);animation:wavego .95s cubic-bezier(.65,0,.35,1) forwards}
+#wave path{fill:rgba(255,255,255,.42)}#wave path+path{fill:rgba(255,255,255,.28)}
+@keyframes wavego{to{transform:translateX(70%)}}
+#main.vt .panel,#main.vt .lz-sec,#main.vt .day,#main.vt .ph,#main.vt .quote{animation:vtrise .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*55ms + 180ms)}
+@keyframes vtrise{from{opacity:0;transform:translateY(18px) scale(.985)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){#wave{display:none!important}#main.vt *{animation:none!important}.route .rt-pulse{animation:none}}
+
+/* Dunkles Glas (Schalter oben rechts) */
+:root[data-theme="dark"]{color-scheme:dark;
+  --panel:rgba(16,18,24,.5);--panel2:rgba(255,255,255,.07);--bg2:rgba(0,0,0,.25);--line:rgba(255,255,255,.14);--line2:rgba(255,255,255,.22);
+  --ink:#F4F2EF;--ink2:rgba(244,242,239,.76);--ink3:rgba(244,242,239,.54);
+  --accent:#8DC3FF;--accent2:#B5D8FF;--accent-soft:rgba(141,195,255,.16);--on-accent:#101216;
+  --good:#8DC3FF;--good-ink:#B5D8FF;--warn:#F2C060;--serious:#F5A05A;--crit:#F5A05A;--crit-ink:#FFC08A;
+  --gl-shadow:0 12px 40px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.14),inset 0 0 0 1px rgba(255,255,255,.03)}
+:root[data-theme="dark"] body.alltag{--accent:#8DC3FF;--accent2:#B5D8FF;--accent-soft:rgba(141,195,255,.16);--on-accent:#101216}
+:root[data-theme="dark"] body::after{background:linear-gradient(180deg,rgba(0,0,0,.5) 0,rgba(0,0,0,.3) 240px,rgba(0,0,0,.28) 60%,rgba(0,0,0,.45) 100%)!important}
+:root[data-theme="dark"] .side{background:rgba(16,18,24,.45)!important}
+:root[data-theme="dark"] .day{background:rgba(16,18,24,.5)!important}
+:root[data-theme="dark"] .nav-btn{color:var(--ink2)}:root[data-theme="dark"] .nav-btn:hover{background:rgba(255,255,255,.08)}
+:root[data-theme="dark"] .nav-btn[aria-current="page"]{background:rgba(255,255,255,.92)!important;color:#101216!important}
+:root[data-theme="dark"] .btn,:root[data-theme="dark"] .refresh{background:rgba(255,255,255,.1)!important;border-color:rgba(255,255,255,.2)!important;color:var(--ink)!important}
+:root[data-theme="dark"] .btn:hover,:root[data-theme="dark"] .refresh:hover{background:rgba(255,255,255,.18)!important}
+:root[data-theme="dark"] .btn.primary,:root[data-theme="dark"] .seg button[aria-pressed="true"]{background:rgba(255,255,255,.92)!important;color:#101216!important}
+:root[data-theme="dark"] .chip{background:rgba(255,255,255,.1);border-color:var(--line)}
+:root[data-theme="dark"] .seg{background:rgba(255,255,255,.06);border-color:var(--line2)}
+:root[data-theme="dark"] input,:root[data-theme="dark"] select,:root[data-theme="dark"] textarea{background:rgba(255,255,255,.08)!important;border-color:var(--line2)!important}
+:root[data-theme="dark"] select option{background:#1c1e24}
+:root[data-theme="dark"] .lz-tile,:root[data-theme="dark"] .lz-load,:root[data-theme="dark"] .lz-ki,:root[data-theme="dark"] .car-bar,:root[data-theme="dark"] #sbmap-slot,:root[data-theme="dark"] .wx-day,:root[data-theme="dark"] .lz-f{background:rgba(255,255,255,.07)!important}
+:root[data-theme="dark"] .lz-zb,:root[data-theme="dark"] .semprog .track{background:rgba(255,255,255,.1)!important}
+:root[data-theme="dark"] .lz-b{background:rgba(255,255,255,.14)}
+:root[data-theme="dark"] .tip{background:rgba(20,22,28,.88)!important;color:var(--ink)!important;border-color:var(--line2)!important}
+:root[data-theme="dark"] .toast{background:rgba(255,255,255,.92)!important;color:#101216!important}
+:root[data-theme="dark"] .brief{background:rgba(0,0,0,.45)!important}
+:root[data-theme="dark"] a{color:var(--accent2)}
+:root[data-theme="dark"] .sb-line,:root[data-theme="dark"] .lz-b.run,:root[data-theme="dark"] .cm-line{color:#101216!important}
+:root[data-theme="dark"] .route .rt-base{stroke:rgba(255,255,255,.3)}
+:root[data-theme="dark"] .route .rt-st circle{fill:rgba(30,32,40,.9);stroke:rgba(255,255,255,.35)}
+:root[data-theme="dark"] .route .rt-st.done circle{fill:var(--accent);stroke:var(--accent)}
+:root[data-theme="dark"] .route .rt-st.done path{stroke:#101216}
+:root[data-theme="dark"] .route .rt-me rect{fill:#fff}:root[data-theme="dark"] .route .rt-me path{stroke:#101216}
+:root[data-theme="dark"] #wave path{fill:rgba(20,22,28,.5)}:root[data-theme="dark"] #wave path+path{fill:rgba(20,22,28,.32)}
+@media (max-width:760px){:root[data-theme="dark"] .tabbar{background:rgba(20,22,28,.85)!important;border-color:var(--line2)!important}}
 </style>
 </head>
 <body>
 
 <div id="bgimg" aria-hidden="true"></div>
+<div id="wave" aria-hidden="true"><svg viewBox="0 0 1600 1000" preserveAspectRatio="none"><path d="M0 0H1100C1180 120 1260 220 1200 330S1060 520 1140 640 1300 860 1220 1000H0Z"/><path d="M0 0H1240C1320 140 1380 260 1330 380S1210 560 1290 690 1440 880 1380 1000H0Z"/></svg></div>
 <a class="bg-credit" href="https://unsplash.com/s/photos/mountain" target="_blank" rel="noopener">Foto: Unsplash</a>
 <div class="app">
   <aside class="side" aria-label="Navigation">
@@ -803,6 +867,54 @@ function setBg(){const d=new Date(),doy=Math.floor((d-new Date(d.getFullYear(),0
   const im=new Image();im.onload=()=>{el.style.backgroundImage=`url("${url}")`;el.classList.add("on")};im.src=url}
 setBg();let bgT=0;addEventListener("resize",()=>{clearTimeout(bgT);bgT=setTimeout(setBg,800)});
 setInterval(setBg,30*6e4);
+
+/* ---------- Design: Hell/Dunkel ---------- */
+let THEME="light";try{THEME=localStorage.getItem("sb-theme")==="dark"?"dark":"light"}catch(e){}
+document.documentElement.dataset.theme=THEME;
+const SUN_ICON='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>';
+const MOON_ICON='<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>';
+document.addEventListener("click",e=>{if(!e.target.closest("[data-themebtn]"))return;THEME=THEME==="dark"?"light":"dark";document.documentElement.dataset.theme=THEME;
+  try{localStorage.setItem("sb-theme",THEME)}catch(x){}const m=document.querySelector('meta[name="theme-color"]');if(m)m.content=THEME==="dark"?"#14161B":"#E9DFD2";render()});
+
+/* ---------- Seitenwechsel-Animation ---------- */
+let vtPending=false,vtT=0;
+function playTransition(){const m=$("#main");if(!m||matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+  let i=0;m.querySelectorAll(".panel,.lz-sec,.day,.ph,.quote").forEach(el=>{if(!el.closest(".panel")||el.classList.contains("panel"))el.style.setProperty("--i",Math.min(i++,12))});
+  m.classList.remove("vt");void m.offsetWidth;m.classList.add("vt");
+  const w=$("#wave");if(w){w.classList.remove("go");void w.offsetWidth;w.classList.add("go")}
+  clearTimeout(vtT);vtT=setTimeout(()=>{m.classList.remove("vt");if(w)w.classList.remove("go")},1600)}
+
+/* ---------- Semesterroute: Etappen = Abgaben und Prüfungen, Gipfel = Semesterende ---------- */
+let routeAnimDone=false;
+function routeStops(){const due=S.events.filter(e=>isDue(e)&&new Date(e.start)>=SEM_START&&new Date(e.start)<=new Date(SEM_END.getTime()+DAY)).sort((a,b)=>new Date(a.start)-new Date(b.start));
+  return [{d:SEM_START,k:"Start",t:"Semesterbeginn"},...due.map(e=>{const c=course(e.course);return {d:new Date(e.start),k:(c?c.code:"")+" "+kindLabel(e.kind),t:e.title,e}}),{d:SEM_END,k:"Gipfel",t:"Semesterende"}]}
+function routePanel(){const st=routeStops(),n=st.length,now=new Date();if(n<2)return"";
+  const W=1000,H=200,x0=50,x1=950,pts=st.map((s,i)=>{const x=x0+i*(x1-x0)/(n-1);return [x,158-i*(96/(n-1))+(i%2?-12:10)*(i>0&&i<n-1?1:0)]});
+  let d=`M${pts[0][0]} ${pts[0][1]}`;for(let i=0;i<n-1;i++){const p0=pts[Math.max(0,i-1)],p1=pts[i],p2=pts[i+1],p3=pts[Math.min(n-1,i+2)];
+    d+=` C${(p1[0]+(p2[0]-p0[0])/6).toFixed(1)} ${(p1[1]+(p2[1]-p0[1])/6).toFixed(1)},${(p2[0]-(p3[0]-p1[0])/6).toFixed(1)} ${(p2[1]-(p3[1]-p1[1])/6).toFixed(1)},${p2[0]} ${p2[1]}`}
+  let seg=0;while(seg<n-2&&now>=st[seg+1].d)seg++;const f=Math.max(0,Math.min(1,(now-st[seg].d)/(st[seg+1].d-st[seg].d||1)));
+  const nextI=st.findIndex(s=>s.d>now),doneN=st.filter((s,i)=>i>0&&i<n-1&&s.d<=now).length,tot=n-2;
+  const nx=st[nextI];const days=nx?Math.max(0,daysUntil(nx.d)):0;
+  const stops=st.map((s,i)=>{const [x,y]=pts[i],done=s.d<=now,cls=done?"done":i===nextI?"next":"",up=i%2===1;
+    const tip=`<b>${esc(s.k)}</b><br>${esc(s.t)}<br>${fDate(s.d,{weekday:"short",day:"2-digit",month:"2-digit",year:"numeric"})}`;
+    const icon=i===n-1?`<path d="M${x-5} ${y+3}l5-8 5 8" style="stroke:${done?"#fff":"var(--ink2)"};stroke-width:2;fill:none;stroke-linejoin:round"/>`:done?`<path d="M${x-4} ${y}l3 3 5-6"/>`:"";
+    return `<g class="rt-st ${cls}" ${tipAttr(tip)}><circle cx="${x}" cy="${y}" r="${i===n-1?13:10}"/>${icon}
+      <text class="k" x="${x}" y="${up?y-24:y+30}">${esc(s.k)}</text><text class="d" x="${x}" y="${up?y-38:y+44}">${fDate(s.d,{day:"2-digit",month:"2-digit"})}</text></g>`}).join("");
+  return `<section class="panel s12" aria-labelledby="h-rt"><div class="ph"><h2 id="h-rt">Semesterroute</h2><span class="label">${doneN} von ${tot} Etappen geschafft</span></div>
+    <div class="route-wrap"><svg class="route" id="route" viewBox="0 0 ${W} ${H+20}" data-seg="${seg}" data-f="${f.toFixed(4)}" data-xs="${pts.map(p=>p[0]).join(",")}" role="img" aria-label="Semesterroute mit ${tot} Abgaben und Prüfungen, ${doneN} erledigt">
+      <path class="rt-base" d="${d}"/><path class="rt-done" id="rt-done" d="${d}"/>${stops}
+      <g class="rt-me" id="rt-me"><circle class="rt-pulse" r="16" cx="0" cy="0"/><rect x="-13" y="-13" width="26" height="26" rx="8"/><path d="M-1 -8a1.6 1.6 0 1 0 .1 0M-1 -4l-3 4 3 2v6M-1 -2l4 2 2 -2M-4 8l2-5M5 -8v16"/></g></svg></div>
+    <div class="rt-sum">${nx&&nextI<n-1?`<span>Nächste Etappe: <b>${esc(nx.k)}</b> in ${days} ${days===1?"Tag":"Tagen"}</span>`:""}<span>Bis zum Gipfel: <b>${Math.max(0,daysUntil(SEM_END))} Tage</b></span></div></section>`}
+function drawRoute(){const svg=document.getElementById("route");if(!svg)return;const p=document.getElementById("rt-done"),me=document.getElementById("rt-me");
+  const L=p.getTotalLength(),xs=svg.dataset.xs.split(",").map(Number),seg=+svg.dataset.seg,f=+svg.dataset.f;
+  const lenAtX=x=>{let lo=0,hi=L;for(let k=0;k<26;k++){const m=(lo+hi)/2;if(p.getPointAtLength(m).x<x)lo=m;else hi=m}return lo};
+  const target=lenAtX(xs[seg]+(xs[seg+1]-xs[seg])*f);
+  const wr=svg.parentElement;if(wr&&wr.scrollWidth>wr.clientWidth+4){const tx=(xs[seg]+(xs[seg+1]-xs[seg])*f)/1000*wr.scrollWidth;wr.scrollLeft=Math.max(0,tx-wr.clientWidth/2)}
+  const place=l=>{const q=p.getPointAtLength(l);me.setAttribute("transform",`translate(${q.x.toFixed(1)} ${q.y.toFixed(1)})`);p.style.strokeDasharray=`${l} ${L}`};
+  if(routeAnimDone||matchMedia("(prefers-reduced-motion: reduce)").matches){place(target);routeAnimDone=true;return}
+  routeAnimDone=true;const t0=performance.now(),dur=1800,ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+  place(0);const step=now=>{const t=Math.min(1,(now-t0)/dur);if(!document.body.contains(p))return;place(target*ease(t));if(t<1)requestAnimationFrame(step)};
+  setTimeout(()=>requestAnimationFrame(step),350)}
 /* ---------- Hilfen ---------- */
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -995,7 +1107,7 @@ const add=(c,data,msg)=>write(()=>sb.from(c).insert(toRow(c,data)),msg,c);
 const upd=(c,id,data,msg)=>write(()=>sb.from(c).update(toRow(c,data)).eq("id",id),msg,c);
 const del=(c,id,msg)=>write(()=>sb.from(c).delete().eq("id",id),msg,c);
 /* ---------- Navigation ---------- */
-function go(v,cid){if(v==="woche"&&view!=="woche")wkOff=0;view=v;courseId=cid||null;lastOf[isAlltag(v)?"alltag":"uni"]=v;render();window.scrollTo(0,0)}
+function go(v,cid){if(v==="woche"&&view!=="woche")wkOff=0;const changed=v!==view;view=v;courseId=cid||null;lastOf[isAlltag(v)?"alltag":"uni"]=v;if(changed)routeAnimDone=false;render();window.scrollTo(0,0);if(changed)playTransition()}
 function renderNav(){
   document.body.classList.toggle("alltag",isAlltag(view));
   const btn=([k,l])=>`<button class="nav-btn" data-go="${k}"${view===k?' aria-current="page"':""} aria-label="${l}">${ICONS[k]}<span>${l}</span></button>`;
@@ -1156,11 +1268,11 @@ function vHeute(){
       <div><div class="label">${fDate(now,{weekday:"long",day:"2-digit",month:"long",year:"numeric"})} · KW ${kw(now)}</div>
         <div class="clock" id="clock" style="margin-top:8px">${fTime(now)}<span class="sec">${String(now.getSeconds()).padStart(2,"0")}</span></div>
         <div class="semprog"><div class="row" style="justify-content:space-between"><span class="label">Semesterfortschritt · Woche ${Math.max(1,semW)} von 20</span><span class="num" style="font-size:.85rem">${semP.toFixed(0)} %</span></div>
-          <div class="track" ${tipAttr(`<b>Wintersemester 2026/27</b><br>01.10.2026 bis 15.02.2027<br>${Math.max(0,Math.round((SEM_END-now)/DAY))} Tage verbleibend`)}><div class="fill" style="width:${semP}%"></div></div>
-          <div class="ticks"><span>Okt</span><span>Nov</span><span>Dez</span><span>Jan</span><span>Feb</span></div></div></div>
+          <div class="track" ${tipAttr(`<b>Wintersemester 2026/27</b><br>01.10.2026 bis 15.02.2027<br>${Math.max(0,Math.round((SEM_END-now)/DAY))} Tage verbleibend`)}><div class="fill" style="width:${semP}%"></div></div></div></div>
       <div class="next">${next?`<div class="label">Als Nächstes${next.kind==="private"?" · privat":""}</div><div class="nwhen"><span class="nday">${daysUntil(next.start)===0?"Heute":daysUntil(next.start)===1?"Morgen":fDate(next.start,{weekday:"long"})}, ${fDate(next.start,{day:"2-digit",month:"2-digit"})}</span><span class="ntime">${fTime(next.start)}<span class="nend">–${fTime(next.end)}</span></span></div><div class="cdn" id="nextcd" data-at="${new Date(next.start).getTime()}">${countdownText(new Date(next.start))}</div>
         <h3>${esc(next.title)}</h3><div class="where">${esc(next.location||"Kein Ort")} ${mapLink(next.location)}</div><div>${cChip(next.course)}</div>${commuteMini()}`:'<div class="empty">Keine weiteren Termine.</div>'}</div>
     </div></section>
+    ${routePanel()}
     ${commutePanel()}
     ${carPanel()}
     ${sbPanel()}
@@ -2234,9 +2346,9 @@ function render(){
   renderNav();hideTip();
   const body={heute:vHeute,woche:vWoche,faecher:vFaecher,aufgaben:vAufgaben,notizen:vNotizen,mail:vMail,alltag:vAlltag,training:vTraining,analyse:vAnalyse,leistung:vLeistung,essen:vEssen,gewicht:vGewicht}[view]();
   const h=new Date().getHours(),al=isAlltag(view);
-  $("#main").innerHTML=`<div class="top"><div><div class="label">${al?"Fitness · Training, Laufen und Essen":"Semesterboard · M.Sc. Applied Business Innovation"}</div>${view==="heute"?`<h1>Guten ${h<11?"Morgen":h<18?"Tag":"Abend"}, Simon</h1>`:""}${view==="alltag"?"<h1>Fitness</h1>":""}${view==="heute"?'<button class="btn" data-brief="open" style="margin-top:8px">☀ Tages-Briefing</button>':""}</div><div class="topr">${view==="heute"?`<button class="refresh" id="stravabtn" data-strava="1" aria-label="Strava jetzt abgleichen" title="Strava jetzt abgleichen"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M10.1 2 4 14h3.6l2.5-4.9 2.5 4.9h3.6zM15.2 14l-1.8 3.5-1.8-3.5H9l4.4 8 4.3-8z"/></svg></button>`:""}<button class="refresh" id="refresh" data-refresh="1" aria-label="Aktualisieren" title="Aktualisieren"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button></div></div>
+  $("#main").innerHTML=`<div class="top"><div><div class="label">${al?"Fitness · Training, Laufen und Essen":"Semesterboard · M.Sc. Applied Business Innovation"}</div>${view==="heute"?`<h1>Guten ${h<11?"Morgen":h<18?"Tag":"Abend"}, Simon</h1>`:""}${view==="alltag"?"<h1>Fitness</h1>":""}${view==="heute"?'<button class="btn" data-brief="open" style="margin-top:8px">☀ Tages-Briefing</button>':""}</div><div class="topr">${view==="heute"?`<button class="refresh" id="stravabtn" data-strava="1" aria-label="Strava jetzt abgleichen" title="Strava jetzt abgleichen"><svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor" aria-hidden="true"><path d="M10.1 2 4 14h3.6l2.5-4.9 2.5 4.9h3.6zM15.2 14l-1.8 3.5-1.8-3.5H9l4.4 8 4.3-8z"/></svg></button>`:""}<button class="refresh" id="themebtn" data-themebtn="1" aria-label="Hell/Dunkel umschalten" title="Hell/Dunkel umschalten">${THEME==="dark"?SUN_ICON:MOON_ICON}</button><button class="refresh" id="refresh" data-refresh="1" aria-label="Aktualisieren" title="Aktualisieren"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 11a8 8 0 1 0-2.3 5.7"/><path d="M20 4v7h-7"/></svg></button></div></div>
     ${!navigator.onLine?'<div class="notice">Offline: Du siehst den letzten Stand. Änderungen gehen erst wieder mit Verbindung.</div>':""}${body}`;
-  drawCharts();lzAnimate();
+  drawCharts();lzAnimate();drawRoute();
   const b=$("#brief");if(b&&!b.hidden){const sc=b.firstElementChild?b.firstElementChild.scrollTop:0;b.innerHTML=briefingHTML();b.firstElementChild.scrollTop=sc}
 }
 
